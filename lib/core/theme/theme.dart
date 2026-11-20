@@ -1,6 +1,8 @@
 export 'app_theme.dart';
 export 'ishara_colors.dart';
 export 'ishara_elevation.dart';
+export 'ishara_icons.dart';
+export 'ishara_sizes.dart';
 export 'ishara_motion.dart';
 export 'ishara_radius.dart';
 export 'ishara_spacing.dart';
