@@ -4,6 +4,7 @@ import 'ishara_colors.dart';
 import 'ishara_elevation.dart';
 import 'ishara_motion.dart';
 import 'ishara_radius.dart';
+import 'ishara_sizes.dart';
 import 'ishara_spacing.dart';
 import 'ishara_text_styles.dart';
 import 'ishara_text_theme.dart';
@@ -114,7 +115,9 @@ abstract final class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: c.accentText,
+          foregroundColor: c.textPrimary,
+          backgroundColor: c.bgSurface,
+          disabledBackgroundColor: c.bgSurface,
           disabledForegroundColor: c.textTertiary,
           textStyle: styles.labelLarge,
           shape: buttonShape,
@@ -135,32 +138,76 @@ abstract final class AppTheme {
           animationDuration: IsharaMotion.instant,
         ),
       ),
+      // Figma IsharaTextField: muted fill, radius lg, no resting border,
+      // 2px accent when focused, 2px danger on error.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: c.bgSurface,
-        contentPadding: const EdgeInsets.all(IsharaSpacing.s4),
-        hintStyle: styles.bodyLarge.copyWith(color: c.textTertiary),
-        labelStyle: styles.bodyMedium.copyWith(color: c.textSecondary),
-        border: OutlineInputBorder(
-          borderRadius: IsharaRadius.brMd,
-          borderSide: BorderSide(color: c.borderDefault, width: outlineWidth),
+        fillColor: c.bgSurfaceMuted,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: IsharaSpacing.s4,
+          vertical: IsharaSpacing.s4,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: IsharaRadius.brMd,
-          borderSide: BorderSide(color: c.borderDefault, width: outlineWidth),
+        hintStyle: styles.bodyLarge.copyWith(color: c.textTertiary),
+        labelStyle: styles.labelMedium.copyWith(color: c.textPrimary),
+        helperStyle: styles.bodySmall.copyWith(color: c.textSecondary),
+        errorStyle: styles.bodySmall.copyWith(color: c.dangerText),
+        prefixIconColor: c.textSecondary,
+        suffixIconColor: c.textSecondary,
+        border: const OutlineInputBorder(
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide.none,
+        ),
+        disabledBorder: const OutlineInputBorder(
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: IsharaRadius.brMd,
-          borderSide: BorderSide(color: c.accentDefault, width: 2),
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide(
+            color: c.accentDefault,
+            width: IsharaSizes.selectedBorder,
+          ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: IsharaRadius.brMd,
-          borderSide: BorderSide(color: c.dangerDefault, width: outlineWidth),
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide(
+            color: c.dangerDefault,
+            width: IsharaSizes.selectedBorder,
+          ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: IsharaRadius.brMd,
-          borderSide: BorderSide(color: c.dangerDefault, width: 2),
+          borderRadius: IsharaRadius.brLg,
+          borderSide: BorderSide(
+            color: c.dangerDefault,
+            width: IsharaSizes.selectedBorder,
+          ),
         ),
+      ),
+      // Figma IsharaSwitch (M3 52x32).
+      switchTheme: SwitchThemeData(
+        trackColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? c.accentDefault
+              : c.bgSurfaceMuted,
+        ),
+        thumbColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? c.textOnAccent
+              : c.textSecondary,
+        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? Colors.transparent
+              : c.borderStrong,
+        ),
+        trackOutlineWidth: const WidgetStatePropertyAll(
+          IsharaSizes.selectedBorder,
+        ),
+        thumbIcon: const WidgetStatePropertyAll(null),
       ),
       cardTheme: CardThemeData(
         color: c.bgSurface,

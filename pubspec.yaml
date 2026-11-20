@@ -35,6 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  lucide_icons_flutter: ^4.0.3
+  flutter_svg: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +64,9 @@ flutter:
   assets:
     - assets/fonts/OFL-PlusJakartaSans.txt
     - assets/fonts/OFL-AnekDevanagari.txt
+    # Brand artwork and filled icons exported from Figma (Components page).
+    - assets/brand/
+    - assets/icons/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;
   # Anek Devanagari (variable) for Nepali glyphs only.
