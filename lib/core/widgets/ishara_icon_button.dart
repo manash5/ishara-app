@@ -15,12 +15,16 @@ class IsharaIconButton extends StatelessWidget {
     required this.tooltip,
     required this.onPressed,
     this.variant = IsharaIconButtonVariant.standard,
+    this.color,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
   final IsharaIconButtonVariant variant;
+
+  /// Icon colour override (Figma instance override), e.g. text/secondary.
+  final Color? color;
 
   /// (background, foreground) for [variant].
   static (Color, Color) colorsFor(
@@ -38,7 +42,8 @@ class IsharaIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final (bg, fg) = colorsFor(c, variant);
+    final (bg, variantFg) = colorsFor(c, variant);
+    final fg = color ?? variantFg;
     return PressableScale(
       enabled: onPressed != null,
       child: IconButton(

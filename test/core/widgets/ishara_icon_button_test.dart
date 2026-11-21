@@ -88,4 +88,20 @@ void main() {
       expect(iconTheme.color, c.textTertiary);
     });
   }
+
+  testWidgets('colour override (LessonProgressHeader close)', (tester) async {
+    await pumpThemed(
+      tester,
+      IsharaIconButton(
+        icon: IsharaIcons.close,
+        tooltip: 'Close',
+        color: IsharaColors.light.textSecondary,
+        onPressed: () {},
+      ),
+    );
+    expect(
+      IconTheme.of(tester.element(find.byIcon(IsharaIcons.close))).color,
+      IsharaColors.light.textSecondary,
+    );
+  });
 }

@@ -79,6 +79,102 @@ Widget _kit() => ListView(
   ],
 );
 
+/// The lesson, roadmap and navigation widgets.
+Widget _lessonKit() => ListView(
+  padding: const EdgeInsets.all(IsharaSpacing.screenMargin),
+  children: [
+    const StatsBar(streak: 12, xp: 340, hearts: 5),
+    LessonProgressHeader(progress: 0.4, hearts: 5, onClose: () {}),
+    UnitHeader(
+      unit: 1,
+      title: 'Greetings & etiquette',
+      learned: 4,
+      total: 12,
+      onGuide: () {},
+    ),
+    Wrap(
+      children: [
+        for (final s in PathNodeState.values)
+          PathNode(state: s, label: 'Lesson', onTap: () {}),
+      ],
+    ),
+    const PathTooltip(text: 'Start'),
+    const DanuMascot(),
+    SignVideoPlayer(
+      semanticLabel: 'Sign video',
+      onReplay: () {},
+      onToggleSlowMotion: () {},
+      onToggleMirror: () {},
+    ),
+    const SizedBox(height: 240, child: CameraFeed()),
+    Row(
+      children: [
+        Expanded(
+          child: VideoOption(semanticLabel: 'Option 1', onTap: () {}),
+        ),
+        Expanded(
+          child: VideoOption(
+            semanticLabel: 'Option 2',
+            state: AnswerState.selected,
+            onTap: () {},
+          ),
+        ),
+      ],
+    ),
+    for (final s in AnswerState.values)
+      AnswerOption(label: 'Answer ${s.name}', state: s, onTap: () {}),
+    Row(
+      children: [
+        for (final s in MatchTileState.values)
+          Expanded(
+            child: MatchTile(label: s.name, state: s, onTap: () {}),
+          ),
+      ],
+    ),
+    FeedbackSheet(
+      result: FeedbackResult.almost,
+      message: 'Placeholder message',
+      onContinue: () {},
+      secondaryLabel: 'Skip for now',
+      onSecondary: () {},
+    ),
+    IsharaBottomBar(
+      current: IsharaTab.learn,
+      onTabSelected: (_) {},
+      onPractice: () {},
+    ),
+  ],
+);
+
+Future<void> _pumpKit(
+  WidgetTester tester,
+  Widget kit,
+  ThemeMode mode, {
+  double textScale = 1,
+}) async {
+  tester.view.physicalSize = const Size(1080, 12000);
+  tester.view.devicePixelRatio = 2.625;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: mode,
+      home: Builder(
+        builder: (context) => MediaQuery(
+          // Reduced motion stops the PathNode pulse so the test can settle.
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: true,
+          ),
+          child: Scaffold(body: kit),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   for (final mode in themeModes) {
     testWidgets('tap targets ≥48dp and labelled (${mode.name})', (
@@ -123,6 +219,25 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final mode in themeModes) {
+    testWidgets('lesson/roadmap kit: targets ≥48dp, labelled (${mode.name})', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pumpKit(tester, _lessonKit(), mode);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('lesson/roadmap kit at 1.3× text (${mode.name})', (
+      tester,
+    ) async {
+      await _pumpKit(tester, _lessonKit(), mode, textScale: 1.3);
       expect(tester.takeException(), isNull);
     });
   }

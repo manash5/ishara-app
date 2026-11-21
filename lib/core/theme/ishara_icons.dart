@@ -21,6 +21,14 @@ abstract final class IsharaIcons {
   static const IconData search = LucideIcons.search;
   static const IconData flame = LucideIcons.flame;
   static const IconData zap = LucideIcons.zap;
+  static const IconData lock = LucideIcons.lock;
+  static const IconData rotateCcw = LucideIcons.rotateCcw;
+  static const IconData trophy = LucideIcons.trophy;
+  static const IconData house = LucideIcons.house;
+  static const IconData bookOpen = LucideIcons.bookOpen;
+  static const IconData user = LucideIcons.user;
+  static const IconData flipHorizontal = LucideIcons.flipHorizontal;
+  static const IconData lightbulb = LucideIcons.lightbulb;
 }
 
 /// The custom filled icons from Figma (`Icon/*-fill`); Lucide has none.
@@ -28,7 +36,8 @@ enum IsharaFilledIconKind {
   flame('assets/icons/flame_fill.svg'),
   heart('assets/icons/heart_fill.svg'),
   zap('assets/icons/zap_fill.svg'),
-  star('assets/icons/star_fill.svg');
+  star('assets/icons/star_fill.svg'),
+  play('assets/icons/play_fill.svg');
 
   const IsharaFilledIconKind(this.asset);
   final String asset;
