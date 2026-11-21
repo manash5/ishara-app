@@ -58,7 +58,7 @@ void main() {
         c.bgSurfaceMuted,
       );
       expect(find.byType(HandLandmarkOverlay), findsOneWidget);
-      expect(textColor(tester, '1×'), c.textPrimary);
+      expect(textColor(tester, '0.5×'), c.textPrimary);
 
       for (final label in ['Replay', 'Slow motion', 'Mirror video']) {
         final node = find.bySemanticsLabel(label);

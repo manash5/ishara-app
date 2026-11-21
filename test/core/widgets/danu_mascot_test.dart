@@ -7,6 +7,18 @@ import 'package:ishara_app/core/widgets/widgets.dart';
 import '../../helpers/pump_themed.dart';
 
 void main() {
+  test('pose artwork is transparent (no exported canvas background)', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    for (final pose in DanuPose.values) {
+      final svg = await rootBundle.loadString(pose.asset);
+      expect(
+        RegExp(r'<rect width="200" height="\d+" fill=').hasMatch(svg),
+        isFalse,
+        reason: pose.name,
+      );
+    }
+  });
+
   test('all six pose SVGs are bundled', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     for (final pose in DanuPose.values) {

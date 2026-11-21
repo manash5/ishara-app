@@ -55,6 +55,12 @@ class IsharaTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.textStyles;
+    final inputTheme = Theme.of(context).inputDecorationTheme;
+    final hasError = errorText != null;
+    // Figma draws helper/error text flush with the label, 8 below the field;
+    // InputDecorator would indent it by the content padding, so it is drawn
+    // here and the error state is expressed through the borders.
+    final subtext = errorText ?? helperText;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -84,24 +90,41 @@ class IsharaTextField extends StatelessWidget {
             cursorColor: c.accentDefault,
             decoration: InputDecoration(
               hintText: hint,
-              helperText: helperText,
-              errorText: errorText,
-              helperMaxLines: 2,
-              errorMaxLines: 2,
+              enabledBorder: hasError ? inputTheme.errorBorder : null,
+              focusedBorder: hasError ? inputTheme.focusedErrorBorder : null,
               constraints: const BoxConstraints(
                 minHeight: IsharaSizes.controlHeight,
               ),
+              // Figma: icon 16 from the edge, 12 before the text (M3 adds
+              // 4 after a prefix icon, so the icon pads 8 itself).
               prefixIcon: prefixIcon == null
                   ? null
-                  : Icon(prefixIcon, size: IsharaSizes.iconMd),
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: IsharaSizes.minTouch,
-                minHeight: IsharaSizes.minTouch,
-              ),
+                  : Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        start: IsharaSpacing.s4,
+                        end: IsharaSpacing.s2,
+                      ),
+                      child: Icon(prefixIcon, size: IsharaSizes.iconMd),
+                    ),
+              prefixIconConstraints: const BoxConstraints(),
               suffixIcon: suffixIcon,
             ),
           ),
         ),
+        if (subtext != null) ...[
+          const SizedBox(height: IsharaSpacing.stackGap),
+          Semantics(
+            liveRegion: hasError,
+            child: Text(
+              subtext,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: s.bodySmall.copyWith(
+                color: hasError ? c.dangerText : c.textSecondary,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -90,4 +90,31 @@ void main() {
     expect(taps, 1);
     handle.dispose();
   });
+
+  testWidgets('banner is 104 tall and the guide 97×64, as in Figma', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      SizedBox(
+        // Wide enough that the Ahem test font doesn't wrap the subtitle.
+        width: 600,
+        child: UnitHeader(
+          unit: 1,
+          title: 'Hi',
+          learned: 4,
+          total: 12,
+          onGuide: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(UnitHeader)).height, 104);
+    final guide = tester.getSize(find.byKey(const ValueKey('unit-guide')));
+    expect(guide.height, 64);
+    // 2px border + 10 padding each side of the label.
+    expect(
+      guide.width - tester.getSize(find.text('GUIDEBOOK')).width,
+      2 * (IsharaSizes.guidePaddingX + IsharaSizes.selectedBorder),
+    );
+  });
 }

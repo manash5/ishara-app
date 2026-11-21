@@ -119,4 +119,29 @@ void main() {
       });
     });
   }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    for (final (tone, fill) in [
+      (IsharaButtonTone.success, c.successDefault),
+      (IsharaButtonTone.danger, c.dangerDefault),
+    ]) {
+      testWidgets('tone ${tone.name} fills the button (${mode.name})', (
+        tester,
+      ) async {
+        await pumpThemed(
+          tester,
+          IsharaButton(label: 'Continue', tone: tone, onPressed: () {}),
+          mode: mode,
+        );
+        expect(bgOf(tester), fill);
+        await pumpThemed(
+          tester,
+          IsharaButton(label: 'Continue', tone: tone, onPressed: null),
+          mode: mode,
+        );
+        expect(bgOf(tester), c.bgSurfaceMuted);
+      });
+    }
+  }
 }

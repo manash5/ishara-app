@@ -5,6 +5,10 @@ import '../theme/theme.dart';
 /// Figma `IsharaButton` → `variant`.
 enum IsharaButtonVariant { filled, outlined, text }
 
+/// Fill colour of a filled button (Figma instance overrides, e.g. in
+/// `FeedbackSheet`): accent (default), success or danger.
+enum IsharaButtonTone { accent, success, danger }
+
 /// Figma `IsharaButton`: flat, 56dp, radius lg, sentence-case label/large.
 ///
 /// `state=disabled` in Figma = [onPressed] is null.
@@ -16,6 +20,7 @@ class IsharaButton extends StatelessWidget {
     this.variant = IsharaButtonVariant.filled,
     this.icon,
     this.expanded = true,
+    this.tone = IsharaButtonTone.accent,
   });
 
   final String label;
@@ -28,9 +33,25 @@ class IsharaButton extends StatelessWidget {
   /// Stretch to the available width (Figma buttons fill the content column).
   final bool expanded;
 
+  /// Only affects [IsharaButtonVariant.filled].
+  final IsharaButtonTone tone;
+
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+    final Color? toneFill = switch (tone) {
+      IsharaButtonTone.accent => null,
+      IsharaButtonTone.success => c.successDefault,
+      IsharaButtonTone.danger => c.dangerDefault,
+    };
     final style = ButtonStyle(
+      backgroundColor: toneFill == null
+          ? null
+          : WidgetStateProperty.resolveWith(
+              (s) => s.contains(WidgetState.disabled)
+                  ? c.bgSurfaceMuted
+                  : toneFill,
+            ),
       minimumSize: WidgetStatePropertyAll(
         Size(
           expanded ? double.infinity : IsharaSizes.minTouch,

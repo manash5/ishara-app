@@ -60,16 +60,20 @@ class MatchTile extends StatelessWidget {
                 minHeight: IsharaSizes.compactTileHeight,
               ),
               padding: const EdgeInsets.all(IsharaSpacing.s2),
-              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: fill,
                 borderRadius: IsharaRadius.brLg,
                 border: Border.all(color: border, width: width),
               ),
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: context.textStyles.titleMedium.copyWith(color: fg),
+              // heightFactor 1: centre without growing past 64 when the
+              // parent's height is loose (a Container alignment would fill it).
+              child: Align(
+                heightFactor: 1,
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: context.textStyles.titleMedium.copyWith(color: fg),
+                ),
               ),
             ),
           ),

@@ -132,8 +132,10 @@ class SignVideoPlayer extends StatelessWidget {
                           toggled: slowMotion,
                           wide: true,
                           onPressed: onToggleSlowMotion,
+                          // Figma: a 0.5× toggle — the label stays, the
+                          // on state is shown by fill and colour.
                           child: Text(
-                            slowMotion ? '0.5×' : '1×',
+                            '0.5×',
                             style: context.textStyles.labelMedium.copyWith(
                               color: slowMotion ? c.accentText : c.textPrimary,
                             ),

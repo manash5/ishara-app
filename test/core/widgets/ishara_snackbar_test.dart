@@ -88,4 +88,31 @@ void main() {
       expect(find.byType(InkWell), findsNothing);
     });
   }
+
+  testWidgets('one-line snackbar is 50 tall with an underlined action', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      SizedBox(
+        width: 380,
+        child: IsharaSnackbar(
+          message: "You're offline",
+          icon: IsharaIcons.wifiOff,
+          actionLabel: 'Retry',
+          onAction: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(IsharaSnackbar)).height, 50);
+    expect(
+      renderedStyle(tester, find.text('Retry'))?.decoration,
+      TextDecoration.underline,
+    );
+    // Touch target stays >= 48dp.
+    expect(
+      tester.getSize(find.byType(InkWell)).height,
+      greaterThanOrEqualTo(IsharaSizes.minTouch),
+    );
+  });
 }

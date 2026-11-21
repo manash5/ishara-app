@@ -86,6 +86,14 @@ abstract final class IsharaSizes {
   static const double bottomBarRadius = 24;
   static const double bottomBarPaddingTop = 12;
   static const double bottomBarPaddingBottom = 10;
+
+  /// Figma draws the Android gesture handle inside the bar (14 gap + 4
+  /// handle) above [bottomBarPaddingBottom]. The system paints the handle
+  /// itself, so the bar only reserves its space.
+  static const double bottomBarGestureArea = 18;
+
+  /// Figma `AppNavigationBar` height (12 + 52 + 18 + 10).
+  static const double bottomBarHeight = 92;
   static const double bottomBarTabHeight = 52;
   static const double practiceButton = 52;
 

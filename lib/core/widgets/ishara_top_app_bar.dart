@@ -45,42 +45,46 @@ class IsharaTopAppBar extends StatelessWidget implements PreferredSizeWidget {
       IsharaAppBarLeading.back => (IsharaIcons.arrowLeft, 'Back'),
       IsharaAppBarLeading.close => (IsharaIcons.close, 'Close'),
     };
-    return AppBar(
-      toolbarHeight: IsharaSizes.appBarHeight,
-      backgroundColor: c.bgCanvas,
-      automaticallyImplyLeading: false,
-      titleSpacing: IsharaSpacing.s1,
-      leadingWidth: IsharaSizes.minTouch + IsharaSpacing.s1,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: IsharaSpacing.s1),
-        child: Center(
-          child: IsharaIconButton(
-            icon: icon,
-            tooltip: tooltip,
-            onPressed: onLeading,
-          ),
-        ),
-      ),
-      title: Semantics(
-        header: true,
-        child: Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textStyles.titleLarge.copyWith(color: c.textPrimary),
-        ),
-      ),
-      actions: [
-        if (action case final a?)
-          Padding(
-            padding: const EdgeInsets.only(right: IsharaSpacing.s1),
+    // Fixed height so it doesn't fill loose constraints outside Scaffold.appBar.
+    return SizedBox(
+      height: IsharaSizes.appBarHeight,
+      child: AppBar(
+        toolbarHeight: IsharaSizes.appBarHeight,
+        backgroundColor: c.bgCanvas,
+        automaticallyImplyLeading: false,
+        titleSpacing: IsharaSpacing.s1,
+        leadingWidth: IsharaSizes.minTouch + IsharaSpacing.s1,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: IsharaSpacing.s1),
+          child: Center(
             child: IsharaIconButton(
-              icon: a.icon,
-              tooltip: a.tooltip,
-              onPressed: a.onPressed,
+              icon: icon,
+              tooltip: tooltip,
+              onPressed: onLeading,
             ),
           ),
-      ],
+        ),
+        title: Semantics(
+          header: true,
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.textStyles.titleLarge.copyWith(color: c.textPrimary),
+          ),
+        ),
+        actions: [
+          if (action case final a?)
+            Padding(
+              padding: const EdgeInsets.only(right: IsharaSpacing.s1),
+              child: IsharaIconButton(
+                icon: a.icon,
+                tooltip: a.tooltip,
+                onPressed: a.onPressed,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
