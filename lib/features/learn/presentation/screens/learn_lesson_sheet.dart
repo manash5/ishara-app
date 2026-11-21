@@ -8,17 +8,33 @@ import '../../../../core/widgets/widgets.dart';
 const String placeholderLessonId = 'greetings-1';
 
 /// Figma "11 Learn – lesson sheet": modal sheet opened from a path node.
-Future<void> showLearnLessonSheet(BuildContext context) {
+Future<void> showLearnLessonSheet(
+  BuildContext context, {
+  String? lessonId,
+  String? title,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     useRootNavigator: true,
-    builder: (sheetContext) => const LearnLessonSheet(),
+    builder: (sheetContext) => LearnLessonSheet(
+      lessonId: lessonId ?? placeholderLessonId,
+      title: title,
+    ),
   );
 }
 
 /// Content of frame 11 (placeholder).
 class LearnLessonSheet extends StatelessWidget {
-  const LearnLessonSheet({super.key});
+  const LearnLessonSheet({
+    super.key,
+    this.lessonId = placeholderLessonId,
+    this.title,
+  });
+
+  final String lessonId;
+
+  /// Lesson name from the path node, if known.
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +53,9 @@ class LearnLessonSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '11 · Learn – lesson sheet',
+              title == null
+                  ? '11 · Learn – lesson sheet'
+                  : '11 · Learn – lesson sheet · $title',
               style: s.titleLarge.copyWith(color: c.textPrimary),
             ),
             const SizedBox(height: IsharaSpacing.s4),
@@ -45,8 +63,7 @@ class LearnLessonSheet extends StatelessWidget {
               label: 'Start lesson',
               onPressed: () {
                 Navigator.of(context).pop();
-                const LessonRoute(lessonId: placeholderLessonId)
-                    .push<void>(context);
+                LessonRoute(lessonId: lessonId).push<void>(context);
               },
             ),
           ],
