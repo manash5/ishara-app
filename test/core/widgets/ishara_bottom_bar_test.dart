@@ -106,4 +106,21 @@ void main() {
     expect(practice, 1);
     expect(selected, IsharaTab.leaderboard);
   });
+
+  testWidgets('is 92 tall like Figma, reserving the gesture handle area', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      IsharaBottomBar(
+        current: IsharaTab.learn,
+        onTabSelected: (_) {},
+        onPractice: () {},
+      ),
+    );
+    expect(
+      tester.getSize(find.byType(IsharaBottomBar)).height,
+      IsharaSizes.bottomBarHeight,
+    );
+  });
 }

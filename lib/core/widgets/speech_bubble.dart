@@ -22,7 +22,9 @@ class SpeechBubble extends StatelessWidget {
       container: true,
       label: text,
       excludeSemantics: true,
+      // Figma: the bubble fills the available width (flex 1).
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           Padding(
             padding: const EdgeInsets.only(
@@ -30,30 +32,38 @@ class SpeechBubble extends StatelessWidget {
             ),
             // Outer box = border colour; non-uniform widths (2 / 4 bottom lip)
             // with rounded corners are drawn as two nested boxes.
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: c.borderDefault,
-                borderRadius: IsharaRadius.brLg,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  border,
-                  border,
-                  border,
-                  IsharaSizes.bubbleLip,
+            child: LayoutBuilder(
+              builder: (context, box) => ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: box.hasBoundedWidth ? box.maxWidth : 0,
                 ),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: c.bgSurface,
-                    borderRadius: innerRadius,
+                    color: c.borderDefault,
+                    borderRadius: IsharaRadius.brLg,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                      IsharaSpacing.cardPadding - border,
+                    padding: const EdgeInsets.fromLTRB(
+                      border,
+                      border,
+                      border,
+                      IsharaSizes.bubbleLip,
                     ),
-                    child: Text(
-                      text,
-                      style: s.bodyLarge.copyWith(color: c.textPrimary),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: c.bgSurface,
+                        borderRadius: innerRadius,
+                      ),
+                      // Figma: 16 inside the 2px border (text at 18).
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                          IsharaSpacing.cardPadding,
+                        ),
+                        child: Text(
+                          text,
+                          style: s.bodyLarge.copyWith(color: c.textPrimary),
+                        ),
+                      ),
                     ),
                   ),
                 ),

@@ -21,6 +21,8 @@ enum IsharaTab {
 ///
 /// Screens using it need [IsharaSizes.bottomBarContentPadding] at the bottom.
 class IsharaBottomBar extends StatelessWidget {
+  static const double _hairline = 1;
+
   const IsharaBottomBar({
     super.key,
     required this.current,
@@ -75,7 +77,9 @@ class IsharaBottomBar extends StatelessWidget {
     }
 
     final practice = Expanded(
+      // heightFactor 1: don't expand under loose constraints (bottomNavigationBar).
       child: Center(
+        heightFactor: 1,
         child: Semantics(
           container: true,
           button: true,
@@ -106,11 +110,15 @@ class IsharaBottomBar extends StatelessWidget {
     );
 
     return Container(
+      // Figma strokes sit inside the frame and padding is measured from the
+      // outer edge, so the 1px hairline comes out of the padding.
       padding: const EdgeInsets.fromLTRB(
-        IsharaSpacing.s2,
-        IsharaSizes.bottomBarPaddingTop,
-        IsharaSpacing.s2,
-        IsharaSizes.bottomBarPaddingBottom,
+        IsharaSpacing.s2 - _hairline,
+        IsharaSizes.bottomBarPaddingTop - _hairline,
+        IsharaSpacing.s2 - _hairline,
+        IsharaSizes.bottomBarGestureArea +
+            IsharaSizes.bottomBarPaddingBottom -
+            _hairline,
       ),
       decoration: BoxDecoration(
         color: c.bgSurface,

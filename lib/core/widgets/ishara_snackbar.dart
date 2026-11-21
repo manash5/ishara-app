@@ -73,11 +73,11 @@ class IsharaSnackbar extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       container: true,
+      // Figma: 14 vertical padding around the 22px message (50 tall). The
+      // padding sits on the message so the 48dp action target fits inside
+      // that height instead of stretching the bar.
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: IsharaSpacing.s4,
-          vertical: IsharaSizes.snackbarPaddingY,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: IsharaSpacing.s4),
         decoration: BoxDecoration(
           color: c.bgInverse,
           borderRadius: IsharaRadius.brLg,
@@ -90,9 +90,14 @@ class IsharaSnackbar extends StatelessWidget {
               const SizedBox(width: IsharaSpacing.s3),
             ],
             Expanded(
-              child: Text(
-                message,
-                style: s.bodyMedium.copyWith(color: c.textInverse),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: IsharaSizes.snackbarPaddingY,
+                ),
+                child: Text(
+                  message,
+                  style: s.bodyMedium.copyWith(color: c.textInverse),
+                ),
               ),
             ),
             if (actionLabel != null && onAction != null) ...[
@@ -111,9 +116,15 @@ class IsharaSnackbar extends StatelessWidget {
                       minWidth: IsharaSizes.minTouch,
                     ),
                     child: Center(
+                      widthFactor: 1,
+                      heightFactor: 1,
                       child: Text(
                         actionLabel!,
-                        style: s.labelLarge.copyWith(color: c.textInverse),
+                        style: s.labelLarge.copyWith(
+                          color: c.textInverse,
+                          decoration: TextDecoration.underline,
+                          decorationColor: c.textInverse,
+                        ),
                       ),
                     ),
                   ),

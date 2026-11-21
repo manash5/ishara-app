@@ -64,4 +64,22 @@ void main() {
       handle.dispose();
     });
   }
+
+  testWidgets('fills its width; one line is 62 tall (Figma padding 16)', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      const SizedBox(width: 256, child: SpeechBubble(text: 'Hi')),
+    );
+    final size = tester.getSize(find.byType(SpeechBubble));
+    expect(size.width, 256);
+    // 2 border + 16 + 24 line + 16 + 4 lip.
+    expect(size.height, 62);
+    expect(
+      tester.getTopLeft(find.text('Hi')).dx -
+          tester.getTopLeft(find.byType(SpeechBubble)).dx,
+      IsharaSizes.bubbleTailWidth - IsharaSizes.selectedBorder + 18,
+    );
+  });
 }

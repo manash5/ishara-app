@@ -46,6 +46,8 @@ class SectionHeader extends StatelessWidget {
                   minWidth: IsharaSizes.minTouch,
                 ),
                 child: Center(
+                  widthFactor: 1,
+                  heightFactor: 1,
                   child: Text(
                     actionLabel!,
                     style: s.labelLarge.copyWith(color: c.accentText),

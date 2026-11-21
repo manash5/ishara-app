@@ -57,7 +57,8 @@ class UnitHeader extends StatelessWidget {
           IsharaSizes.unitHeaderPaddingLeft,
           IsharaSpacing.s4,
           IsharaSpacing.s4,
-          IsharaSizes.unitHeaderPaddingBottom - IsharaSizes.lipCard,
+          // Figma: the 4px lip sits below the 20px padding (104 tall).
+          IsharaSizes.unitHeaderPaddingBottom,
         ),
         child: Row(
           children: [
@@ -108,11 +109,13 @@ class UnitHeader extends StatelessWidget {
                   borderRadius: IsharaRadius.brMd,
                   pressed: pressed,
                   child: Padding(
+                    // Figma guide (97×64): 2px border + 8 top, 10 bottom
+                    // + 4px lip; LipSurface adds the border and lip.
                     padding: const EdgeInsets.fromLTRB(
                       IsharaSizes.guidePaddingX,
-                      IsharaSpacing.s2 - IsharaSizes.selectedBorder,
+                      IsharaSpacing.s2,
                       IsharaSizes.guidePaddingX,
-                      IsharaSizes.guidePaddingX - IsharaSizes.lipCard,
+                      IsharaSizes.guidePaddingX,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

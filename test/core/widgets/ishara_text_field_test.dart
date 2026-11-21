@@ -84,6 +84,35 @@ void main() {
         expect(textColor(tester, 'Enter a valid email'), c.dangerText);
       });
 
+      testWidgets('subtext and icon follow Figma geometry', (tester) async {
+        await pumpThemed(
+          tester,
+          const SizedBox(
+            width: 364,
+            child: IsharaTextField(
+              label: 'Email',
+              hint: 'hint',
+              prefixIcon: IsharaIcons.mail,
+              errorText: 'Bad email',
+            ),
+          ),
+          mode: mode,
+        );
+        final label = tester.getTopLeft(find.text('Email'));
+        final field = tester.getRect(find.byType(InputDecorator));
+        final error = tester.getTopLeft(find.text('Bad email'));
+        // Flush with the label, 8 below the field.
+        expect(error.dx, label.dx);
+        expect(error.dy - field.bottom, IsharaSpacing.stackGap);
+        // Icon 16 from the field edge; text 12 after the icon.
+        final icon = tester.getRect(find.byIcon(IsharaIcons.mail));
+        expect(icon.left - field.left, IsharaSpacing.s4);
+        expect(
+          tester.getTopLeft(find.text('hint')).dx - icon.right,
+          IsharaSpacing.s3,
+        );
+      });
+
       testWidgets('helper uses text/secondary', (tester) async {
         await pumpThemed(
           tester,
