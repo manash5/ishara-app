@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'core/theme/theme.dart';
+import 'dev/gallery/widgets_gallery_screen.dart';
 
 void main() {
   registerFontLicenses();
@@ -34,6 +35,13 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Ishara'),
+      // Debug-only widget gallery; `kDebugMode` is const, so release builds
+      // tree-shake the route and its screen away.
+      // `flutter run --route /gallery`
+      routes: {
+        if (kDebugMode)
+          WidgetsGalleryScreen.routeName: (_) => const WidgetsGalleryScreen(),
+      },
     );
   }
 }
