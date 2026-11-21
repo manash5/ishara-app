@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors the Figma token fun/teal-hero (IsharaColors.funTealHero), the
+         Splash background, so the native launch window hands over seamlessly
+         to the Flutter Splash (01) with no Flutter logo or white flash. -->
+    <color name="ishara_launch_background">#1F4D52</color>
+</resources>
