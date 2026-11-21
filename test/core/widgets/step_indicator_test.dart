@@ -40,4 +40,27 @@ void main() {
     await pumpThemed(tester, const StepIndicator(current: 2, total: 5));
     expect(find.byType(AnimatedContainer), findsNWidgets(5));
   });
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    testWidgets('onHero paints active bars fun/lime (${mode.name})', (
+      tester,
+    ) async {
+      await pumpThemed(
+        tester,
+        const StepIndicator(current: 2, onHero: true),
+        mode: mode,
+      );
+      Color? bar(int i) {
+        final box = tester.widget<AnimatedContainer>(
+          find.byKey(ValueKey('step-$i')),
+        );
+        return (box.decoration! as BoxDecoration).color;
+      }
+
+      expect(bar(1), c.funLime);
+      expect(bar(2), c.funLime);
+      expect(bar(3), c.borderDefault);
+    });
+  }
 }

@@ -72,8 +72,12 @@ flutter:
     - assets/fonts/OFL-AnekDevanagari.txt
     # Brand artwork and filled icons exported from Figma (Components page).
     - assets/brand/
+    # Logo mark split into layers for the Splash entrance (same artwork).
+    - assets/brand/logo_mark_layers/
     - assets/icons/
     - assets/mascot/
+    # Wave pose split into layers so Danu can wave (same artwork).
+    - assets/mascot/wave_layers/
     - assets/roadmap/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;

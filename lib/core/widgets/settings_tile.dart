@@ -20,6 +20,7 @@ class SettingsTile extends StatelessWidget {
     this.switchValue = false,
     this.onSwitchChanged,
     this.onTap,
+    this.destructive = false,
   });
 
   final IconData icon;
@@ -31,6 +32,9 @@ class SettingsTile extends StatelessWidget {
   final bool switchValue;
   final ValueChanged<bool>? onSwitchChanged;
   final VoidCallback? onTap;
+
+  /// Danger label (e.g. Log out, Figma 12:1583); the icon stays neutral.
+  final bool destructive;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +99,9 @@ class SettingsTile extends StatelessWidget {
                   height: IsharaSizes.iconBoxSm,
                   decoration: BoxDecoration(
                     color: c.funLavenderSubtle,
-                    borderRadius: IsharaRadius.brSm,
+                    borderRadius: BorderRadius.circular(
+                      IsharaSizes.iconBoxRadius,
+                    ),
                   ),
                   child: Icon(
                     icon,
@@ -107,7 +113,9 @@ class SettingsTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     label,
-                    style: s.bodyLarge.copyWith(color: c.textPrimary),
+                    style: s.bodyLarge.copyWith(
+                      color: destructive ? c.dangerText : c.textPrimary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: IsharaSpacing.s3),

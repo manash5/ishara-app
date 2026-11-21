@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../core/theme/theme.dart';
 import '../../core/widgets/widgets.dart';
 import '../../features/auth/presentation/providers/fake_session_provider.dart';
+import '../../features/learn/presentation/providers/learn_path_provider.dart';
 import 'sections/gallery_section.dart';
 import 'sections/widget_sections.dart';
 
@@ -77,7 +78,7 @@ class FakeSessionSection extends ConsumerWidget {
     final notifier = ref.read(fakeSessionProvider.notifier);
     return GallerySection(
       title: 'Fake session',
-      subtitle: 'Drives the router redirects until real auth lands',
+      subtitle: 'Drives the redirects and fake states until real data lands',
       children: [
         SettingsTile(
           key: const Key('gallery-session-logged-in'),
@@ -94,6 +95,14 @@ class FakeSessionSection extends ConsumerWidget {
           trailing: SettingsTrailing.toggle,
           switchValue: session.onboardingDone,
           onSwitchChanged: notifier.setOnboardingDone,
+        ),
+        SettingsTile(
+          key: const Key('gallery-learn-offline'),
+          icon: IsharaIcons.wifiOff,
+          label: 'Learn offline (12)',
+          trailing: SettingsTrailing.toggle,
+          switchValue: ref.watch(learnOfflineProvider),
+          onSwitchChanged: ref.read(learnOfflineProvider.notifier).set,
         ),
       ],
     );

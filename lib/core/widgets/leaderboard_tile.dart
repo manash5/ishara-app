@@ -14,6 +14,7 @@ class LeaderboardTile extends StatelessWidget {
     required this.xp,
     this.isMe = false,
     this.photo,
+    this.avatarName,
   });
 
   final int rank;
@@ -21,6 +22,10 @@ class LeaderboardTile extends StatelessWidget {
   final int xp;
   final bool isMe;
   final ImageProvider? photo;
+
+  /// Name for the avatar initials when [name] is a label like "You"
+  /// (Figma 12:1252 shows "You" with "ML").
+  final String? avatarName;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +60,7 @@ class LeaderboardTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: IsharaSpacing.s3),
-            IsharaAvatar(name: name, photo: photo),
+            IsharaAvatar(name: avatarName ?? name, photo: photo),
             const SizedBox(width: IsharaSpacing.s3),
             Expanded(
               child: Text(

@@ -7,15 +7,26 @@ import 'package:material_ui/material_ui.dart';
 
 /// Boots the real app (router + shell) on a phone-sized view with the given
 /// fake session. Returns the container so tests can flip the session.
+/// [settle] false stops on the first frame (e.g. to see the Splash);
+/// [animate] true keeps animations on (they are off by default).
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   bool loggedIn = false,
   bool onboardingDone = false,
   String? location,
+  bool settle = true,
+  bool animate = false,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.625;
   addTearDown(tester.view.reset);
+  // Reduced motion by default: looping animations (e.g. the current
+  // PathNode pulse) would otherwise keep pumpAndSettle from settling.
+  if (!animate) {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+  }
 
   final container = ProviderContainer();
   addTearDown(container.dispose);
@@ -29,7 +40,7 @@ Future<ProviderContainer> pumpApp(
   if (location != null) {
     container.read(appRouterProvider).go(location);
   }
-  await tester.pumpAndSettle();
+  if (settle) await tester.pumpAndSettle();
   return container;
 }
 

@@ -1,0 +1,15 @@
+<svg width="200" height="203" viewBox="0 0 200 203" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="motion">
+<g id="motion">
+<path id="Vector_50" d="M162 42.6435C166 47.3101 167 52.6435 165 58.6435" stroke-width="2.6" stroke-linecap="round" stroke="#9479D4"/>
+<path id="Vector_51" d="M169 32.6435C175 40.6435 176.667 49.3101 174 58.6435" stroke-width="2.6" stroke-linecap="round" stroke="#9479D4"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_1_3" x1="0.00017643" y1="82.6435" x2="0.00017643" y2="178.643" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#1F4D52"/>
+<stop offset="0.65" stop-color="#6A5FB0"/>
+<stop offset="1" stop-color="#9479D4"/>
+</linearGradient>
+</defs>
+</svg>

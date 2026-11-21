@@ -79,4 +79,34 @@ void main() {
       expect(find.text('SR'), findsOneWidget);
     });
   }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    testWidgets('onHero: lime fill, teal initials, white ring (${mode.name})', (
+      tester,
+    ) async {
+      await pumpThemed(
+        tester,
+        const IsharaAvatar(
+          name: 'Manash Lamichhane',
+          size: IsharaAvatarSize.large,
+          onHero: true,
+        ),
+        mode: mode,
+      );
+      final box = tester.widget<DecoratedBox>(
+        find
+            .descendant(
+              of: find.byType(IsharaAvatar),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      final d = box.decoration as BoxDecoration;
+      expect(d.color, c.funLime);
+      expect((d.border! as Border).top.color, c.staticWhite);
+      expect((d.border! as Border).top.width, IsharaSizes.selectedBorder);
+      expect(textColor(tester, 'ML'), c.funTealHero);
+    });
+  }
 }

@@ -23,6 +23,7 @@ export 'path_node.dart';
 export 'path_tooltip.dart';
 export 'section_header.dart';
 export 'selection_card.dart';
+export 'settings_group.dart';
 export 'settings_tile.dart';
 export 'sign_list_tile.dart';
 export 'sign_video_player.dart';

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/pump_themed.dart';
 
@@ -61,5 +62,65 @@ void main() {
     expect(find.byType(SvgPicture), findsNWidgets(2));
     await tester.pumpAndSettle();
     expect(find.byType(SvgPicture), findsOneWidget);
+  });
+
+  Set<String> assetsShown(WidgetTester tester) => tester
+      .widgetList<SvgPicture>(find.byType(SvgPicture))
+      .map((p) => (p.bytesLoader as SvgAssetLoader).assetName)
+      .toSet();
+
+  testWidgets('animated wave draws the layered pose and keeps waving', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.wave, size: 130, animated: true),
+    );
+    expect(assetsShown(tester), DanuWaveLayers.all.toSet());
+
+    double wingAngle() {
+      final wing = find.ancestor(
+        of: find.byWidgetPredicate(
+          (w) =>
+              w is SvgPicture &&
+              (w.bytesLoader as SvgAssetLoader).assetName ==
+                  DanuWaveLayers.wing,
+        ),
+        matching: find.byType(Transform),
+      );
+      return tester.widget<Transform>(wing.first).transform.storage[1];
+    }
+
+    final a = wingAngle();
+    await tester.pump(DanuWaveMotion.period ~/ 4);
+    final b = wingAngle();
+    expect(a, isNot(closeTo(b, 1e-6)));
+    expect(tester.takeException(), isNull);
+    // Looping: unmount instead of settling.
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('reduced motion shows the still wave artwork', (tester) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.wave, animated: true),
+      disableAnimations: true,
+    );
+    expect(assetsShown(tester), {DanuPose.wave.asset});
+  });
+
+  testWidgets('animated has no effect on poses without layers', (tester) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.think, animated: true),
+    );
+    expect(assetsShown(tester), {DanuPose.think.asset});
+  });
+
+  test('wave layer assets are bundled', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    for (final asset in DanuWaveLayers.all) {
+      expect((await rootBundle.loadString(asset)).contains('<svg'), isTrue);
+    }
   });
 }

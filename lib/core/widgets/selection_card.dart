@@ -56,7 +56,8 @@ class SelectionCard extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: IsharaSizes.iconMd,
-                    color: selected ? c.funLavenderLip : c.textPrimary,
+                    // Figma screens 06/07: accent on the white box.
+                    color: selected ? c.accentDefault : c.textPrimary,
                   ),
                 ),
                 const SizedBox(width: IsharaSpacing.s4),

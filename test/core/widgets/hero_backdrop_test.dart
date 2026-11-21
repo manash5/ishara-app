@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -64,4 +65,86 @@ void main() {
       handle.dispose();
     });
   }
+
+  test('intro staggers shapes in paint order', () {
+    expect(HeroBackdropPainter.shapeProgress(0, 0), 0);
+    expect(HeroBackdropPainter.shapeProgress(1, 0), 1);
+    expect(HeroBackdropPainter.shapeProgress(1, 4), 1);
+    // Mid-intro the first shape is further along than the last.
+    expect(
+      HeroBackdropPainter.shapeProgress(0.4, 0),
+      greaterThan(HeroBackdropPainter.shapeProgress(0.4, 4)),
+    );
+  });
+
+  testWidgets('intro animation repaints without errors', (tester) async {
+    final controller = AnimationController(
+      vsync: const TestVSync(),
+      duration: IsharaMotion.celebrate,
+    );
+    addTearDown(controller.dispose);
+    await pumpThemed(
+      tester,
+      SizedBox(
+        width: 412,
+        height: 600,
+        child: HeroBackdrop(
+          layout: HeroBackdropLayout.welcome,
+          intro: controller,
+        ),
+      ),
+    );
+    final painter =
+        tester
+                .widget<CustomPaint>(
+                  find
+                      .descendant(
+                        of: find.byType(HeroBackdrop),
+                        matching: find.byType(CustomPaint),
+                      )
+                      .first,
+                )
+                .painter!
+            as HeroBackdropPainter;
+    expect(painter.intro, same(controller));
+    controller.value = 0.5;
+    await tester.pump();
+    controller.value = 1;
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('ambient drift keeps repainting while it loops', (tester) async {
+    final drift = AnimationController(
+      vsync: const TestVSync(),
+      duration: IsharaMotion.celebrate,
+    );
+    addTearDown(drift.dispose);
+    await pumpThemed(
+      tester,
+      SizedBox(
+        width: 412,
+        height: 600,
+        child: HeroBackdrop(layout: HeroBackdropLayout.welcome, drift: drift),
+      ),
+    );
+    final painter =
+        tester
+                .widget<CustomPaint>(
+                  find
+                      .descendant(
+                        of: find.byType(HeroBackdrop),
+                        matching: find.byType(CustomPaint),
+                      )
+                      .first,
+                )
+                .painter!
+            as HeroBackdropPainter;
+    expect(painter.drift, same(drift));
+    for (final v in [0.25, 0.5, 0.75]) {
+      drift.value = v;
+      await tester.pump();
+    }
+    expect(tester.takeException(), isNull);
+  });
 }

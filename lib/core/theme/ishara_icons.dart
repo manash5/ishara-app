@@ -29,6 +29,17 @@ abstract final class IsharaIcons {
   static const IconData user = LucideIcons.user;
   static const IconData flipHorizontal = LucideIcons.flipHorizontal;
   static const IconData lightbulb = LucideIcons.lightbulb;
+  static const IconData settings = LucideIcons.settings;
+  static const IconData moon = LucideIcons.moon;
+  static const IconData sun = LucideIcons.sun;
+  static const IconData globe = LucideIcons.globe;
+  static const IconData shieldCheck = LucideIcons.shieldCheck;
+  static const IconData logOut = LucideIcons.logOut;
+  static const IconData clock = LucideIcons.clock;
+  static const IconData info = LucideIcons.info;
+  static const IconData cameraOff = LucideIcons.cameraOff;
+  static const IconData scan = LucideIcons.scan;
+  static const IconData flag = LucideIcons.flag;
 }
 
 /// The custom filled icons from Figma (`Icon/*-fill`); Lucide has none.

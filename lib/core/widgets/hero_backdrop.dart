@@ -17,17 +17,35 @@ class HeroBackdrop extends StatelessWidget {
     super.key,
     this.layout = HeroBackdropLayout.header,
     this.child,
+    this.intro,
+    this.drift,
   });
 
   final HeroBackdropLayout layout;
   final Widget? child;
+
+  /// Optional entrance (0 → 1), e.g. the Splash: each shape glides in from
+  /// outside its Figma position, grows from
+  /// [HeroBackdropPainter.introStartScale] and fades in (squares spin into
+  /// place), staggered in paint order. Null = static artwork.
+  final Animation<double>? intro;
+
+  /// Optional ambient loop (a repeating 0 → 1): every shape floats on its own
+  /// small orbit and gently breathes. Null = still. The caller owns both
+  /// controllers and skips them under reduced motion.
+  final Animation<double>? drift;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return ClipRect(
       child: CustomPaint(
-        painter: HeroBackdropPainter(layout: layout, colors: c),
+        painter: HeroBackdropPainter(
+          layout: layout,
+          colors: c,
+          intro: intro,
+          drift: drift,
+        ),
         child: child ?? const SizedBox.expand(),
       ),
     );
@@ -110,10 +128,45 @@ const Map<HeroBackdropLayout, List<_Shape>> _shapes = {
 
 @visibleForTesting
 class HeroBackdropPainter extends CustomPainter {
-  const HeroBackdropPainter({required this.layout, required this.colors});
+  HeroBackdropPainter({
+    required this.layout,
+    required this.colors,
+    this.intro,
+    this.drift,
+  }) : super(repaint: Listenable.merge([?intro, ?drift]));
 
   final HeroBackdropLayout layout;
   final IsharaColors colors;
+  final Animation<double>? intro;
+  final Animation<double>? drift;
+
+  /// Intro choreography: shapes start at this scale, [introTravel] artboard
+  /// px further out from the artboard centre, squares [introSpin] degrees
+  /// round; each starts [introStagger] after the previous one and takes
+  /// [introShapeSpan] of the whole intro.
+  static const double introStartScale = 0.3;
+  static const double introTravel = IsharaSpacing.s12 * 2;
+  static const double introSpin = 90;
+  static const double introStagger = 0.1;
+  static const double introShapeSpan = 0.6;
+
+  /// Ambient drift: orbit radius (artboard px), breathing amount and the
+  /// squares' sway (degrees). Each shape is phase-shifted so they never move
+  /// in step.
+  static const double driftRadius = IsharaSpacing.s2;
+  static const double driftBreath = 0.03;
+  static const double driftSway = 6;
+
+  /// Centre the intro pushes shapes away from (artboard px).
+  static const Offset _introOrigin = Offset(_artboardWidth / 2, 300);
+
+  /// Progress (0–1) of shape [index] at intro value [t].
+  @visibleForTesting
+  static double shapeProgress(double t, int index) {
+    final start = index * introStagger;
+    final local = ((t - start) / introShapeSpan).clamp(0.0, 1.0);
+    return IsharaMotion.enter.transform(local);
+  }
 
   Color _color(_Hue hue) => switch (hue) {
     _Hue.lime => colors.funLime,
@@ -125,16 +178,44 @@ class HeroBackdropPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = colors.funTealHero);
     final k = size.width / _artboardWidth;
-    for (final s in _shapes[layout]!) {
-      final paint = Paint()..color = _color(s.hue);
-      final theta = s.rotation * math.pi / 180;
+    final t = intro?.value ?? 1;
+    final d = drift?.value;
+    for (final (i, s) in _shapes[layout]!.indexed) {
+      final p = intro == null ? 1.0 : shapeProgress(t, i);
+      if (p <= 0) continue;
+      final paint = Paint()..color = _color(s.hue).withValues(alpha: p);
       final half = s.size / 2;
+      final rot0 = s.rotation * math.pi / 180;
       // Figma rotates around the local origin; find the shape's centre.
-      final cx = s.x + half * math.cos(theta) + half * math.sin(theta);
-      final cy = s.y - half * math.sin(theta) + half * math.cos(theta);
+      var cx = s.x + half * math.cos(rot0) + half * math.sin(rot0);
+      var cy = s.y - half * math.sin(rot0) + half * math.cos(rot0);
+
+      // Intro: glide in from further out along the line from the centre.
+      final away = Offset(cx, cy) - _introOrigin;
+      final dir = away.distance == 0 ? Offset.zero : away / away.distance;
+      cx += dir.dx * introTravel * (1 - p);
+      cy += dir.dy * introTravel * (1 - p);
+      var theta = rot0;
+      var scale = introStartScale + (1 - introStartScale) * p;
+      if (s.kind == _Kind.roundedSquare) {
+        theta += introSpin * math.pi / 180 * (1 - p);
+      }
+
+      // Ambient: a small, phase-shifted orbit plus breathing.
+      if (d != null) {
+        final a = 2 * math.pi * (d + i * 0.23);
+        cx += math.sin(a) * driftRadius;
+        cy += math.cos(a * 1.0 + i) * driftRadius;
+        scale *= 1 + driftBreath * math.sin(a + i * 0.7);
+        if (s.kind == _Kind.roundedSquare) {
+          theta += driftSway * math.pi / 180 * math.sin(a);
+        }
+      }
+
       canvas.save();
       canvas.translate(cx * k, cy * k);
       canvas.rotate(-theta);
+      canvas.scale(scale);
       final rect = Rect.fromCenter(
         center: Offset.zero,
         width: s.size * k,
@@ -155,7 +236,10 @@ class HeroBackdropPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(HeroBackdropPainter old) =>
-      old.layout != layout || old.colors != colors;
+      old.layout != layout ||
+      old.colors != colors ||
+      old.intro != intro ||
+      old.drift != drift;
 
   @override
   bool? hitTest(Offset position) => false;

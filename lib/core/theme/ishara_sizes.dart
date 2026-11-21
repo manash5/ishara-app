@@ -14,6 +14,8 @@ abstract final class IsharaSizes {
 
   // Off-scale paddings used by Figma components.
   static const double chipPaddingX = 10;
+  static const double filterChipHeight = 32; // IsharaChip.filter (12:846)
+  static const double filterChipPaddingX = 14;
   static const double snackbarPaddingY = 14;
   static const double titleGap = 2; // title → subtitle in tiles/cards
   static const double ctaUnderlineGap = 6;
@@ -130,4 +132,9 @@ abstract final class IsharaSizes {
   static const double ghostOpacity = 0.6; // HandOverlay/Ghost
   static const double subtitleOpacity = 0.9; // UnitHeader subtitle
   static const double matchedOpacity = 0.45; // MatchTile matched
+  static const double heroCaptionOpacity =
+      0.7; // white captions on HeroBackdrop
+
+  /// SettingsTile icon box corner (Figma 10; not on the radius scale).
+  static const double iconBoxRadius = 10;
 }

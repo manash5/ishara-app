@@ -7,6 +7,9 @@ import '../theme/theme.dart';
 ///
 /// Pass either a filled icon [kind] (Figma uses `Icon/flame-fill`) or a
 /// Lucide [icon]. The icon defaults to fun/gold (XP & streak).
+/// Figma `StatCard` fill override: lavender (default), peach or mint subtle.
+enum StatCardTint { lavender, peach, mint }
+
 class StatCard extends StatelessWidget {
   const StatCard({
     super.key,
@@ -15,6 +18,7 @@ class StatCard extends StatelessWidget {
     this.kind = IsharaFilledIconKind.flame,
     this.icon,
     this.iconColor,
+    this.tint = StatCardTint.lavender,
   });
 
   final String value;
@@ -22,6 +26,7 @@ class StatCard extends StatelessWidget {
   final IsharaFilledIconKind kind;
   final IconData? icon;
   final Color? iconColor;
+  final StatCardTint tint;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,11 @@ class StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(IsharaSpacing.cardPadding),
         decoration: BoxDecoration(
-          color: c.funLavenderSubtle,
+          color: switch (tint) {
+            StatCardTint.lavender => c.funLavenderSubtle,
+            StatCardTint.peach => c.funPeachSubtle,
+            StatCardTint.mint => c.funMintSubtle,
+          },
           borderRadius: IsharaRadius.brLg,
         ),
         child: Column(

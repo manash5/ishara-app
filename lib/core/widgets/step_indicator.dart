@@ -8,13 +8,20 @@ import '../theme/theme.dart';
 /// others 12dp. Done and current steps are accent/default, upcoming steps
 /// border/default. Width changes animate in [IsharaMotion.fast].
 class StepIndicator extends StatelessWidget {
-  const StepIndicator({super.key, required this.current, this.total = 3})
-    : assert(total > 0),
-      assert(current >= 1 && current <= total);
+  const StepIndicator({
+    super.key,
+    required this.current,
+    this.total = 3,
+    this.onHero = false,
+  }) : assert(total > 0),
+       assert(current >= 1 && current <= total);
 
   /// 1-based current step.
   final int current;
   final int total;
+
+  /// On a teal HeroBackdrop (Figma 9:373): active bars in fun/lime.
+  final bool onHero;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +45,9 @@ class StepIndicator extends StatelessWidget {
                   : IsharaSizes.stepBarInactive,
               height: IsharaSizes.stepBarHeight,
               decoration: BoxDecoration(
-                color: i <= current ? c.accentDefault : c.borderDefault,
+                color: i <= current
+                    ? (onHero ? c.funLime : c.accentDefault)
+                    : c.borderDefault,
                 borderRadius: IsharaRadius.brFull,
               ),
             ),
