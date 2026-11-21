@@ -67,6 +67,8 @@ flutter:
     # Brand artwork and filled icons exported from Figma (Components page).
     - assets/brand/
     - assets/icons/
+    - assets/mascot/
+    - assets/roadmap/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;
   # Anek Devanagari (variable) for Nepali glyphs only.
