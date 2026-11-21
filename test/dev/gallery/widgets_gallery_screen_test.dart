@@ -3,7 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/dev/gallery/sections/widget_sections.dart';
 import 'package:ishara_app/dev/gallery/widgets_gallery_screen.dart';
-import 'package:ishara_app/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ishara_app/core/router/app_router.dart';
+import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
@@ -17,7 +20,9 @@ void main() {
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
-      MaterialApp(home: WidgetsGalleryScreen(initialBrightness: b)),
+      ProviderScope(
+        child: MaterialApp(home: WidgetsGalleryScreen(initialBrightness: b)),
+      ),
     );
   }
 
@@ -70,11 +75,10 @@ void main() {
     expect(brightness(tester), Brightness.light);
   });
 
-  testWidgets('/gallery route is registered in debug builds', (tester) async {
-    await tester.pumpWidget(const MyApp());
-    final nav = tester.state<NavigatorState>(find.byType(Navigator).first);
-    nav.pushNamed(WidgetsGalleryScreen.routeName);
-    await tester.pumpAndSettle();
-    expect(find.byType(WidgetsGalleryScreen), findsOneWidget);
+  test('/gallery route is registered in debug builds', () {
+    expect(
+      appRoutes.whereType<GoRoute>().map((r) => r.path),
+      contains(const GalleryRoute().location),
+    );
   });
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'core/theme/theme.dart';
-import 'dev/gallery/widgets_gallery_screen.dart';
+import 'app.dart';
 
 void main() {
   registerFontLicenses();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: IsharaApp()));
 }
 
 /// Adds the bundled fonts' OFL licences to the app's licence page.
@@ -22,70 +22,4 @@ void registerFontLicenses() {
       ], await rootBundle.loadString(file));
     }
   });
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ishara',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Ishara'),
-      // Debug-only widget gallery; `kDebugMode` is const, so release builds
-      // tree-shake the route and its screen away.
-      // `flutter run --route /gallery`
-      routes: {
-        if (kDebugMode)
-          WidgetsGalleryScreen.routeName: (_) => const WidgetsGalleryScreen(),
-      },
-    );
-  }
-}
-
-// Placeholder home until the router and first screens land.
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
 }
