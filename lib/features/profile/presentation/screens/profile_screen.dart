@@ -1,28 +1,129 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/router/screen_placeholder.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/widgets.dart';
+import '../providers/profile_provider.dart';
+import '../widgets/profile_hero.dart';
+import '../widgets/weekly_xp_chart.dart';
 
-/// Figma "16 Profile" — placeholder until the real screen is built.
-class ProfileScreen extends StatelessWidget {
+/// "1240" → "1,240".
+String groupThousands(int n) =>
+    n.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',');
+
+/// Figma "16 Profile" (Light 12:1337 · Dark 60:6904): tab root in the
+/// bottom-bar shell — hero identity header, stats grid and this week's XP.
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.colors;
+    final p = ref.watch(profileSummaryProvider);
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      // White status bar icons over the teal hero in both themes.
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: c.bgSurface,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            // ContentPanel already pads 24 and is shifted up by the sheet radius.
+            bottom:
+                IsharaSizes.bottomBarContentPadding -
+                IsharaSpacing.screenMargin -
+                IsharaRadius.sheet,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ProfileHero(
+                name: p.name,
+                joined: p.joined,
+                onSettings: () => const SettingsRoute().push<void>(context),
+              ),
+              Transform.translate(
+                offset: const Offset(0, -IsharaRadius.sheet),
+                child: ContentPanel(
+                  children: [
+                    const SectionHeader(title: 'Your stats'),
+                    _StatsGrid(profile: p),
+                    Padding(
+                      padding: const EdgeInsets.only(top: IsharaSpacing.s2),
+                      child: SectionHeader(
+                        title: 'This week',
+                        actionLabel: 'Details',
+                        onAction: () => IsharaSnackbar.show(
+                          context,
+                          message: 'Detailed stats are coming soon.',
+                        ),
+                      ),
+                    ),
+                    WeeklyXpChart(
+                      weeklyXp: p.weeklyXp,
+                      todayIndex: p.todayIndex,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatsGrid extends StatelessWidget {
+  const _StatsGrid({required this.profile});
+
+  final ProfileSummary profile;
+
+  @override
   Widget build(BuildContext context) {
-    return ScreenPlaceholder(
-      frame: '16',
-      name: 'Profile',
-      inShell: true,
-      actions: [
-        PlaceholderAction(
-          'Settings',
-          () => const SettingsRoute().push<void>(context),
-          primary: true,
-        ),
-        PlaceholderAction(
-          'Streak',
-          () => const StreakRoute().push<void>(context),
-        ),
+    final c = context.colors;
+    // Figma fills: 12:1361 peach, 12:1375 mint, the others lavender.
+    final cards = [
+      StatCard(
+        value: '${profile.streakDays}',
+        caption: 'Day streak',
+        tint: StatCardTint.peach,
+      ),
+      StatCard(
+        value: groupThousands(profile.totalXp),
+        caption: 'Total XP',
+        kind: IsharaFilledIconKind.zap,
+      ),
+      StatCard(
+        value: '${profile.signsLearned}',
+        caption: 'Signs learned',
+        icon: IsharaIcons.hand,
+        iconColor: c.accentText,
+        tint: StatCardTint.mint,
+      ),
+      StatCard(
+        value: '${(profile.cameraAccuracy * 100).round()}%',
+        caption: 'Camera accuracy',
+        icon: IsharaIcons.target,
+        iconColor: c.textPrimary,
+      ),
+    ];
+    Widget row(Widget a, Widget b) => IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: a),
+          const SizedBox(width: IsharaSpacing.listGap),
+          Expanded(child: b),
+        ],
+      ),
+    );
+    return Column(
+      children: [
+        row(cards[0], cards[1]),
+        const SizedBox(height: IsharaSpacing.listGap),
+        row(cards[2], cards[3]),
       ],
     );
   }
