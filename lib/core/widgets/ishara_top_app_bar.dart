@@ -24,13 +24,14 @@ class IsharaAppBarAction {
 class IsharaTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const IsharaTopAppBar({
     super.key,
-    required this.title,
+    this.title,
     required this.onLeading,
     this.leading = IsharaAppBarLeading.back,
     this.action,
   });
 
-  final String title;
+  /// Null = back/close only (auth forms, Figma 7:116).
+  final String? title;
   final IsharaAppBarLeading leading;
   final VoidCallback? onLeading;
   final IsharaAppBarAction? action;
@@ -64,15 +65,19 @@ class IsharaTopAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-        title: Semantics(
-          header: true,
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: context.textStyles.titleLarge.copyWith(color: c.textPrimary),
-          ),
-        ),
+        title: title == null
+            ? null
+            : Semantics(
+                header: true,
+                child: Text(
+                  title!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textStyles.titleLarge.copyWith(
+                    color: c.textPrimary,
+                  ),
+                ),
+              ),
         actions: [
           if (action case final a?)
             Padding(

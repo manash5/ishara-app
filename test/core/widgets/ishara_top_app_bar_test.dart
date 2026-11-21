@@ -86,4 +86,22 @@ void main() {
       expect(taps, 1);
     });
   }
+
+  testWidgets('title is optional (back button only)', (tester) async {
+    await pumpThemed(
+      tester,
+      SizedBox(
+        height: IsharaSizes.appBarHeight,
+        child: IsharaTopAppBar(onLeading: () {}),
+      ),
+    );
+    expect(find.byTooltip('Back'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(IsharaTopAppBar),
+        matching: find.byType(Text),
+      ),
+      findsNothing,
+    );
+  });
 }

@@ -104,4 +104,24 @@ void main() {
       IsharaColors.light.textSecondary,
     );
   });
+
+  testWidgets('compact draws a 20dp icon in a 48dp target', (tester) async {
+    await pumpThemed(
+      tester,
+      IsharaIconButton(
+        icon: IsharaIcons.eye,
+        tooltip: 'Show password',
+        compact: true,
+        onPressed: () {},
+      ),
+    );
+    expect(
+      tester.widget<IconButton>(find.byType(IconButton)).iconSize,
+      IsharaSizes.iconMd,
+    );
+    expect(
+      tester.getSize(find.byType(IconButton)),
+      const Size.square(IsharaSizes.minTouch),
+    );
+  });
 }

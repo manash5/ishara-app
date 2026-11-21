@@ -21,11 +21,16 @@ class IsharaAvatar extends StatelessWidget {
     required this.name,
     this.photo,
     this.size = IsharaAvatarSize.small,
+    this.onHero = false,
   });
 
   final String name;
   final ImageProvider? photo;
   final IsharaAvatarSize size;
+
+  /// On a teal HeroBackdrop (Profile 12:1355): fun/lime fill, fun/teal-hero
+  /// initials and a 2dp static/white ring.
+  final bool onHero;
 
   /// "Manash Lama" → "ML", "sujata" → "S", "" → "?".
   static String initialsOf(String name) {
@@ -50,7 +55,7 @@ class IsharaAvatar extends StatelessWidget {
         initialsOf(name),
         maxLines: 1,
         style: (size == IsharaAvatarSize.small ? s.labelMedium : s.stat)
-            .copyWith(color: c.accentText),
+            .copyWith(color: onHero ? c.funTealHero : c.accentText),
       ),
     );
     return Semantics(
@@ -62,8 +67,14 @@ class IsharaAvatar extends StatelessWidget {
         dimension: d,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: c.accentSubtle,
+            color: onHero ? c.funLime : c.accentSubtle,
             shape: BoxShape.circle,
+            border: onHero
+                ? Border.all(
+                    color: c.staticWhite,
+                    width: IsharaSizes.selectedBorder,
+                  )
+                : null,
           ),
           child: photo == null
               ? initials

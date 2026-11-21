@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/widgets/widgets.dart';
 import 'gallery_section.dart';
+import 'widget_variant_sections.dart';
 
 void _noop() {}
 void _noopBool(bool _) {}
@@ -22,20 +23,26 @@ final _filledName = TextEditingController(text: 'Sita Sharma');
 final _badEmail = TextEditingController(text: 'sita@');
 final _password = TextEditingController(text: 'secret123');
 
-/// One builder per shared widget, in Figma Components page order.
+/// One builder per shared widget (plus its added variants), in Figma
+/// Components page order.
 final List<WidgetBuilder> widgetSections = [
   _buttons,
   _googleSignIn,
   _textFields,
+  textFieldSearch,
   _chips,
+  chipFilters,
   _iconButtons,
+  iconButtonCompact,
   _switches,
   _topAppBars,
+  topAppBarNoTitle,
   _bottomBars,
   _statsBars,
   _lessonHeaders,
   _snackbars,
   _stepIndicators,
+  stepIndicatorOnHero,
   _sectionHeaders,
   _pathNodes,
   _pathTooltips,
@@ -49,16 +56,23 @@ final List<WidgetBuilder> widgetSections = [
   _feedbackSheets,
   _signListTiles,
   _leaderboardTiles,
+  leaderboardAvatarName,
   _settingsTiles,
+  settingsDestructiveAndGroup,
   _statCards,
+  statCardTints,
   _selectionCards,
   _avatars,
+  avatarOnHero,
   _mascots,
+  danuWaving,
   _speechBubbles,
   _heroBackdrops,
+  heroBackdropIntro,
   _contentPanels,
   _textLinks,
   _logos,
+  logoOnHero,
 ];
 
 Widget _gap([double h = IsharaSpacing.listGap]) => SizedBox(height: h);

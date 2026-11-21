@@ -16,6 +16,7 @@ class IsharaIconButton extends StatelessWidget {
     required this.onPressed,
     this.variant = IsharaIconButtonVariant.standard,
     this.color,
+    this.compact = false,
   });
 
   final IconData icon;
@@ -25,6 +26,9 @@ class IsharaIconButton extends StatelessWidget {
 
   /// Icon colour override (Figma instance override), e.g. text/secondary.
   final Color? color;
+
+  /// 20dp icon inside a text field (Figma I7:167;3:54); still a 48dp target.
+  final bool compact;
 
   /// (background, foreground) for [variant].
   static (Color, Color) colorsFor(
@@ -50,7 +54,7 @@ class IsharaIconButton extends StatelessWidget {
         onPressed: onPressed,
         tooltip: tooltip,
         icon: Icon(icon),
-        iconSize: IsharaSizes.iconLg,
+        iconSize: compact ? IsharaSizes.iconMd : IsharaSizes.iconLg,
         style: IconButton.styleFrom(
           backgroundColor: bg,
           foregroundColor: fg,

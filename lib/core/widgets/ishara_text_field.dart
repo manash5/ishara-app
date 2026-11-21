@@ -28,6 +28,8 @@ class IsharaTextField extends StatelessWidget {
     this.autofillHints,
     this.enabled = true,
     this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
+    this.showLabel = true,
   });
 
   final String label;
@@ -50,6 +52,11 @@ class IsharaTextField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final bool enabled;
   final List<TextInputFormatter>? inputFormatters;
+  final TextCapitalization textCapitalization;
+
+  /// False for label-less fields such as search (Dictionary 12:834); [label]
+  /// is still announced by screen readers.
+  final bool showLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +73,15 @@ class IsharaTextField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // The visible label is announced through the field's Semantics below.
-        ExcludeSemantics(
-          child: Text(
-            label,
-            style: s.labelMedium.copyWith(color: c.textPrimary),
+        if (showLabel) ...[
+          ExcludeSemantics(
+            child: Text(
+              label,
+              style: s.labelMedium.copyWith(color: c.textPrimary),
+            ),
           ),
-        ),
-        const SizedBox(height: IsharaSpacing.stackGap),
+          const SizedBox(height: IsharaSpacing.stackGap),
+        ],
         Semantics(
           label: label,
           child: TextField(
@@ -86,6 +95,7 @@ class IsharaTextField extends StatelessWidget {
             autofillHints: autofillHints,
             enabled: enabled,
             inputFormatters: inputFormatters,
+            textCapitalization: textCapitalization,
             style: s.bodyLarge.copyWith(color: c.textPrimary),
             cursorColor: c.accentDefault,
             decoration: InputDecoration(

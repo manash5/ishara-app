@@ -62,7 +62,7 @@ void main() {
       expect((outer.border! as Border).top.color, c.funLavender);
       expect(
         tester.widget<Icon>(find.byIcon(IsharaIcons.target)).color,
-        c.funLavenderLip,
+        c.accentDefault,
       );
       expect(radioOf(tester).color, c.funLavenderLip);
       expect(
@@ -96,6 +96,29 @@ void main() {
       await tester.pumpAndSettle();
       expect(taps, 1);
       handle.dispose();
+    });
+  }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    testWidgets('selected icon uses accent/default (${mode.name})', (
+      tester,
+    ) async {
+      await pumpThemed(
+        tester,
+        SelectionCard(
+          icon: IsharaIcons.target,
+          title: 'Regular',
+          description: '10 min a day',
+          selected: true,
+          onTap: () {},
+        ),
+        mode: mode,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(IsharaIcons.target)).color,
+        c.accentDefault,
+      );
     });
   }
 }

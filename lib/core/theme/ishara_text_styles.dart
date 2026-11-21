@@ -16,6 +16,9 @@ TextStyle _sans(
   double trackingPercent = 0,
 }) => TextStyle(
   fontFamily: IsharaFonts.sans,
+  // Nepali letters inside English text (e.g. lesson names) use the bundled
+  // Anek Devanagari instead of whatever the device has.
+  fontFamilyFallback: const [IsharaFonts.devanagari],
   fontSize: size,
   height: lineHeight / size,
   fontWeight: weight,

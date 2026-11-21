@@ -138,4 +138,36 @@ void main() {
       });
     });
   }
+
+  testWidgets('showLabel false hides the label but keeps it for semantics', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpThemed(
+      tester,
+      const IsharaTextField(
+        label: 'Search signs',
+        hint: 'Search',
+        showLabel: false,
+        prefixIcon: IsharaIcons.search,
+      ),
+    );
+    expect(find.text('Search signs'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('Search signs')), findsWidgets);
+    handle.dispose();
+  });
+
+  testWidgets('textCapitalization is passed to the field', (tester) async {
+    await pumpThemed(
+      tester,
+      const IsharaTextField(
+        label: 'Full name',
+        textCapitalization: TextCapitalization.words,
+      ),
+    );
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).textCapitalization,
+      TextCapitalization.words,
+    );
+  });
 }

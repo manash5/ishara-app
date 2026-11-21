@@ -33,7 +33,10 @@ void main() {
       );
       final deco = box.decoration! as BoxDecoration;
       expect(deco.color, c.funLavenderSubtle);
-      expect(deco.borderRadius, IsharaRadius.brSm);
+      expect(
+        deco.borderRadius,
+        BorderRadius.circular(IsharaSizes.iconBoxRadius),
+      );
       expect(
         tester.widget<Icon>(find.byIcon(IsharaIcons.bell)).color,
         c.textPrimary,
@@ -116,4 +119,46 @@ void main() {
       handle.dispose();
     });
   }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    testWidgets('destructive label is danger/text, icon stays (${mode.name})', (
+      tester,
+    ) async {
+      await pumpThemed(
+        tester,
+        SettingsTile(
+          icon: IsharaIcons.logOut,
+          label: 'Log out',
+          destructive: true,
+          onTap: () {},
+        ),
+        mode: mode,
+      );
+      expect(textColor(tester, 'Log out'), c.dangerText);
+      expect(
+        tester.widget<Icon>(find.byIcon(IsharaIcons.logOut)).color,
+        c.textPrimary,
+      );
+    });
+  }
+
+  testWidgets('icon box uses the Figma 10dp radius', (tester) async {
+    await pumpThemed(
+      tester,
+      SettingsTile(icon: IsharaIcons.bell, label: 'Reminders', onTap: () {}),
+    );
+    final box = tester.widget<Container>(
+      find
+          .ancestor(
+            of: find.byIcon(IsharaIcons.bell),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    expect(
+      (box.decoration! as BoxDecoration).borderRadius,
+      BorderRadius.circular(IsharaSizes.iconBoxRadius),
+    );
+  });
 }

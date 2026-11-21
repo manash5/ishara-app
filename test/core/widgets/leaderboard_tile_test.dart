@@ -63,4 +63,19 @@ void main() {
       handle.dispose();
     });
   }
+
+  testWidgets('avatarName drives the initials (You shows ML)', (tester) async {
+    await pumpThemed(
+      tester,
+      const LeaderboardTile(
+        rank: 4,
+        name: 'You',
+        xp: 480,
+        isMe: true,
+        avatarName: 'Manash Lamichhane',
+      ),
+    );
+    expect(find.text('You'), findsOneWidget);
+    expect(find.text('ML'), findsOneWidget);
+  });
 }

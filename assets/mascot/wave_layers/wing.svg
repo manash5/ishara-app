@@ -1,0 +1,16 @@
+<svg width="200" height="203" viewBox="0 0 200 203" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="wing">
+<g id="Group_6">
+<path id="Vector_31" d="M131.632 107.413C145.199 97.0235 154.101 79.0027 155.796 61.1946L149.224 64.1632L151.449 54.941L143.606 61.8317L142.863 55.4718C129.933 68.617 119.334 85.5779 117.215 98.4041C118.488 103.916 126.12 108.685 131.632 107.413Z" fill="#B79CF0" stroke-width="2" stroke-linejoin="round" stroke="#163A3E"/>
+<path id="Vector_32" d="M130.995 95.2228C139.898 86.636 145.409 75.9295 146.256 67.0254C139.473 72.2201 131.418 81.3368 125.907 92.0433L130.995 95.2228Z" fill="#9479D4"/>
+<path id="Vector_33" d="M131.42 100.205C139.263 93.3141 144.562 84.8336 147.105 76.9893" stroke-width="2" stroke-linecap="round" stroke="#8BE3B0"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_1_3" x1="0.00017643" y1="82.6435" x2="0.00017643" y2="178.643" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#1F4D52"/>
+<stop offset="0.65" stop-color="#6A5FB0"/>
+<stop offset="1" stop-color="#9479D4"/>
+</linearGradient>
+</defs>
+</svg>

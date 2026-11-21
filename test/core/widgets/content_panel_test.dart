@@ -40,4 +40,19 @@ void main() {
       expect(slotTop - headerBottom, IsharaSpacing.s4);
     });
   }
+
+  testWidgets('padding can be overridden (Figma 16 bottom)', (tester) async {
+    const padding = EdgeInsets.fromLTRB(24, 24, 24, 16);
+    await pumpThemed(
+      tester,
+      const ContentPanel(padding: padding, children: [Text('a')]),
+    );
+    final box = tester.widget<Container>(
+      find.descendant(
+        of: find.byType(ContentPanel),
+        matching: find.byType(Container),
+      ),
+    );
+    expect(box.padding, padding);
+  });
 }

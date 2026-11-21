@@ -60,8 +60,10 @@ void main() {
     });
   }
 
-  test('one section per exported widget', () {
-    expect(widgetSections, hasLength(35));
+  test('a section per exported widget plus each added variant', () {
+    // 35 base widgets (SettingsGroup shares the SettingsTile variant section)
+    // + 12 variant sections.
+    expect(widgetSections, hasLength(47));
   });
 
   testWidgets('toggle switches light ↔ dark', (tester) async {

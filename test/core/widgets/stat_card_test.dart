@@ -59,4 +59,32 @@ void main() {
       expect(find.byType(IsharaFilledIcon), findsNothing);
     });
   }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    for (final (tint, fill) in [
+      (StatCardTint.lavender, c.funLavenderSubtle),
+      (StatCardTint.peach, c.funPeachSubtle),
+      (StatCardTint.mint, c.funMintSubtle),
+    ]) {
+      testWidgets('tint ${tint.name} fills the card (${mode.name})', (
+        tester,
+      ) async {
+        await pumpThemed(
+          tester,
+          StatCard(value: '12', caption: 'Day streak', tint: tint),
+          mode: mode,
+        );
+        final box = tester.widget<Container>(
+          find
+              .descendant(
+                of: find.byType(StatCard),
+                matching: find.byType(Container),
+              )
+              .first,
+        );
+        expect((box.decoration! as BoxDecoration).color, fill);
+      });
+    }
+  }
 }
