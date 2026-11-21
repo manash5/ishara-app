@@ -59,6 +59,67 @@ abstract final class IsharaSizes {
   static const double logoLockupMark = 36;
   static const double logoLockupGap = 10;
 
+  // Roadmap kit (gamified / 3D lip style).
+  static const double lipCard = 4; // UnitHeader, guide button
+  static const double lipBadge = 3; // StatsBar course badge
+  static const double lipNode = 6; // PathNode
+  static const double pathNode = 72;
+  static const double pathNodeHalo = 96;
+  static const double pathNodeHaloStroke = 6;
+  static const double pathNodeIcon = 30;
+  static const double pathNodeCheck = 34;
+  static const double pathNodeStar = 32;
+  static const double courseBadgeWidth = 48;
+  static const double courseBadgeHeight = 36;
+  static const double tooltipArrowWidth = 14;
+  static const double tooltipArrowHeight = 8;
+  static const double tooltipPaddingX = 14;
+  static const double statsBarHeight = 56;
+  static const double statsGap = 20;
+  static const double statsIconGap = 6;
+  static const double unitHeaderPaddingLeft = 18;
+  static const double unitHeaderPaddingBottom = 20;
+  static const double guidePaddingX = 10;
+  static const double mascot = 200;
+
+  // Bottom bar (ui.md + Figma AppNavigationBar).
+  static const double bottomBarRadius = 24;
+  static const double bottomBarPaddingTop = 12;
+  static const double bottomBarPaddingBottom = 10;
+  static const double bottomBarTabHeight = 52;
+  static const double practiceButton = 52;
+
+  /// Bottom padding screens need so content clears the bottom bar.
+  static const double bottomBarContentPadding = 112;
+
+  // Lesson.
+  static const double lessonHeaderHeight = 64;
+  static const double progressBarHeight = 10;
+  static const double answerOptionHeight = 60;
+  static const double answerIcon = 22;
+  static const double answerPaddingX = 20;
+  static const double feedbackBadge = 40;
+
+  // Video & camera.
+  static const double videoControl = 40;
+  static const double videoControlIcon = 18;
+  static const double videoTilePlay = 28;
+  static const double videoTilePlayIcon = 12;
+  static const double videoOptionPadding = 4;
+
+  // Hand landmarks (Figma HandOverlay, drawn on a 200x240 frame).
+  static const double landmarkBone = 4;
+  static const double landmarkGhostBone = 5;
+  static const double landmarkJointRadius = 5.5;
+  static const double landmarkWristRadius = 7;
+  static const double landmarkJointStroke = 3;
+
   // Overlay opacity of the onCamera icon-button scrim.
   static const double cameraScrimOpacity = 0.4;
+
+  // Other opacities from Figma.
+  static const double placeholderOpacity = 0.12; // CameraFeed silhouette
+  static const double ghostOpacity = 0.6; // HandOverlay/Ghost
+  static const double subtitleOpacity = 0.9; // UnitHeader subtitle
+  static const double matchedOpacity = 0.45; // MatchTile matched
 }
