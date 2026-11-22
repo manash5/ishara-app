@@ -110,6 +110,44 @@ abstract final class IsharaSizes {
   static const double answerPaddingX = 20;
   static const double feedbackBadge = 40;
 
+  /// Square hero badge: Camera permission (08) camera badge and the Ranks
+  /// (15) league badge share 56dp with a 28dp icon.
+  static const double heroBadge = 56;
+  static const double heroBadgeIcon = 28;
+  static const double tipIcon = 20; // Watch & learn tip card (18)
+  static const double referencePipWidth = 93.5; // Sign it reference video (23)
+  static const double letterTileWidth = 72; // Fingerspell letters (25)
+  static const double letterTileHeight = 84;
+  static const double letterTileGlyph = 44;
+  static const double letterTileGlyphLine = 52;
+  static const double dialogWidth = 312; // AlertDialog (29)
+  static const double sheetHeart = 22; // Out of hearts sheet (28)
+  static const double sheetHeartGap = 6;
+
+  // Lesson results (26–27).
+  static const double resultBadge = 64;
+  static const double resultBadgeIcon = 32;
+  static const double streakHero = 128;
+  static const double streakHeroIcon = 88;
+  static const double streakDay = 32;
+  static const double streakDayGap = 6;
+  static const double resultMascot = 96;
+  static const double resultMascotLarge = 112; // 26, straddling the panel
+
+  /// 26 hero: space above the badge row, so it sits below the backdrop's
+  /// lavender circle (it ends 124dp down, the status bar included).
+  static const double resultHeroTop = 96;
+
+  /// 26 hero: space under the subtitle (more teal before the panel).
+  static const double resultHeroBottom = 64;
+
+  /// How far Danu on 26 rises above the results panel (the rest overlaps
+  /// the panel's top, beside "Your results"). A little more than
+  /// [resultHeroBottom], so Danu sits just under the title.
+  static const double resultMascotOverlap = 76;
+  static const double streakNumber = 56; // 27 hero count (56/64 ExtraBold)
+  static const double streakNumberLine = 64;
+
   // Video & camera.
   static const double videoControl = 40;
   static const double videoControlIcon = 18;

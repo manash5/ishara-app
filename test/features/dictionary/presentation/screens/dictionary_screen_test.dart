@@ -9,7 +9,6 @@ import 'package:ishara_app/features/dictionary/presentation/providers/dictionary
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_providers.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/dictionary_screen.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/sign_detail_screen.dart';
-import 'package:ishara_app/features/dictionary/presentation/widgets/dictionary_state_message.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
@@ -143,7 +142,7 @@ void main() {
           dictionarySignsProvider.overrideWith((_) => pending.future),
         ],
       );
-      expect(find.byType(SignListSkeleton), findsOneWidget);
+      expect(find.byType(ListSkeleton), findsOneWidget);
       expect(find.text('Nepali Sign Language'), findsOneWidget);
     });
 

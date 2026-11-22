@@ -5,8 +5,9 @@ import '../theme/theme.dart';
 /// Figma `IsharaButton` → `variant`.
 enum IsharaButtonVariant { filled, outlined, text }
 
-/// Fill colour of a filled button (Figma instance overrides, e.g. in
-/// `FeedbackSheet`): accent (default), success or danger.
+/// Colour of a button (Figma instance overrides): accent (default), success
+/// or danger. Filled buttons take it as their fill (e.g. `FeedbackSheet`);
+/// text buttons as their label colour (e.g. "Quit" in the quit dialog, 29).
 enum IsharaButtonTone { accent, success, danger }
 
 /// Figma `IsharaButton`: flat, 56dp, radius lg, sentence-case label/large.
@@ -21,6 +22,7 @@ class IsharaButton extends StatelessWidget {
     this.icon,
     this.expanded = true,
     this.tone = IsharaButtonTone.accent,
+    this.compact = false,
   });
 
   final String label;
@@ -33,17 +35,32 @@ class IsharaButton extends StatelessWidget {
   /// Stretch to the available width (Figma buttons fill the content column).
   final bool expanded;
 
-  /// Only affects [IsharaButtonVariant.filled].
+  /// Fill of a filled button, label colour of a text button; outlined
+  /// buttons ignore it.
   final IsharaButtonTone tone;
+
+  /// 48dp instead of 56dp — Figma dialog actions (AlertDialog in 29).
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final Color? toneFill = switch (tone) {
-      IsharaButtonTone.accent => null,
-      IsharaButtonTone.success => c.successDefault,
-      IsharaButtonTone.danger => c.dangerDefault,
-    };
+    final filled = variant == IsharaButtonVariant.filled;
+    final Color? toneFill = !filled
+        ? null
+        : switch (tone) {
+            IsharaButtonTone.accent => null,
+            IsharaButtonTone.success => c.successDefault,
+            IsharaButtonTone.danger => c.dangerDefault,
+          };
+    final Color? toneText = variant != IsharaButtonVariant.text
+        ? null
+        : switch (tone) {
+            IsharaButtonTone.accent => null,
+            IsharaButtonTone.success => c.successText,
+            IsharaButtonTone.danger => c.dangerText,
+          };
+    final height = compact ? IsharaSizes.minTouch : IsharaSizes.controlHeight;
     final style = ButtonStyle(
       backgroundColor: toneFill == null
           ? null
@@ -52,12 +69,20 @@ class IsharaButton extends StatelessWidget {
                   ? c.bgSurfaceMuted
                   : toneFill,
             ),
+      foregroundColor: toneText == null
+          ? null
+          : WidgetStateProperty.resolveWith(
+              (s) =>
+                  s.contains(WidgetState.disabled) ? c.textTertiary : toneText,
+            ),
       minimumSize: WidgetStatePropertyAll(
-        Size(
-          expanded ? double.infinity : IsharaSizes.minTouch,
-          IsharaSizes.controlHeight,
-        ),
+        Size(expanded ? double.infinity : IsharaSizes.minTouch, height),
       ),
+      padding: compact
+          ? const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: IsharaSpacing.s3),
+            )
+          : null,
       iconSize: const WidgetStatePropertyAll(IsharaSizes.iconMd),
     );
     final child = Text(

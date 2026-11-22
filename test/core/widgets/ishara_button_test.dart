@@ -144,4 +144,63 @@ void main() {
       });
     }
   }
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+    testWidgets('text + danger tone colours the label, not the fill '
+        '(${mode.name})', (tester) async {
+      await pumpThemed(
+        tester,
+        IsharaButton(
+          label: 'Quit',
+          variant: IsharaButtonVariant.text,
+          tone: IsharaButtonTone.danger,
+          expanded: false,
+          onPressed: () {},
+        ),
+        mode: mode,
+      );
+      expect(textColor(tester, 'Quit'), c.dangerText);
+      expect(bgOf(tester), isNot(c.dangerDefault));
+    });
+
+    testWidgets('outlined ignores tone (${mode.name})', (tester) async {
+      await pumpThemed(
+        tester,
+        IsharaButton(
+          label: 'End lesson',
+          variant: IsharaButtonVariant.outlined,
+          tone: IsharaButtonTone.danger,
+          onPressed: () {},
+        ),
+        mode: mode,
+      );
+      expect(bgOf(tester), isNot(c.dangerDefault));
+      expect(textColor(tester, 'End lesson'), isNot(c.dangerText));
+    });
+  }
+
+  testWidgets('compact is 48dp tall (dialog actions), default 56dp', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      IsharaButton(
+        label: 'Keep learning',
+        variant: IsharaButtonVariant.text,
+        compact: true,
+        expanded: false,
+        onPressed: () {},
+      ),
+    );
+    expect(
+      tester.getSize(find.byType(TextButton)).height,
+      IsharaSizes.minTouch,
+    );
+    await pumpThemed(tester, IsharaButton(label: 'Continue', onPressed: () {}));
+    expect(
+      tester.getSize(find.byType(FilledButton)).height,
+      IsharaSizes.controlHeight,
+    );
+  });
 }

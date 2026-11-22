@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../ishara_motion.dart';
 import '../ishara_radius.dart';
+import '../ishara_sizes.dart';
 import '../theme_extensions.dart';
 
 /// Selection state for options and cards: 2px `funLavender` border on a
@@ -15,8 +16,8 @@ class SelectionHighlight extends StatelessWidget {
     this.borderRadius = IsharaRadius.brLg,
   });
 
-  static const double selectedBorderWidth = 2;
-  static const double borderWidth = 1.5;
+  static const double selectedBorderWidth = IsharaSizes.selectedBorder;
+  static const double borderWidth = IsharaSizes.outline;
 
   final bool selected;
   final BorderRadius borderRadius;

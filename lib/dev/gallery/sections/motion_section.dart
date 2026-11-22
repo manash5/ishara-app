@@ -68,6 +68,8 @@ class _MotionSectionState extends State<MotionSection> {
               _SelectionDemo(),
               GalleryCaption('Answer feedback'),
               _FeedbackDemo(),
+              GalleryCaption('Results: pop, count-up, confetti'),
+              _CelebrateDemo(),
             ],
           ),
         ),
@@ -347,6 +349,68 @@ class _DemoFeedbackSheet extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Lesson results motion (26–27): PopIn + CountUp + ConfettiBurst. Replay
+/// rebuilds them with a new key.
+class _CelebrateDemo extends StatefulWidget {
+  const _CelebrateDemo();
+
+  @override
+  State<_CelebrateDemo> createState() => _CelebrateDemoState();
+}
+
+class _CelebrateDemoState extends State<_CelebrateDemo> {
+  int _run = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return SizedBox(
+      height: IsharaSizes.streakHero * 2,
+      child: Stack(
+        key: ValueKey(_run),
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PopIn(
+                  child: Container(
+                    width: IsharaSizes.resultBadge,
+                    height: IsharaSizes.resultBadge,
+                    decoration: BoxDecoration(
+                      color: c.funLime,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      IsharaIcons.check,
+                      size: IsharaSizes.resultBadgeIcon,
+                      color: c.funTealHero,
+                    ),
+                  ),
+                ),
+                CountUp(
+                  value: 15,
+                  builder: (context, xp) => Text(
+                    '+$xp XP',
+                    style: context.textStyles.stat.copyWith(
+                      color: c.textPrimary,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _run++),
+                  child: const Text('Replay'),
+                ),
+              ],
+            ),
+          ),
+          const Positioned.fill(child: ConfettiBurst()),
+        ],
       ),
     );
   }

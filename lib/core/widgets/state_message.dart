@@ -1,14 +1,15 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/theme/theme.dart';
-import '../../../../core/widgets/widgets.dart';
+import '../theme/theme.dart';
+import 'ishara_button.dart';
 
-/// Empty / no-results / error message for dictionary lists.
+/// Empty / no-results / error message for a list or screen: centred
+/// title/medium + body/medium and an optional outlined action.
 ///
-/// TODO(widgets): Figma has no empty/error state for frames 13–14; a shared
-/// state-message component is requested (see report).
-class DictionaryStateMessage extends StatelessWidget {
-  const DictionaryStateMessage({
+/// Shared by Dictionary (13–14) and Ranks (15). Figma has no empty/error
+/// state component yet; this follows the kit's text and button styles.
+class StateMessage extends StatelessWidget {
+  const StateMessage({
     super.key,
     required this.title,
     required this.body,
@@ -18,6 +19,8 @@ class DictionaryStateMessage extends StatelessWidget {
 
   final String title;
   final String body;
+
+  /// Shown only together with [onAction] (e.g. "Try again").
   final String? actionLabel;
   final VoidCallback? onAction;
 
@@ -49,39 +52,6 @@ class DictionaryStateMessage extends StatelessWidget {
                 label: actionLabel!,
                 variant: IsharaButtonVariant.outlined,
                 onPressed: onAction,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Loading skeleton: muted blocks the shape of [SignListTile]s.
-///
-/// TODO(motion): motion.md asks for a subtle shimmer; no shared skeleton
-/// widget exists yet (see report).
-class SignListSkeleton extends StatelessWidget {
-  const SignListSkeleton({super.key, this.count = 6});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'Loading signs',
-      child: ExcludeSemantics(
-        child: Column(
-          children: [
-            for (var i = 0; i < count; i++) ...[
-              if (i > 0) const SizedBox(height: IsharaSpacing.s2),
-              Container(
-                height: IsharaSizes.listTileHeight,
-                decoration: BoxDecoration(
-                  color: context.colors.bgSurfaceMuted,
-                  borderRadius: IsharaRadius.brLg,
-                ),
               ),
             ],
           ],

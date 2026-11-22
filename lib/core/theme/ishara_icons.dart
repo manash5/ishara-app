@@ -40,6 +40,7 @@ abstract final class IsharaIcons {
   static const IconData cameraOff = LucideIcons.cameraOff;
   static const IconData scan = LucideIcons.scan;
   static const IconData flag = LucideIcons.flag;
+  static const IconData heart = LucideIcons.heart;
 }
 
 /// The custom filled icons from Figma (`Icon/*-fill`); Lucide has none.

@@ -18,9 +18,9 @@ import '../widgets/privacy_point.dart';
 class CameraPermissionScreen extends ConsumerWidget {
   const CameraPermissionScreen({super.key});
 
-  // Figma `heroContent` 55:3717 / `badge` 55:3718 — no tokens for these yet.
-  static const double _badgeSize = 56;
-  static const double _badgeIcon = 28;
+  // Figma `heroContent` 55:3717 / `badge` 55:3718 (badge shared with Ranks).
+  static const double _badgeSize = IsharaSizes.heroBadge;
+  static const double _badgeIcon = IsharaSizes.heroBadgeIcon;
   static const double _heroBottomPadding = 44;
   static const double _heroSubtitleOpacity = IsharaSizes.heroCaptionOpacity;
 

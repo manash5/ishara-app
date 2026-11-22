@@ -1,24 +1,28 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/router/screen_placeholder.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/widgets.dart';
 
-/// Figma "28 Out of hearts" — placeholder until the real screen is built.
+/// Figma "28 Out of hearts" as a full-screen route (`/out-of-hearts`, e.g.
+/// a deep link). In a lesson the same panel opens as a sheet over the
+/// player instead (`showOutOfHeartsSheet`).
 class OutOfHeartsScreen extends StatelessWidget {
   const OutOfHeartsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ScreenPlaceholder(
-      frame: '28',
-      name: 'Out of hearts',
-      actions: [
-        PlaceholderAction(
-          'Back to Learn',
-          () => const LearnRoute().go(context),
-          primary: true,
+    return Scaffold(
+      backgroundColor: context.colors.bgCanvas,
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: SingleChildScrollView(
+          child: OutOfHeartsPanel(
+            onPractise: () => const PracticeRoute().go(context),
+            onEndLesson: () => const LearnRoute().go(context),
+          ),
         ),
-      ],
+      ),
     );
   }
 }

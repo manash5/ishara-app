@@ -155,26 +155,43 @@ class SignVideoPlayer extends StatelessWidget {
                     ),
                   )
                 else
-                  Positioned(
-                    left: IsharaSpacing.s2 + IsharaSizes.titleGap,
-                    bottom: IsharaSpacing.s2 + IsharaSizes.titleGap,
-                    child: ExcludeSemantics(
-                      child: Container(
-                        width: IsharaSizes.videoTilePlay,
-                        height: IsharaSizes.videoTilePlay,
-                        decoration: BoxDecoration(
-                          color: c.bgSurface,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: IsharaFilledIcon(
-                            IsharaFilledIconKind.play,
-                            size: IsharaSizes.videoTilePlayIcon,
-                            color: c.textPrimary,
+                  // The play badge scales with the tile, so a small tile
+                  // (the 93.5dp reference video in Figma 23) keeps the
+                  // Figma proportions.
+                  LayoutBuilder(
+                    builder: (context, box) {
+                      final k = box.maxWidth.isFinite
+                          ? box.maxWidth / _tileWidth
+                          : 1.0;
+                      final inset =
+                          (IsharaSpacing.s2 + IsharaSizes.titleGap) * k;
+                      return Stack(
+                        children: [
+                          Positioned(
+                            left: inset,
+                            bottom: inset,
+                            child: ExcludeSemantics(
+                              child: Container(
+                                key: const ValueKey('video-tile-play'),
+                                width: IsharaSizes.videoTilePlay * k,
+                                height: IsharaSizes.videoTilePlay * k,
+                                decoration: BoxDecoration(
+                                  color: c.bgSurface,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: IsharaFilledIcon(
+                                    IsharaFilledIconKind.play,
+                                    size: IsharaSizes.videoTilePlayIcon * k,
+                                    color: c.textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
+                        ],
+                      );
+                    },
                   ),
               ],
             ),
