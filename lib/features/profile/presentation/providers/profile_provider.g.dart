@@ -120,16 +120,22 @@ final class ProfileSummaryProvider
 String _$profileSummaryHash() => r'2ae84380a544dc7b76662eb2e206b74582ca5e50';
 
 /// When the profile on screen was fetched; re-read whenever it changes.
+/// Null when unknown (nothing cached, or the cache can't be read): the
+/// "updated … ago" chip is then left out.
 
 @ProviderFor(profileLastUpdated)
 final profileLastUpdatedProvider = ProfileLastUpdatedProvider._();
 
 /// When the profile on screen was fetched; re-read whenever it changes.
+/// Null when unknown (nothing cached, or the cache can't be read): the
+/// "updated … ago" chip is then left out.
 
 final class ProfileLastUpdatedProvider
     extends $FunctionalProvider<DateTime?, DateTime?, DateTime?>
     with $Provider<DateTime?> {
   /// When the profile on screen was fetched; re-read whenever it changes.
+  /// Null when unknown (nothing cached, or the cache can't be read): the
+  /// "updated … ago" chip is then left out.
   ProfileLastUpdatedProvider._()
     : super(
         from: null,
@@ -164,4 +170,4 @@ final class ProfileLastUpdatedProvider
 }
 
 String _$profileLastUpdatedHash() =>
-    r'04d2940da731f2f582383b460d3f37aea49ff3c8';
+    r'8265400379fc1daece3cfd74ac161c154f6131a8';

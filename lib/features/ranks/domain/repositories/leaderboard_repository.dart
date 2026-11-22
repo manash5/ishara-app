@@ -8,5 +8,5 @@ abstract interface class LeaderboardRepository {
   Stream<Result<WeeklyLeaderboard>> watchWeekly();
 
   /// When the cached league was fetched, or null if nothing is cached.
-  DateTime? lastUpdated();
+  Result<DateTime?> lastUpdated();
 }

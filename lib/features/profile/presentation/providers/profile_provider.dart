@@ -68,8 +68,12 @@ AsyncValue<ProfileSummary> profileSummary(Ref ref) =>
     ref.watch(userProfileProvider).mapKeepingError(ProfileSummary.fromProfile);
 
 /// When the profile on screen was fetched; re-read whenever it changes.
+/// Null when unknown (nothing cached, or the cache can't be read): the
+/// "updated … ago" chip is then left out.
 @riverpod
 DateTime? profileLastUpdated(Ref ref) {
   ref.watch(userProfileProvider);
-  return GetProfileLastUpdated(ref.watch(profileRepositoryProvider))();
+  return GetProfileLastUpdated(
+    ref.watch(profileRepositoryProvider),
+  )().valueOrNull;
 }

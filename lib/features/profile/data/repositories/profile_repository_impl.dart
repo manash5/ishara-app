@@ -20,13 +20,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileLocalDataSource _local;
 
   @override
-  DateTime? lastUpdated() {
-    try {
-      return _local.read()?.fetchedAt;
-    } catch (_) {
-      return null;
-    }
-  }
+  Result<DateTime?> lastUpdated() => guardSync(() => _local.read()?.fetchedAt);
 
   @override
   Stream<Result<UserProfile>> watchProfile() async* {

@@ -1,3 +1,4 @@
+import '../../../../core/error/result.dart';
 import '../repositories/profile_repository.dart';
 
 /// When the cached profile was fetched ("Offline · updated 3 h ago").
@@ -6,5 +7,5 @@ class GetProfileLastUpdated {
 
   final ProfileRepository _repository;
 
-  DateTime? call() => _repository.lastUpdated();
+  Result<DateTime?> call() => _repository.lastUpdated();
 }

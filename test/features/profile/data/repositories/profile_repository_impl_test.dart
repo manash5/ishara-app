@@ -52,6 +52,27 @@ void main() {
   Future<List<Result<UserProfile>>> firstResults(int count) =>
       repo.watchProfile().take(count).toList();
 
+  group('lastUpdated', () {
+    test('when the cached profile was fetched', () {
+      when(() => local.read())
+          .thenReturn(CacheEntry(cached, DateTime.utc(2026)));
+      expect(repo.lastUpdated().valueOrNull, DateTime.utc(2026));
+    });
+
+    test('nothing cached: Ok(null)', () {
+      when(() => local.read()).thenReturn(null);
+      final result = repo.lastUpdated();
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull, isNull);
+    });
+
+    test('an unreadable cache is an Err, not a silent null', () {
+      when(() => local.read()).thenThrow(const CacheException());
+      final result = repo.lastUpdated();
+      expect((result as Err<DateTime?>).failure, isA<CacheFailure>());
+    });
+  });
+
   group('watchProfile (cache-first)', () {
     test('cache hit: cached, then fresh (written to the cache)', () async {
       when(() => local.read())

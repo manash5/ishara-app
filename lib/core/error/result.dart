@@ -36,6 +36,17 @@ final class Err<T> extends Result<T> {
   final Failure failure;
 }
 
+/// [guard] for synchronous work (e.g. reading the Hive cache).
+Result<T> guardSync<T>(T Function() body) {
+  try {
+    return Ok(body());
+  } on AppException catch (e) {
+    return Err(Failure.fromException(e));
+  } catch (_) {
+    return const Err(UnknownFailure());
+  }
+}
+
 /// Runs [body] and turns any thrown error into an [Err]: an [AppException]
 /// becomes its matching [Failure], anything else an [UnknownFailure].
 Future<Result<T>> guard<T>(Future<T> Function() body) async {

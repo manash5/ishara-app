@@ -17,10 +17,13 @@ Stream<WeeklyLeaderboard> weeklyLeaderboard(Ref ref) => WatchWeeklyLeaderboard(
 )().map((result) => result.getOrThrow());
 
 /// When the league on screen was fetched; re-read whenever it changes.
+/// Null when unknown: the "updated … ago" chip is then left out.
 @riverpod
 DateTime? leaderboardLastUpdated(Ref ref) {
   ref.watch(weeklyLeaderboardProvider);
-  return GetLeaderboardLastUpdated(ref.watch(leaderboardRepositoryProvider))();
+  return GetLeaderboardLastUpdated(
+    ref.watch(leaderboardRepositoryProvider),
+  )().valueOrNull;
 }
 
 /// "3d 14h", "5h 20m", "45m" — the countdown chip text. Rounds up to the

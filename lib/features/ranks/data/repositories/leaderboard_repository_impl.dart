@@ -17,13 +17,8 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
   final LeaderboardLocalDataSource _local;
 
   @override
-  DateTime? lastUpdated() {
-    try {
-      return _local.readWeekly()?.fetchedAt;
-    } catch (_) {
-      return null;
-    }
-  }
+  Result<DateTime?> lastUpdated() =>
+      guardSync(() => _local.readWeekly()?.fetchedAt);
 
   @override
   Stream<Result<WeeklyLeaderboard>> watchWeekly() async* {

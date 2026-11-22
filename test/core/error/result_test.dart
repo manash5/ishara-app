@@ -36,6 +36,14 @@ void main() {
     expect(failure.message, isNot(contains('boom')));
   });
 
+  test('guardSync: Ok, AppException → its Failure, other → Unknown', () {
+    expect(guardSync(() => 7).valueOrNull, 7);
+    final cache = guardSync<int>(() => throw const CacheException());
+    expect((cache as Err<int>).failure, isA<CacheFailure>());
+    final other = guardSync<int>(() => throw StateError('boom'));
+    expect((other as Err<int>).failure, isA<UnknownFailure>());
+  });
+
   test('a validation failure shows the server message or a fallback', () {
     expect(const ValidationFailure('Email is taken').message, 'Email is taken');
     expect(const ValidationFailure().message, isNotEmpty);

@@ -58,16 +58,19 @@ final class WeeklyLeaderboardProvider
 String _$weeklyLeaderboardHash() => r'9104a6326e0d2a3042fd4acbb799ddaa9bfea972';
 
 /// When the league on screen was fetched; re-read whenever it changes.
+/// Null when unknown: the "updated … ago" chip is then left out.
 
 @ProviderFor(leaderboardLastUpdated)
 final leaderboardLastUpdatedProvider = LeaderboardLastUpdatedProvider._();
 
 /// When the league on screen was fetched; re-read whenever it changes.
+/// Null when unknown: the "updated … ago" chip is then left out.
 
 final class LeaderboardLastUpdatedProvider
     extends $FunctionalProvider<DateTime?, DateTime?, DateTime?>
     with $Provider<DateTime?> {
   /// When the league on screen was fetched; re-read whenever it changes.
+  /// Null when unknown: the "updated … ago" chip is then left out.
   LeaderboardLastUpdatedProvider._()
     : super(
         from: null,
@@ -102,4 +105,4 @@ final class LeaderboardLastUpdatedProvider
 }
 
 String _$leaderboardLastUpdatedHash() =>
-    r'2d429ca69cb7fe05c4172dcd42b8d6bf5e3b5ac4';
+    r'f05287a56bb134c0f8e59a374efcb26e576cbe9f';

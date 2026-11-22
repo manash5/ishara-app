@@ -45,6 +45,19 @@ void main() {
     when(() => local.writeWeekly(any())).thenAnswer((_) async {});
   });
 
+  group('lastUpdated', () {
+    test('when the cached league was fetched', () {
+      when(() => local.readWeekly())
+          .thenReturn(CacheEntry(_board(1), DateTime.utc(2026)));
+      expect(repo.lastUpdated().valueOrNull, DateTime.utc(2026));
+    });
+
+    test('an unreadable cache is an Err', () {
+      when(() => local.readWeekly()).thenThrow(const CacheException());
+      expect(repo.lastUpdated().isOk, isFalse);
+    });
+  });
+
   List<int> weeks(List<Result<WeeklyLeaderboard>> results) => [
     for (final r in results) r.getOrThrow().weekNumber,
   ];
