@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -51,5 +52,52 @@ void main() {
       ),
     );
     expect(find.byKey(const Key('video')), findsOneWidget);
+  });
+
+  for (final mode in themeModes) {
+    final c = tokensFor(mode);
+
+    testWidgets('offline: "connect to watch", no controls (${mode.name})', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpThemed(
+        tester,
+        const SizedBox(
+          width: 364,
+          child: SignVideo(semanticLabel: 'Sign video: Namaste', offline: true),
+        ),
+        mode: mode,
+      );
+      expect(find.text(SignVideo.offlineMessage), findsOneWidget);
+      expect(textColor(tester, SignVideo.offlineMessage), c.textSecondary);
+      expect(find.byIcon(IsharaIcons.wifiOff), findsOneWidget);
+      expect(find.bySemanticsLabel('Slow motion'), findsNothing);
+      expect(find.bySemanticsLabel('Mirror video'), findsNothing);
+      expect(
+        find.bySemanticsLabel(
+          'Sign video: Namaste. ${SignVideo.offlineMessage}',
+        ),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+  }
+
+  testWidgets('a tile offline shows only the icon', (tester) async {
+    await pumpThemed(
+      tester,
+      const SizedBox(
+        width: 170,
+        child: SignVideoPlayer(
+          semanticLabel: 'Sign video',
+          size: SignVideoSize.tile,
+          unavailableMessage: SignVideo.offlineMessage,
+        ),
+      ),
+    );
+    expect(find.byIcon(IsharaIcons.wifiOff), findsOneWidget);
+    expect(find.text(SignVideo.offlineMessage), findsNothing);
+    expect(find.byKey(const ValueKey('video-tile-play')), findsNothing);
   });
 }

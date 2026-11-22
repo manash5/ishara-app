@@ -4,17 +4,18 @@ import 'package:ishara_app/core/error/failure.dart';
 import 'package:ishara_app/core/error/result.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
+import 'package:ishara_app/core/sync/sync_event.dart';
+import 'package:ishara_app/core/sync/sync_queue.dart';
+import 'package:ishara_app/core/sync/sync_service.dart';
 import 'package:ishara_app/features/lesson/data/datasources/lesson_local_data_source.dart';
 import 'package:ishara_app/features/lesson/data/datasources/lesson_remote_data_source.dart';
 import 'package:ishara_app/features/lesson/data/models/lesson_attempt_dto.dart';
 import 'package:ishara_app/features/lesson/data/models/lesson_dto.dart';
 import 'package:ishara_app/features/lesson/data/models/lesson_result_dto.dart';
-import 'package:ishara_app/features/lesson/data/models/progress_sync_dto.dart';
 import 'package:ishara_app/features/lesson/data/repositories/lesson_repository_impl.dart';
 import 'package:ishara_app/features/lesson/domain/entities/exercise.dart';
 import 'package:ishara_app/features/lesson/domain/entities/lesson.dart';
 import 'package:ishara_app/features/lesson/domain/entities/lesson_result.dart';
-import 'package:ishara_app/features/lesson/domain/entities/progress_sync_report.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/mock_api.dart';
@@ -23,6 +24,8 @@ import '../../../../helpers/test_hive.dart';
 class _MockRemote extends Mock implements LessonRemoteDataSource {}
 
 class _MockLocal extends Mock implements LessonLocalDataSource {}
+
+class _MockQueue extends Mock implements SyncQueue {}
 
 const _lessonId = FixtureIds.currentLesson;
 
@@ -40,44 +43,40 @@ LessonAttempt _attempt(String event, {int minute = 0}) => LessonAttempt(
   completedAt: DateTime.utc(2026, 11, 22, 9, minute),
 );
 
-QueuedAttemptDto _queued(String event, {int minute = 0, int failed = 0}) =>
-    QueuedAttemptDto(
-      attempt: LessonAttemptDto.fromEntity(_attempt(event, minute: minute)),
-      queuedAt: DateTime.utc(2026, 11, 22, 10),
-      failedFlushes: failed,
-    );
-
-SyncEventResultDto _syncResult(String event, SyncEventStatus status) =>
-    SyncEventResultDto(
-      clientEventId: event,
-      status: status,
-      result: status == SyncEventStatus.rejected ? null : _resultDto(event),
-    );
-
 void main() {
   setUpAll(() {
     registerFallbackValue(_lessonDto());
     registerFallbackValue(LessonAttemptDto.fromEntity(_attempt('fallback')));
-    registerFallbackValue(_queued('fallback'));
+    registerFallbackValue(
+      SyncEvent(
+        clientEventId: 'fallback',
+        type: SyncEvent.lessonComplete,
+        payload: const {},
+        occurredAt: DateTime.utc(2026),
+        queuedAt: DateTime.utc(2026),
+      ),
+    );
     registerFallbackValue(<String>[]);
   });
 
   late _MockRemote remote;
   late _MockLocal local;
+  late _MockQueue queue;
   late LessonRepositoryImpl repo;
 
   setUp(() {
     remote = _MockRemote();
     local = _MockLocal();
+    queue = _MockQueue();
     repo = LessonRepositoryImpl(
       remote,
       local,
+      queue,
       clock: () => DateTime.utc(2026, 11, 22, 10),
     );
     when(() => local.writeLesson(any(), any())).thenAnswer((_) async {});
-    when(() => local.enqueue(any())).thenAnswer((_) async {});
-    when(() => local.removeQueued(any())).thenAnswer((_) async {});
-    when(() => local.markFailed(any())).thenAnswer((_) async {});
+    when(() => queue.enqueue(any())).thenAnswer((_) async {});
+    when(() => queue.remove(any())).thenAnswer((_) async {});
   });
 
   group('watchLesson (cache first)', () {
@@ -176,8 +175,8 @@ void main() {
                 as LessonAttemptDto;
         expect(sent.clientEventId, 'e-1');
         expect(sent.durationSeconds, 252);
-        verify(() => local.removeQueued(['e-1'])).called(1);
-        verifyNever(() => local.enqueue(any()));
+        verify(() => queue.remove(['e-1'])).called(1);
+        verifyNever(() => queue.enqueue(any()));
       },
     );
 
@@ -189,16 +188,26 @@ void main() {
 
       expect((result as Err).failure, isA<NetworkFailure>());
       final queued =
-          verify(() => local.enqueue(captureAny())).captured.single
-              as QueuedAttemptDto;
-      expect(queued.attempt.clientEventId, 'e-1');
+          verify(() => queue.enqueue(captureAny())).captured.single
+              as SyncEvent;
+      expect(queued.clientEventId, 'e-1');
+      expect(queued.type, SyncEvent.lessonComplete);
       expect(queued.queuedAt, DateTime.utc(2026, 11, 22, 10));
+      expect(queued.occurredAt, DateTime.utc(2026, 11, 22, 9));
+      expect(queued.toWire(), {
+        'clientEventId': 'e-1',
+        'type': 'lessonComplete',
+        'lessonId': _lessonId,
+        'mistakes': 1,
+        'durationSeconds': 252,
+        'completedAt': '2026-11-22T09:00:00.000Z',
+      });
     });
 
     test('offline and the queue write fails: still a NetworkFailure', () async {
       when(() => remote.completeLesson(any()))
           .thenThrow(const NetworkException());
-      when(() => local.enqueue(any())).thenThrow(const CacheException());
+      when(() => queue.enqueue(any())).thenThrow(const CacheException());
 
       final result = await repo.completeLesson(_attempt('e-1'));
 
@@ -215,9 +224,9 @@ void main() {
 
         expect((result as Err).failure, isA<ServerFailure>());
         final queued =
-            verify(() => local.enqueue(captureAny())).captured.single
-                as QueuedAttemptDto;
-        expect(queued.attempt.clientEventId, 'e-1');
+            verify(() => queue.enqueue(captureAny())).captured.single
+                as SyncEvent;
+        expect(queued.clientEventId, 'e-1');
       },
     );
 
@@ -235,7 +244,7 @@ void main() {
           final result = await repo.completeLesson(_attempt('e-1'));
 
           expect(result, isA<Err<LessonResult>>());
-          verifyNever(() => local.enqueue(any()));
+          verifyNever(() => queue.enqueue(any()));
         },
       );
     }
@@ -251,94 +260,16 @@ void main() {
     });
   });
 
-  group('flushQueue', () {
-    test('empty queue: nothing is sent', () async {
-      when(() => local.readQueue()).thenReturn([]);
-
-      final result = await repo.flushQueue();
-
-      expect(result.valueOrNull, const ProgressSyncReport());
-      verifyNever(() => remote.syncProgress(any()));
-    });
-
-    test('sends oldest first; removes applied, duplicate and rejected; '
-        'keeps unknown', () async {
-      when(() => local.readQueue()).thenReturn([
-        _queued('a', minute: 1),
-        _queued('b', minute: 2),
-        _queued('c', minute: 3),
-        _queued('d', minute: 4),
-      ]);
-      when(() => remote.syncProgress(any())).thenAnswer(
-        (_) async => ProgressSyncDto(
-          results: [
-            _syncResult('a', SyncEventStatus.applied),
-            _syncResult('b', SyncEventStatus.duplicate),
-            _syncResult('c', SyncEventStatus.rejected),
-            _syncResult('d', SyncEventStatus.unknown),
-          ],
-        ),
-      );
-
-      final report = (await repo.flushQueue()).getOrThrow();
-
-      final sent =
-          verify(() => remote.syncProgress(captureAny())).captured.single
-              as List<LessonAttemptDto>;
-      expect(sent.map((e) => e.clientEventId), ['a', 'b', 'c', 'd']);
-      final removed =
-          verify(() => local.removeQueued(captureAny())).captured.single
-              as Iterable<String>;
-      expect(removed, unorderedEquals(['a', 'b', 'c']));
-      expect(report.applied.map((r) => r.clientEventId), ['a']);
-      expect(report.duplicates, 1);
-      expect(report.rejected, 1);
-      expect(report.remaining, 1);
-    });
-
-    test('failure: keeps every event, counts the failed flush', () async {
-      final queue = [_queued('a'), _queued('b', minute: 1, failed: 2)];
-      when(() => local.readQueue()).thenReturn(queue);
-      when(() => remote.syncProgress(any()))
-          .thenThrow(const NetworkException());
-
-      final result = await repo.flushQueue();
-
-      expect((result as Err).failure, isA<NetworkFailure>());
-      verify(() => local.markFailed(queue)).called(1);
-      verifyNever(() => local.removeQueued(any()));
-    });
-
-    test('an unreadable queue is a CacheFailure (nothing sent)', () async {
-      when(() => local.readQueue()).thenThrow(const CacheException());
-
-      final result = await repo.flushQueue();
-
-      expect((result as Err).failure, isA<CacheFailure>());
-      verifyNever(() => remote.syncProgress(any()));
-    });
-
-    test('concurrent flushes share one request', () async {
-      when(() => local.readQueue()).thenReturn([_queued('a')]);
-      when(() => remote.syncProgress(any())).thenAnswer(
-        (_) async => ProgressSyncDto(
-          results: [_syncResult('a', SyncEventStatus.applied)],
-        ),
-      );
-
-      final both = await Future.wait([repo.flushQueue(), repo.flushQueue()]);
-
-      expect(both[0], same(both[1]));
-      verify(() => remote.syncProgress(any())).called(1);
-    });
-  });
-
   group('against the mock API and Hive', () {
     LessonRepositoryImpl realRepo([MockApiSimulation Function()? s]) =>
         LessonRepositoryImpl(
           LessonRemoteDataSource(mockApiClient(simulation: s)),
           LessonLocalDataSource(TestHive.instance),
+          SyncQueue(TestHive.instance),
         );
+
+    SyncService sync([MockApiSimulation Function()? s]) =>
+        SyncService(SyncQueue(TestHive.instance), mockApiClient(simulation: s));
 
     test(
       'maps the lesson and one exercise of each type, and caches it',
@@ -388,10 +319,12 @@ void main() {
       ]);
     });
 
-    test('offline completion is queued, then a flush applies and removes it; '
+    test('offline completion is queued, then the core SyncService applies and '
+        'removes it; '
         'a second copy is a duplicate', () async {
       var simulation = MockApiSimulation.offline;
       final r = realRepo(() => simulation);
+      final service = sync(() => simulation);
       final attempt = _attempt('c3d4e5f6-0000-4000-8000-000000000002');
 
       final offline = await r.completeLesson(attempt);
@@ -401,23 +334,27 @@ void main() {
       expect(TestHive.instance.syncQueue.keys, [attempt.clientEventId]);
 
       // Still offline: the flush fails and keeps it.
-      expect((await r.flushQueue()).isOk, isFalse);
+      expect((await service.flush()).isOk, isFalse);
       expect(TestHive.instance.syncQueue.length, 1);
 
       simulation = MockApiSimulation.none;
-      final report = (await r.flushQueue()).getOrThrow();
+      final report = (await service.flush()).getOrThrow();
       expect(report.applied.single.clientEventId, attempt.clientEventId);
       expect(report.remaining, 0);
       expect(TestHive.instance.syncQueue.isEmpty, isTrue);
 
       // Re-queued by a stale retry: the server says duplicate → dropped.
-      await LessonLocalDataSource(TestHive.instance).enqueue(
-        QueuedAttemptDto(
-          attempt: LessonAttemptDto.fromEntity(attempt),
+      final dto = LessonAttemptDto.fromEntity(attempt);
+      await SyncQueue(TestHive.instance).enqueue(
+        SyncEvent(
+          clientEventId: dto.clientEventId,
+          type: SyncEvent.lessonComplete,
+          payload: dto.toSyncPayload(),
+          occurredAt: dto.completedAt,
           queuedAt: DateTime.utc(2026),
         ),
       );
-      final again = (await r.flushQueue()).getOrThrow();
+      final again = (await service.flush()).getOrThrow();
       expect(again.duplicates, 1);
       expect(again.applied, isEmpty);
       expect(TestHive.instance.syncQueue.isEmpty, isTrue);
@@ -427,6 +364,7 @@ void main() {
         'recovers', () async {
       var simulation = MockApiSimulation.serverError;
       final r = realRepo(() => simulation);
+      final service = sync(() => simulation);
       final attempt = _attempt('c3d4e5f6-0000-4000-8000-000000000003');
 
       final failed = await r.completeLesson(attempt);
@@ -434,11 +372,11 @@ void main() {
       expect(TestHive.instance.syncQueue.keys, [attempt.clientEventId]);
 
       // Server still failing: the flush keeps it.
-      expect((await r.flushQueue()).isOk, isFalse);
+      expect((await service.flush()).isOk, isFalse);
       expect(TestHive.instance.syncQueue.length, 1);
 
       simulation = MockApiSimulation.none;
-      final report = (await r.flushQueue()).getOrThrow();
+      final report = (await service.flush()).getOrThrow();
       expect(report.applied.single.clientEventId, attempt.clientEventId);
       expect(TestHive.instance.syncQueue.isEmpty, isTrue);
     });

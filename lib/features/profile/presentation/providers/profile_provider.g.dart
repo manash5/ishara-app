@@ -118,3 +118,50 @@ final class ProfileSummaryProvider
 }
 
 String _$profileSummaryHash() => r'2ae84380a544dc7b76662eb2e206b74582ca5e50';
+
+/// When the profile on screen was fetched; re-read whenever it changes.
+
+@ProviderFor(profileLastUpdated)
+final profileLastUpdatedProvider = ProfileLastUpdatedProvider._();
+
+/// When the profile on screen was fetched; re-read whenever it changes.
+
+final class ProfileLastUpdatedProvider
+    extends $FunctionalProvider<DateTime?, DateTime?, DateTime?>
+    with $Provider<DateTime?> {
+  /// When the profile on screen was fetched; re-read whenever it changes.
+  ProfileLastUpdatedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profileLastUpdatedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$profileLastUpdatedHash();
+
+  @$internal
+  @override
+  $ProviderElement<DateTime?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DateTime? create(Ref ref) {
+    return profileLastUpdated(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime?>(value),
+    );
+  }
+}
+
+String _$profileLastUpdatedHash() =>
+    r'04d2940da731f2f582383b460d3f37aea49ff3c8';

@@ -5,7 +5,6 @@ import '../../core/services/api/mock_api_settings.dart';
 import '../../core/theme/theme.dart';
 import '../../core/widgets/widgets.dart';
 import '../../features/auth/presentation/providers/session_provider.dart';
-import '../../features/learn/presentation/providers/learn_path_provider.dart';
 import 'sections/gallery_section.dart';
 import 'sections/widget_sections.dart';
 
@@ -101,14 +100,6 @@ class SessionSection extends ConsumerWidget {
           switchValue: session.onboardingDone,
           onSwitchChanged: (v) => notifier.debugOverride(onboardingDone: v),
         ),
-        SettingsTile(
-          key: const Key('gallery-learn-offline'),
-          icon: IsharaIcons.wifiOff,
-          label: 'Learn offline (12)',
-          trailing: SettingsTrailing.toggle,
-          switchValue: ref.watch(learnOfflineProvider),
-          onSwitchChanged: ref.read(learnOfflineProvider.notifier).set,
-        ),
       ],
     );
   }
@@ -124,7 +115,8 @@ class MockApiSection extends ConsumerWidget {
     final notifier = ref.read(mockApiSettingsProvider.notifier);
     return GallerySection(
       title: 'Mock API',
-      subtitle: 'Simulate offline, 401, 404 and 500 from the fixtures',
+      subtitle:
+          'Simulate offline (drives every offline state), 401, 404 and 500',
       children: [
         Wrap(
           spacing: IsharaSpacing.s2,

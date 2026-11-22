@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/auth_form_providers.dart';
@@ -17,6 +18,10 @@ import '../widgets/password_field.dart';
 /// taken email shows under Email, other errors under Password.
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
+
+  /// Shown while offline (auth needs a connection).
+  static const offlineMessage =
+      'You’re offline. Creating an account needs an internet connection.';
 
   @override
   ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
@@ -49,7 +54,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final form = ref.watch(signUpFormProvider);
+    // Auth needs a connection.
+    final offline = ref.watch(isOnlineProvider).value == false;
     return AuthFormScaffold(
+      offlineMessage: offline ? SignUpScreen.offlineMessage : null,
       title: 'Create your account',
       subtitle: 'Save your streak and progress across devices.',
       footer: AuthLink(
@@ -95,11 +103,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           label: form.pending == AuthSubmit.email
               ? 'Creating account…'
               : 'Create account',
-          onPressed: form.busy ? null : _register,
+          onPressed: form.busy || offline ? null : _register,
         ),
         const OrDivider(),
         GoogleSignInButton(
-          onPressed: form.busy
+          onPressed: form.busy || offline
               ? null
               : ref.read(signUpFormProvider.notifier).google,
         ),

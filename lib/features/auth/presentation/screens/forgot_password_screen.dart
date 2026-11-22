@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/auth_form_providers.dart';
@@ -21,6 +22,10 @@ import '../widgets/reset_link_sent_notice.dart';
 /// Step 2 is composed from the same shared fields as the other auth forms.
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
+
+  /// Shown while offline (auth needs a connection).
+  static const offlineMessage =
+      'You’re offline. Resetting your password needs an internet connection.';
 
   /// Length of the emailed reset code.
   static const codeLength = 6;
@@ -67,8 +72,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(passwordResetFormProvider);
     final form = state.form;
+    // Auth needs a connection.
+    final offline = ref.watch(isOnlineProvider).value == false;
     final sent = state.codeSent;
     return AuthFormScaffold(
+      offlineMessage: offline ? ForgotPasswordScreen.offlineMessage : null,
       title: 'Reset your password',
       subtitle: sent
           ? 'Enter the 6-digit code from the email and choose a new '
@@ -83,7 +91,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               label: form.pending == AuthSubmit.reset
                   ? 'Resetting…'
                   : 'Reset password',
-              onPressed: form.busy ? null : _reset,
+              onPressed: form.busy || offline ? null : _reset,
             ),
             const SizedBox(height: IsharaSpacing.s3),
             IsharaButton(
@@ -91,14 +99,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ? 'Sending…'
                   : 'Resend code',
               variant: IsharaButtonVariant.outlined,
-              onPressed: form.busy ? null : _sendCode,
+              onPressed: form.busy || offline ? null : _sendCode,
             ),
           ] else
             IsharaButton(
               label: form.pending == AuthSubmit.sendCode
                   ? 'Sending…'
                   : 'Send reset code',
-              onPressed: form.busy ? null : _sendCode,
+              onPressed: form.busy || offline ? null : _sendCode,
             ),
           const SizedBox(height: IsharaSpacing.s3),
           IsharaButton(

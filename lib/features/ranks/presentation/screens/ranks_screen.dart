@@ -2,7 +2,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/relative_time.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/ranks_providers.dart';
 import '../widgets/league_header.dart';
@@ -29,6 +31,21 @@ class RanksScreen extends ConsumerWidget {
                 ),
               ]
             : [
+                if (ref.watch(isOnlineProvider).value == false)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: IsharaSpacing.s3),
+                      child: IsharaChip(
+                        key: const Key('ranks-offline-chip'),
+                        label: offlineUpdatedLabel(
+                          ref.watch(leaderboardLastUpdatedProvider),
+                        ),
+                        icon: IsharaIcons.wifiOff,
+                        tone: IsharaChipTone.neutral,
+                      ),
+                    ),
+                  ),
                 LeagueBanner(
                   text:
                       'Top ${b.promotionCount} move up to ${b.nextLeagueName}. '

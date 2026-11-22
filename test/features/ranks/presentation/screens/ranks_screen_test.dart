@@ -160,6 +160,29 @@ void main() {
       expect(find.byType(LeaderboardTile), findsNWidgets(10));
     });
 
+    for (final mode in themeModes) {
+      testWidgets('says when the cached league was updated (${mode.name})', (
+        tester,
+      ) async {
+        await TestHive.instance.putCache(
+          LeaderboardLocalDataSource.cacheKey,
+          fixtureData<Map<String, dynamic>>('leaderboard/weekly_200'),
+          fetchedAt: DateTime.now().subtract(const Duration(hours: 3)),
+        );
+        await _pump(tester, mode: mode, simulation: MockApiSimulation.offline);
+        final chip = tester.widget<IsharaChip>(
+          find.byKey(const Key('ranks-offline-chip')),
+        );
+        expect(chip.label, 'Offline · updated 3 h ago');
+        expect(chip.tone, IsharaChipTone.neutral);
+      });
+    }
+
+    testWidgets('online: no offline chip', (tester) async {
+      await _pump(tester);
+      expect(find.byKey(const Key('ranks-offline-chip')), findsNothing);
+    });
+
     testWidgets('with nothing cached shows the error', (tester) async {
       await _pump(tester, simulation: MockApiSimulation.offline);
       expect(find.text('Couldn’t load the leaderboard'), findsOneWidget);

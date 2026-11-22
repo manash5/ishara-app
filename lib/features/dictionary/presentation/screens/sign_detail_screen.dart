@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/dictionary_models.dart';
@@ -81,7 +82,13 @@ class _SignDetailBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SignVideo(semanticLabel: 'Sign video: ${sign.name}'),
+                // Videos need a connection; the text below works offline.
+                Consumer(
+                  builder: (context, ref, _) => SignVideo(
+                    semanticLabel: 'Sign video: ${sign.name}',
+                    offline: ref.watch(isOnlineProvider).value == false,
+                  ),
+                ),
                 const SizedBox(height: IsharaSpacing.s6),
                 SignMeaningSection(
                   name: sign.name,

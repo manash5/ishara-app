@@ -3,7 +3,9 @@ import 'package:material_ui/material_ui.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/theme.dart';
-import 'features/lesson/presentation/providers/progress_sync_provider.dart';
+import 'core/services/connectivity/connectivity_service.dart';
+import 'core/sync/sync_controller.dart';
+import 'features/lesson/presentation/providers/lesson_sync_listener.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
 
 /// Root widget: Ishara light/dark themes (the learner's saved choice,
@@ -23,7 +25,12 @@ class _IsharaAppState extends ConsumerState<IsharaApp> {
   void initState() {
     super.initState();
     _lifecycle = AppLifecycleListener(
-      onResume: () => ref.read(progressSyncProvider.notifier).flush(),
+      onResume: () {
+        // Re-check the connection (the plugin may have missed a change)
+        // and send anything queued while the app was away.
+        ref.invalidate(isOnlineProvider);
+        ref.read(syncControllerProvider.notifier).flush();
+      },
     );
   }
 
@@ -35,8 +42,10 @@ class _IsharaAppState extends ConsumerState<IsharaApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Keeps the sync provider alive: it flushes whenever the app comes online.
-    ref.listen(progressSyncProvider, (_, _) {});
+    // Keeps syncing alive: the queue flushes whenever the app comes online,
+    // and synced lessons refresh the learner's stats.
+    ref.listen(syncControllerProvider, (_, _) {});
+    ref.listen(lessonSyncListenerProvider, (_, _) {});
     return MaterialApp.router(
       title: 'Ishara',
       debugShowCheckedModeBanner: false,

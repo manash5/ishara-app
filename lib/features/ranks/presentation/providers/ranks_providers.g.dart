@@ -56,3 +56,50 @@ final class WeeklyLeaderboardProvider
 }
 
 String _$weeklyLeaderboardHash() => r'9104a6326e0d2a3042fd4acbb799ddaa9bfea972';
+
+/// When the league on screen was fetched; re-read whenever it changes.
+
+@ProviderFor(leaderboardLastUpdated)
+final leaderboardLastUpdatedProvider = LeaderboardLastUpdatedProvider._();
+
+/// When the league on screen was fetched; re-read whenever it changes.
+
+final class LeaderboardLastUpdatedProvider
+    extends $FunctionalProvider<DateTime?, DateTime?, DateTime?>
+    with $Provider<DateTime?> {
+  /// When the league on screen was fetched; re-read whenever it changes.
+  LeaderboardLastUpdatedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'leaderboardLastUpdatedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$leaderboardLastUpdatedHash();
+
+  @$internal
+  @override
+  $ProviderElement<DateTime?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DateTime? create(Ref ref) {
+    return leaderboardLastUpdated(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime?>(value),
+    );
+  }
+}
+
+String _$leaderboardLastUpdatedHash() =>
+    r'2d429ca69cb7fe05c4172dcd42b8d6bf5e3b5ac4';

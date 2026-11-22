@@ -3,7 +3,6 @@ import 'package:ishara_app/core/error/app_exception.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/features/lesson/data/datasources/lesson_remote_data_source.dart';
 import 'package:ishara_app/features/lesson/data/models/lesson_attempt_dto.dart';
-import 'package:ishara_app/features/lesson/data/models/progress_sync_dto.dart';
 
 import '../../../../helpers/mock_api.dart';
 
@@ -35,25 +34,12 @@ void main() {
     },
   );
 
-  test('syncProgress: applied the first time, duplicate after', () async {
-    final remote = LessonRemoteDataSource(mockApiClient());
-    await remote.completeLesson(_attempt('done'));
-
-    final sync = await remote.syncProgress([_attempt('new'), _attempt('done')]);
-
-    expect(sync.results.map((r) => (r.clientEventId, r.status)), [
-      ('new', SyncEventStatus.applied),
-      ('done', SyncEventStatus.duplicate),
-    ]);
-    expect(sync.results.first.result!.clientEventId, 'new');
-  });
-
   test('offline throws NetworkException', () async {
     final remote = LessonRemoteDataSource(
       mockApiClient(simulation: () => MockApiSimulation.offline),
     );
     await expectLater(
-      remote.syncProgress([_attempt('a')]),
+      remote.completeLesson(_attempt('a')),
       throwsA(isA<NetworkException>()),
     );
   });

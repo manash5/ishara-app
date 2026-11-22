@@ -270,17 +270,17 @@ abstract class _$LatestLessonResult extends $Notifier<LessonResult?> {
 }
 
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
-/// the attempt is queued for `POST /progress/sync` and this fails with a
-/// `NetworkFailure`; Try again resends the same `clientEventId`.
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline or
+/// on a server error, the attempt is queued for `POST /progress/sync` and
+/// this fails; Try again resends the same `clientEventId`.
 
 @ProviderFor(lessonResult)
 final lessonResultProvider = LessonResultFamily._();
 
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
-/// the attempt is queued for `POST /progress/sync` and this fails with a
-/// `NetworkFailure`; Try again resends the same `clientEventId`.
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline or
+/// on a server error, the attempt is queued for `POST /progress/sync` and
+/// this fails; Try again resends the same `clientEventId`.
 
 final class LessonResultProvider
     extends
@@ -291,9 +291,9 @@ final class LessonResultProvider
         >
     with $FutureModifier<LessonResult>, $FutureProvider<LessonResult> {
   /// What the server awarded for the finished lesson
-  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
-  /// the attempt is queued for `POST /progress/sync` and this fails with a
-  /// `NetworkFailure`; Try again resends the same `clientEventId`.
+  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline or
+  /// on a server error, the attempt is queued for `POST /progress/sync` and
+  /// this fails; Try again resends the same `clientEventId`.
   LessonResultProvider._({
     required LessonResultFamily super.from,
     required String super.argument,
@@ -341,9 +341,9 @@ final class LessonResultProvider
 String _$lessonResultHash() => r'8ed75acfd4d44d5714c48db0420e5a1cb232d1af';
 
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
-/// the attempt is queued for `POST /progress/sync` and this fails with a
-/// `NetworkFailure`; Try again resends the same `clientEventId`.
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline or
+/// on a server error, the attempt is queued for `POST /progress/sync` and
+/// this fails; Try again resends the same `clientEventId`.
 
 final class LessonResultFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<LessonResult>, String> {
@@ -357,9 +357,9 @@ final class LessonResultFamily extends $Family
       );
 
   /// What the server awarded for the finished lesson
-  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
-  /// the attempt is queued for `POST /progress/sync` and this fails with a
-  /// `NetworkFailure`; Try again resends the same `clientEventId`.
+  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline or
+  /// on a server error, the attempt is queued for `POST /progress/sync` and
+  /// this fails; Try again resends the same `clientEventId`.
 
   LessonResultProvider call(String lessonId) =>
       LessonResultProvider._(argument: lessonId, from: this);

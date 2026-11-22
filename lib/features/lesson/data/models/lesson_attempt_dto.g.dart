@@ -23,19 +23,3 @@ Map<String, dynamic> _$LessonAttemptDtoToJson(_LessonAttemptDto instance) =>
       'durationSeconds': instance.durationSeconds,
       'completedAt': instance.completedAt.toIso8601String(),
     };
-
-_QueuedAttemptDto _$QueuedAttemptDtoFromJson(Map<String, dynamic> json) =>
-    _QueuedAttemptDto(
-      attempt: LessonAttemptDto.fromJson(
-        json['attempt'] as Map<String, dynamic>,
-      ),
-      queuedAt: DateTime.parse(json['queuedAt'] as String),
-      failedFlushes: (json['failedFlushes'] as num?)?.toInt() ?? 0,
-    );
-
-Map<String, dynamic> _$QueuedAttemptDtoToJson(_QueuedAttemptDto instance) =>
-    <String, dynamic>{
-      'attempt': instance.attempt,
-      'queuedAt': instance.queuedAt.toIso8601String(),
-      'failedFlushes': instance.failedFlushes,
-    };

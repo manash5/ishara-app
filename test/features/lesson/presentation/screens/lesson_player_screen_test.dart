@@ -2,18 +2,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/config/game_rules.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exercise_view.dart';
+import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/sign_it_exercise_view.dart';
+import 'package:ishara_app/features/lesson/presentation/widgets/watch_exercise_view.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/mock_api.dart';
 import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
+import '../../../../helpers/pump_themed.dart';
 
 void main() {
   const lessonId = 'unit-1-lesson-2';
@@ -208,5 +212,52 @@ void main() {
     location: const LessonRoute(lessonId: FixtureIds.currentLesson).location,
     errorTitle: 'Couldn’t load this lesson',
     loadingLabel: 'Loading the lesson',
+    // Offline, lessons are blocked instead (tested below).
+    offlineShowsError: false,
   );
+
+  group('offline: lessons need sign videos', () {
+    for (final mode in themeModes) {
+      testWidgets('opening a lesson offline is blocked (${mode.name})', (
+        tester,
+      ) async {
+        if (mode == ThemeMode.dark) {
+          tester.platformDispatcher.platformBrightnessTestValue =
+              Brightness.dark;
+          addTearDown(
+            tester.platformDispatcher.clearPlatformBrightnessTestValue,
+          );
+        }
+        await pumpApp(
+          tester,
+          loggedIn: true,
+          onboardingDone: true,
+          location: const LessonRoute(lessonId: FixtureIds.currentLesson)
+              .location,
+          simulation: MockApiSimulation.offline,
+        );
+        final c = tokensFor(mode);
+        expect(find.text('Connect to start this lesson'), findsOneWidget);
+        expect(
+          textColor(tester, 'Connect to start this lesson'),
+          c.textPrimary,
+        );
+        expect(find.byType(WatchExerciseView), findsNothing);
+      });
+    }
+
+    testWidgets('Back to Learn leaves the blocked lesson', (tester) async {
+      await pumpApp(
+        tester,
+        loggedIn: true,
+        onboardingDone: true,
+        location: const LessonRoute(lessonId: FixtureIds.currentLesson)
+            .location,
+        simulation: MockApiSimulation.offline,
+      );
+      await tester.tap(find.text('Back to Learn'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LessonPlayerScreen), findsNothing);
+    });
+  });
 }

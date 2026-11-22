@@ -6,8 +6,8 @@ import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/learn/data/datasources/path_local_data_source.dart';
-import 'package:ishara_app/features/learn/presentation/providers/learn_path_provider.dart';
-import 'package:ishara_app/features/learn/presentation/screens/learn_offline_view.dart';
+import 'package:ishara_app/features/learn/presentation/widgets/learn_offline_notice.dart';
+import 'package:ishara_app/features/learn/presentation/screens/learn_lesson_sheet.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/learn_path_view.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/trek_painters.dart';
@@ -169,17 +169,9 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('offline (12) replaces the roadmap and can retry', (
-    tester,
-  ) async {
-    final container = await pumpLearn(tester);
-    container.read(learnOfflineProvider.notifier).set(true);
-    await tester.pumpAndSettle();
-    expect(find.byType(LearnOfflineView), findsOneWidget);
-    expect(find.byType(LearnPathView), findsNothing);
-    await tester.tap(find.text('Try again'));
-    await tester.pumpAndSettle();
-    expect(find.byType(LearnPathView), findsOneWidget);
+  testWidgets('online: no offline notice', (tester) async {
+    await pumpLearn(tester);
+    expect(find.text(LearnOfflineNotice.message), findsNothing);
   });
 
   testWidgets('first load: rows fade in and the trail draws itself', (
@@ -238,6 +230,93 @@ void main() {
     errorTitle: 'Couldn’t load your path',
     loadingLabel: 'Loading your path',
   );
+
+  group('offline (12)', () {
+    final profile = userProfileProvider.overrideWithValue(
+      AsyncData(testProfile()),
+    );
+
+    Future<void> pumpOffline(WidgetTester tester, {ThemeMode? mode}) async {
+      if (mode == ThemeMode.dark) {
+        tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+        addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+      }
+      await TestHive.instance.putCache(
+        PathLocalDataSource.cacheKey,
+        fixtureData<Map<String, dynamic>>('path/get_200'),
+      );
+      await pumpApp(
+        tester,
+        loggedIn: true,
+        onboardingDone: true,
+        location: const LearnRoute().location,
+        simulation: MockApiSimulation.offline,
+        overrides: [profile],
+      );
+      await pumpApi(tester);
+      await tester.pumpAndSettle();
+    }
+
+    for (final mode in themeModes) {
+      testWidgets('the cached roadmap with the Figma 12 notice above the bar '
+          '(${mode.name})', (tester) async {
+        await pumpOffline(tester, mode: mode);
+        final c = tokensFor(mode);
+        expect(find.byType(LearnPathView), findsOneWidget);
+        expect(find.text(LearnOfflineNotice.message), findsOneWidget);
+        expect(textColor(tester, LearnOfflineNotice.message), c.textInverse);
+        final notice = tester.getRect(
+          find.byKey(const Key('learn-offline-notice')),
+        );
+        final bar = tester.getRect(find.byType(IsharaBottomBar));
+        expect(notice.bottom, lessThanOrEqualTo(bar.top));
+        // Figma 12: about 12 above the bar.
+        expect(bar.top - notice.bottom, closeTo(IsharaSpacing.s3, 1));
+      });
+    }
+
+    testWidgets('the lesson sheet disables Start lesson offline', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: ProviderScope(
+            overrides: mockApiOverrides(simulation: MockApiSimulation.offline),
+            child: const Scaffold(body: LearnLessonSheet(title: 'Thank you')),
+          ),
+        ),
+      );
+      await pumpApi(tester);
+      expect(find.byKey(const Key('lesson-sheet-offline')), findsOneWidget);
+      expect(
+        tester
+            .widget<IsharaButton>(
+              find.widgetWithText(IsharaButton, 'Start lesson'),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('OK hides the notice', (tester) async {
+      await pumpOffline(tester);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      expect(find.text(LearnOfflineNotice.message), findsNothing);
+      expect(find.byType(LearnPathView), findsOneWidget);
+    });
+
+    testWidgets('a lesson can\'t start: the sheet is not opened', (
+      tester,
+    ) async {
+      await pumpOffline(tester);
+      await tester.tap(find.text('Start'));
+      await tester.pump();
+      expect(find.text(LearnScreen.offlineLessonMessage), findsOneWidget);
+      expect(find.textContaining('lesson sheet'), findsNothing);
+    });
+  });
 
   group('offline (cache first)', () {
     // The profile comes from the profile feature (cached there); pin it so

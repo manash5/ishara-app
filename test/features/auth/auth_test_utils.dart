@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ishara_app/core/router/redirect.dart';
 import 'package:ishara_app/core/services/api/api_client.dart';
@@ -35,6 +36,9 @@ class AuthTestEnv {
   late final TokenStorage tokens;
   late final ApiClient api;
   MockApiSimulation simulation = MockApiSimulation.none;
+
+  /// What `isOnlineProvider` reports (no connectivity plugin in tests).
+  bool online = true;
   final GoogleIdTokenProvider google;
 
   /// Seeds the session (skips the start-up restore) when set.
@@ -47,6 +51,7 @@ class AuthTestEnv {
     tokenStorageProvider.overrideWithValue(tokens),
     hiveServiceProvider.overrideWithValue(hive),
     googleIdTokenSourceProvider.overrideWithValue(google),
+    isOnlineProvider.overrideWith((ref) => Stream.value(online)),
     if (session case final seeded?)
       sessionProvider.overrideWith(() => Session(initial: seeded)),
   ];
@@ -135,6 +140,7 @@ Future<ProviderContainer> pumpAuthFlow(
       container: container,
       child: MaterialApp.router(
         theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
         routerConfig: router,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(disableAnimations: true),

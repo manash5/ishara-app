@@ -5,6 +5,7 @@ import '../../../../core/utils/async_value_x.dart';
 
 import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/user_profile.dart';
+import '../../domain/usecases/get_profile_last_updated.dart';
 import '../../domain/usecases/watch_profile.dart';
 
 part 'profile_provider.g.dart';
@@ -65,3 +66,10 @@ class ProfileSummary {
 @riverpod
 AsyncValue<ProfileSummary> profileSummary(Ref ref) =>
     ref.watch(userProfileProvider).mapKeepingError(ProfileSummary.fromProfile);
+
+/// When the profile on screen was fetched; re-read whenever it changes.
+@riverpod
+DateTime? profileLastUpdated(Ref ref) {
+  ref.watch(userProfileProvider);
+  return GetProfileLastUpdated(ref.watch(profileRepositoryProvider))();
+}

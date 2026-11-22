@@ -20,6 +20,9 @@ abstract interface class ProfileRepository {
   /// `PUT /me`; the updated profile replaces the cached one.
   Future<Result<UserProfile>> updateProfile(ProfileUpdate update);
 
+  /// When the cached profile was fetched, or null if nothing is cached.
+  DateTime? lastUpdated();
+
   /// `DELETE /me`: deletes the account and revokes every session. The caller
   /// then ends the local session.
   Future<Result<void>> deleteAccount();

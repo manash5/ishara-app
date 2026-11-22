@@ -57,17 +57,26 @@ final class ConnectivityServiceProvider
 String _$connectivityServiceHash() =>
     r'568a679e477672810a184cbab3dc2202776ffa58';
 
-/// Whether the API is reachable now, updated as the network changes.
+/// Whether the API is reachable now, updated as the network changes and
+/// re-checked while offline. With the mock API it also re-checks whenever the
+/// debug simulation changes, so the `/gallery` Offline toggle applies at once.
+/// Invalidate it to re-check (app resume).
 
 @ProviderFor(isOnline)
 final isOnlineProvider = IsOnlineProvider._();
 
-/// Whether the API is reachable now, updated as the network changes.
+/// Whether the API is reachable now, updated as the network changes and
+/// re-checked while offline. With the mock API it also re-checks whenever the
+/// debug simulation changes, so the `/gallery` Offline toggle applies at once.
+/// Invalidate it to re-check (app resume).
 
 final class IsOnlineProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
     with $FutureModifier<bool>, $StreamProvider<bool> {
-  /// Whether the API is reachable now, updated as the network changes.
+  /// Whether the API is reachable now, updated as the network changes and
+  /// re-checked while offline. With the mock API it also re-checks whenever the
+  /// debug simulation changes, so the `/gallery` Offline toggle applies at once.
+  /// Invalidate it to re-check (app resume).
   IsOnlineProvider._()
     : super(
         from: null,
@@ -93,4 +102,4 @@ final class IsOnlineProvider
   }
 }
 
-String _$isOnlineHash() => r'8f096232c0d00c583558a3ac3ebf8e17660b844c';
+String _$isOnlineHash() => r'5edf09aa0fe6f48d29f71cb8f12361046b0d71f7';

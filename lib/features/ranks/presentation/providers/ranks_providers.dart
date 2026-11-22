@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/repositories/leaderboard_repository_impl.dart';
 import '../../domain/entities/weekly_leaderboard.dart';
+import '../../domain/usecases/get_leaderboard_last_updated.dart';
 import '../../domain/usecases/watch_weekly_leaderboard.dart';
 
 export '../../domain/entities/weekly_leaderboard.dart';
@@ -14,6 +15,13 @@ part 'ranks_providers.g.dart';
 Stream<WeeklyLeaderboard> weeklyLeaderboard(Ref ref) => WatchWeeklyLeaderboard(
   ref.watch(leaderboardRepositoryProvider),
 )().map((result) => result.getOrThrow());
+
+/// When the league on screen was fetched; re-read whenever it changes.
+@riverpod
+DateTime? leaderboardLastUpdated(Ref ref) {
+  ref.watch(weeklyLeaderboardProvider);
+  return GetLeaderboardLastUpdated(ref.watch(leaderboardRepositoryProvider))();
+}
 
 /// "3d 14h", "5h 20m", "45m" — the countdown chip text. Rounds up to the
 /// minute, so a league ending in 3d 13h 59m 59s still reads "3d 14h".

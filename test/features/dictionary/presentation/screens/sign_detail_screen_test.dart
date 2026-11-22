@@ -166,6 +166,16 @@ void main() {
       );
       expect(find.text('Sorry'), findsNWidgets(2));
       expect(find.text('Couldn’t load this sign'), findsNothing);
+      // Text works offline; the video needs a connection.
+      expect(find.text(SignVideo.offlineMessage), findsOneWidget);
+      expect(find.bySemanticsLabel('Slow motion'), findsNothing);
+      expect(find.bySemanticsLabel('Mirror video'), findsNothing);
+    });
+
+    testWidgets('online: the video plays, no offline message', (tester) async {
+      await _pump(tester);
+      expect(find.text(SignVideo.offlineMessage), findsNothing);
+      expect(find.bySemanticsLabel('Slow motion'), findsOneWidget);
     });
 
     testWidgets('offline with nothing cached shows the error', (tester) async {

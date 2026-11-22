@@ -319,8 +319,15 @@ Widget sharedSignVideo(BuildContext context) => GallerySection(
   title: 'SignVideo',
   subtitle:
       'SignVideoPlayer that keeps its own slow-mo / mirror state '
-      '(Dictionary 14, lesson 18–19); tap the controls',
-  children: [_phone(const SignVideo(semanticLabel: 'Sign video: Namaste'))],
+      '(Dictionary 14, lesson 18–19); tap the controls. Offline: '
+      '"connect to watch", no controls',
+  children: [
+    _phone(const SignVideo(semanticLabel: 'Sign video: Namaste')),
+    const SizedBox(height: IsharaSpacing.s4),
+    _phone(
+      const SignVideo(semanticLabel: 'Sign video: Namaste', offline: true),
+    ),
+  ],
 );
 
 Widget sharedOutOfHearts(BuildContext context) => GallerySection(

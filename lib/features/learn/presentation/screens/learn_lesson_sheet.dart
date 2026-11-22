@@ -1,8 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import 'learn_screen.dart';
 
 /// Placeholder lesson id until the path comes from the API.
 const String placeholderLessonId = 'greetings-1';
@@ -59,11 +62,33 @@ class LearnLessonSheet extends StatelessWidget {
               style: s.titleLarge.copyWith(color: c.textPrimary),
             ),
             const SizedBox(height: IsharaSpacing.s4),
-            IsharaButton(
-              label: 'Start lesson',
-              onPressed: () {
-                Navigator.of(context).pop();
-                LessonRoute(lessonId: lessonId).push<void>(context);
+            // Lessons need sign videos, so they need a connection.
+            Consumer(
+              builder: (context, ref, _) {
+                final offline = ref.watch(isOnlineProvider).value == false;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (offline) ...[
+                      Text(
+                        LearnScreen.offlineLessonMessage,
+                        key: const Key('lesson-sheet-offline'),
+                        style: s.bodyMedium.copyWith(color: c.textSecondary),
+                      ),
+                      const SizedBox(height: IsharaSpacing.s3),
+                    ],
+                    IsharaButton(
+                      label: 'Start lesson',
+                      onPressed: offline
+                          ? null
+                          : () {
+                              Navigator.of(context).pop();
+                              LessonRoute(lessonId: lessonId)
+                                  .push<void>(context);
+                            },
+                    ),
+                  ],
+                );
               },
             ),
           ],

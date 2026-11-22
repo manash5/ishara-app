@@ -6,4 +6,7 @@ abstract interface class LeaderboardRepository {
   /// Cache-first: emits the cached league (if any), then the fresh one. If
   /// the refresh fails it emits the failure only when nothing was cached.
   Stream<Result<WeeklyLeaderboard>> watchWeekly();
+
+  /// When the cached league was fetched, or null if nothing is cached.
+  DateTime? lastUpdated();
 }

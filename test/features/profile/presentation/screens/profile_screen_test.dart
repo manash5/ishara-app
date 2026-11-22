@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/features/profile/data/datasources/profile_local_data_source.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/profile/presentation/screens/profile_screen.dart';
@@ -12,6 +14,7 @@ import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
 import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 void main() {
   void phone(WidgetTester tester) {
@@ -119,4 +122,51 @@ void main() {
     errorTitle: 'Couldn’t load your profile',
     loadingLabel: 'Loading your profile',
   );
+
+  group('offline', () {
+    Future<void> pumpOffline(
+      WidgetTester tester, {
+      required bool cached,
+    }) async {
+      phone(tester);
+      if (cached) {
+        await TestHive.instance.putCache(
+          ProfileLocalDataSource.cacheKey,
+          fixtureData<Map<String, dynamic>>('me/get_200'),
+          fetchedAt: DateTime.now().subtract(const Duration(minutes: 5)),
+        );
+      }
+      await pumpThemed(
+        tester,
+        ProviderScope(
+          overrides: mockApiOverrides(simulation: MockApiSimulation.offline),
+          child: const ProfileScreen(),
+        ),
+      );
+      await pumpApi(tester);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('shows the cached stats and when they were updated', (
+      tester,
+    ) async {
+      await pumpOffline(tester, cached: true);
+      expect(find.text('1,240'), findsOneWidget);
+      expect(find.text('Couldn’t load your profile'), findsNothing);
+      final chip = tester.widget<IsharaChip>(
+        find.byKey(const Key('profile-offline-chip')),
+      );
+      expect(chip.label, 'Offline · updated 5 min ago');
+    });
+
+    testWidgets('with nothing cached: the error state', (tester) async {
+      await pumpOffline(tester, cached: false);
+      expect(find.text('Couldn’t load your profile'), findsOneWidget);
+    });
+
+    testWidgets('online: no offline chip', (tester) async {
+      await pumpProfile(tester);
+      expect(find.byKey(const Key('profile-offline-chip')), findsNothing);
+    });
+  });
 }

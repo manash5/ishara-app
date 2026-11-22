@@ -96,13 +96,3 @@ Stream<List<PathUnit>> learnPath(Ref ref) =>
 @riverpod
 AsyncValue<ProgressStats> learnStats(Ref ref) =>
     ref.watch(progressStatsProvider);
-
-/// Fake connectivity for frame 12 (Learn – offline). Flip it from the debug
-/// `/gallery` until real connectivity lands.
-@Riverpod(keepAlive: true)
-class LearnOffline extends _$LearnOffline {
-  @override
-  bool build() => false;
-
-  void set(bool value) => state = value;
-}

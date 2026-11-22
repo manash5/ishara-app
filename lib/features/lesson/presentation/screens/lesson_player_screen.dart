@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
@@ -29,6 +30,13 @@ class LessonPlayerScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final provider = lessonPlayerProvider(lessonId);
+    // Lessons need sign videos: don't start one offline. A drop mid-lesson
+    // doesn't interrupt it (the completion is queued).
+    if (ref.watch(isOnlineProvider).value == false &&
+        !ref.read(provider.exists)) {
+      return const _OfflineBlocked();
+    }
     final lesson = ref.watch(lessonProvider(lessonId));
     if (!lesson.hasValue) {
       return Scaffold(
@@ -41,7 +49,6 @@ class LessonPlayerScreen extends ConsumerWidget {
         ),
       );
     }
-    final provider = lessonPlayerProvider(lessonId);
     final state = ref.watch(provider);
     ref.listen(provider.select((s) => s.phase), (_, phase) {
       switch (phase) {
@@ -257,4 +264,31 @@ class _PlayerPage extends StatelessWidget {
       onResult: controller.cameraResult,
     ),
   };
+}
+
+/// Shown instead of the player when a lesson is opened offline.
+class _OfflineBlocked extends StatelessWidget {
+  const _OfflineBlocked();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.colors.bgSurface,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(IsharaSpacing.screenMargin),
+            child: StateMessage(
+              title: 'Connect to start this lesson',
+              body:
+                  'Lessons need sign videos, so they need an internet '
+                  'connection. Fingerspelling practice works offline.',
+              actionLabel: 'Back to Learn',
+              onAction: () => const LearnRoute().go(context),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

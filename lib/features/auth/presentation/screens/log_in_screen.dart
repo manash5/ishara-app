@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/auth_form_providers.dart';
@@ -17,6 +18,10 @@ import '../widgets/password_field.dart';
 /// (e.g. "Wrong email or password.") show under the password field.
 class LogInScreen extends ConsumerStatefulWidget {
   const LogInScreen({super.key});
+
+  /// Shown while offline (auth needs a connection).
+  static const offlineMessage =
+      'You’re offline. Logging in needs an internet connection.';
 
   @override
   ConsumerState<LogInScreen> createState() => _LogInScreenState();
@@ -43,7 +48,10 @@ class _LogInScreenState extends ConsumerState<LogInScreen> {
   @override
   Widget build(BuildContext context) {
     final form = ref.watch(logInFormProvider);
+    // Auth needs a connection.
+    final offline = ref.watch(isOnlineProvider).value == false;
     return AuthFormScaffold(
+      offlineMessage: offline ? LogInScreen.offlineMessage : null,
       title: 'Welcome back',
       subtitle: 'Log in to keep your streak going.',
       footer: AuthLink(
@@ -82,11 +90,11 @@ class _LogInScreenState extends ConsumerState<LogInScreen> {
         ),
         IsharaButton(
           label: form.pending == AuthSubmit.email ? 'Logging in…' : 'Log in',
-          onPressed: form.busy ? null : _logIn,
+          onPressed: form.busy || offline ? null : _logIn,
         ),
         const OrDivider(),
         GoogleSignInButton(
-          onPressed: form.busy
+          onPressed: form.busy || offline
               ? null
               : ref.read(logInFormProvider.notifier).google,
         ),
