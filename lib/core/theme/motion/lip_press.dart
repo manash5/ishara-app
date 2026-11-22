@@ -1,11 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../ishara_motion.dart';
+import '../ishara_sizes.dart';
 
 /// Lip heights of the gamified roadmap kit (Figma: 4px buttons/cards, 6px path nodes).
 abstract final class IsharaLip {
-  static const double standard = 4;
-  static const double pathNode = 6;
+  static const double standard = IsharaSizes.lipCard;
+  static const double pathNode = IsharaSizes.lipNode;
 }
 
 /// Press feedback for 3D roadmap elements: the face drops into its lip by

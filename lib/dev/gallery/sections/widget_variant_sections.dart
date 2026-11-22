@@ -311,3 +311,82 @@ Widget danuWaving(BuildContext context) => const GallerySection(
   subtitle: 'Waving loop (roadmap); still with reduced motion',
   children: [DanuMascot(pose: DanuPose.wave, size: 160, animated: true)],
 );
+
+// ── Shared widgets consolidated from features ───────────────────────────────
+
+Widget sharedSignVideo(BuildContext context) => GallerySection(
+  title: 'SignVideo',
+  subtitle:
+      'SignVideoPlayer that keeps its own slow-mo / mirror state '
+      '(Dictionary 14, lesson 18–19); tap the controls',
+  children: [_phone(const SignVideo(semanticLabel: 'Sign video: Namaste'))],
+);
+
+Widget sharedOutOfHearts(BuildContext context) => GallerySection(
+  title: 'OutOfHeartsPanel',
+  subtitle:
+      '28 Out of hearts: sheet over the lesson, or the /out-of-hearts '
+      'route',
+  children: [
+    _phone(const OutOfHeartsPanel(onPractise: _noop, onEndLesson: _noop)),
+  ],
+);
+
+Widget sharedStateMessage(BuildContext context) => GallerySection(
+  title: 'StateMessage',
+  subtitle: 'empty / error state (Dictionary, Ranks); no Figma component yet',
+  children: [
+    _phone(
+      const StateMessage(
+        title: 'No signs yet',
+        body: 'Signs you can learn will appear here.',
+      ),
+    ),
+    _phone(
+      const StateMessage(
+        title: 'Couldn’t load signs',
+        body: 'Check your connection and try again.',
+        actionLabel: 'Try again',
+        onAction: _noop,
+      ),
+    ),
+  ],
+);
+
+Widget sharedListSkeleton(BuildContext context) => GallerySection(
+  title: 'ListSkeleton',
+  subtitle:
+      'loading rows: SignListTile height (Dictionary), compact '
+      'LeaderboardTile height (Ranks)',
+  children: [
+    _phone(
+      const ListSkeleton(
+        itemHeight: IsharaSizes.listTileHeight,
+        semanticLabel: 'Loading signs',
+        count: 3,
+      ),
+    ),
+    const SizedBox(height: IsharaSpacing.s4),
+    _phone(
+      const ListSkeleton(
+        itemHeight: IsharaSizes.compactTileHeight,
+        semanticLabel: 'Loading leaderboard',
+        count: 3,
+        gap: IsharaSpacing.s1,
+      ),
+    ),
+  ],
+);
+
+Widget sharedResultsDanu(BuildContext context) => GallerySection(
+  title: 'ResultsScaffold · ResultsDanu',
+  subtitle:
+      'Lesson complete (26) / Streak (27): Danu pops in, then waves; '
+      'ResultsScaffold is full-screen (see the lesson flow)',
+  children: [
+    _onHero(
+      context,
+      const Align(alignment: Alignment.centerLeft, child: ResultsDanu()),
+    ),
+  ],
+);

@@ -109,6 +109,11 @@ abstract final class IsharaSizes {
   static const double answerIcon = 22;
   static const double answerPaddingX = 20;
   static const double feedbackBadge = 40;
+
+  /// Square hero badge: Camera permission (08) camera badge and the Ranks
+  /// (15) league badge share 56dp with a 28dp icon.
+  static const double heroBadge = 56;
+  static const double heroBadgeIcon = 28;
   static const double tipIcon = 20; // Watch & learn tip card (18)
   static const double referencePipWidth = 93.5; // Sign it reference video (23)
   static const double letterTileWidth = 72; // Fingerspell letters (25)

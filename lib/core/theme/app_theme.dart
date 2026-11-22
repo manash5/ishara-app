@@ -24,7 +24,7 @@ abstract final class AppTheme {
   );
 
   /// Hairline border width for outlined controls (Figma: 1.5px border/default).
-  static const double outlineWidth = 1.5;
+  static const double outlineWidth = IsharaSizes.outline;
 
   static ColorScheme colorScheme(
     Brightness brightness,
