@@ -2,13 +2,18 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/error/app_exception.dart';
+import 'package:hive_ce/hive_ce.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
+
+import '../../../helpers/test_hive.dart';
 
 void main() {
   late Directory dir;
   late HiveService hive;
 
   setUp(() async {
+    // Swap the shared in-memory boxes for real ones on disk.
+    await Hive.close();
     dir = await Directory.systemTemp.createTemp('ishara_hive_');
     hive = await HiveService.init(path: dir.path);
   });
@@ -16,6 +21,7 @@ void main() {
   tearDown(() async {
     await hive.close();
     await dir.delete(recursive: true);
+    TestHive.instance = await HiveService.inMemory();
   });
 
   test('opens every typed box', () {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -52,6 +53,30 @@ class HiveService {
       await Hive.openBox<Map<dynamic, dynamic>>(HiveBoxes.syncQueue.boxName),
       await Hive.openBox<Object?>(HiveBoxes.settings.boxName),
     );
+  }
+
+  /// Boxes held in memory only (no disk IO), for tests: their writes finish
+  /// without real IO, so they work inside fake-async widget tests.
+  static Future<HiveService> inMemory() async => HiveService._(
+    await Hive.openBox<Map<dynamic, dynamic>>(
+      HiveBoxes.cache.boxName,
+      bytes: Uint8List(0),
+    ),
+    await Hive.openBox<Map<dynamic, dynamic>>(
+      HiveBoxes.syncQueue.boxName,
+      bytes: Uint8List(0),
+    ),
+    await Hive.openBox<Object?>(
+      HiveBoxes.settings.boxName,
+      bytes: Uint8List(0),
+    ),
+  );
+
+  /// Empties every box (logout, tests).
+  Future<void> clearAll() async {
+    await cache.clear();
+    await syncQueue.clear();
+    await settings.clear();
   }
 
   final Box<Map<dynamic, dynamic>> cache;
