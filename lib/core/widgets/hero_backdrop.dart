@@ -5,7 +5,15 @@ import 'package:material_ui/material_ui.dart';
 import '../theme/theme.dart';
 
 /// Figma `HeroBackdrop` → `layout`.
-enum HeroBackdropLayout { welcome, header }
+enum HeroBackdropLayout {
+  welcome,
+  header,
+
+  /// [header] without the lime circle and lime diamond on the right, so
+  /// Danu can sit there on Lesson complete (26). Not a Figma variant: added
+  /// on request.
+  results,
+}
 
 /// Figma `HeroBackdrop` (v4 minimal kit): a fun/teal-hero block with playful
 /// decorative shapes, drawn behind an optional [child].
@@ -114,6 +122,19 @@ const Map<HeroBackdropLayout, List<_Shape>> _shapes = {
       radius: 3,
       rotation: 45,
     ),
+    _Shape(
+      _Kind.roundedSquare,
+      _Hue.lavender,
+      226,
+      108,
+      18,
+      radius: 4,
+      rotation: 15,
+    ),
+  ],
+  HeroBackdropLayout.results: [
+    _Shape(_Kind.ellipse, _Hue.lavender, 284, -96, 220),
+    _Shape(_Kind.ellipse, _Hue.mint, 246, 22, 56),
     _Shape(
       _Kind.roundedSquare,
       _Hue.lavender,

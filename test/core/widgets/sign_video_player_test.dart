@@ -145,4 +145,27 @@ void main() {
       expect(find.byIcon(IsharaIcons.rotateCcw), findsNothing);
     });
   }
+
+  testWidgets('tile play badge scales with the tile (Figma 23 referencePip)', (
+    tester,
+  ) async {
+    Future<Size> badgeAt(double width) async {
+      await pumpThemed(
+        tester,
+        SizedBox(
+          width: width,
+          child: const SignVideoPlayer(
+            semanticLabel: 'Reference video',
+            size: SignVideoSize.tile,
+          ),
+        ),
+      );
+      return tester.getSize(find.byKey(const ValueKey('video-tile-play')));
+    }
+
+    expect(await badgeAt(170), const Size.square(IsharaSizes.videoTilePlay));
+    final small = await badgeAt(IsharaSizes.referencePipWidth);
+    // Figma: 15.4dp on the 93.5dp pip.
+    expect(small.width, closeTo(15.4, 0.01));
+  });
 }

@@ -11,6 +11,9 @@ abstract final class IsharaFeedback {
   /// Wrong answer / streak moment: medium haptic. Pair with [Shake].
   static Future<void> wrong() => HapticFeedback.mediumImpact();
 
+  /// Streak extended (27): medium haptic, paired with the flame and count-up.
+  static Future<void> streak() => HapticFeedback.mediumImpact();
+
   /// `FeedbackSheet` slides up in `standard`/`enter` and leaves at ~75% with
   /// `exit`. Pass to `showModalBottomSheet(sheetAnimationStyle: …)`.
   static final AnimationStyle sheetAnimationStyle = AnimationStyle(

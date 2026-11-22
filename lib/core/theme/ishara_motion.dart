@@ -53,6 +53,9 @@ abstract final class IsharaMotion {
   static const double pulseScale = 1.06;
   static const Duration pulsePeriod = Duration(milliseconds: 1200);
 
+  /// Lesson complete / Streak confetti: one short burst (motion.md ≤ 1.5 s).
+  static const Duration confetti = Duration(milliseconds: 1200);
+
   /// Exit runs at ~75% of the matching enter duration.
   static Duration exitDuration(Duration enterDuration) => enterDuration * 0.75;
 

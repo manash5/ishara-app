@@ -27,6 +27,7 @@ final _password = TextEditingController(text: 'secret123');
 /// Components page order.
 final List<WidgetBuilder> widgetSections = [
   _buttons,
+  buttonTextToneCompact,
   _googleSignIn,
   _textFields,
   textFieldSearch,

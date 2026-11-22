@@ -31,6 +31,34 @@ Widget _onHero(BuildContext context, Widget child) => DecoratedBox(
   ),
 );
 
+Widget buttonTextToneCompact(BuildContext context) => GallerySection(
+  title: 'IsharaButton · text tone + compact',
+  subtitle: '48dp dialog actions; danger label (29 Quit lesson)',
+  children: [
+    Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        const IsharaButton(
+          label: 'Quit',
+          variant: IsharaButtonVariant.text,
+          tone: IsharaButtonTone.danger,
+          compact: true,
+          expanded: false,
+          onPressed: _noop,
+        ),
+        const SizedBox(width: IsharaSpacing.s2),
+        const IsharaButton(
+          label: 'Keep learning',
+          variant: IsharaButtonVariant.text,
+          compact: true,
+          expanded: false,
+          onPressed: _noop,
+        ),
+      ],
+    ),
+  ],
+);
+
 Widget textFieldSearch(BuildContext context) => GallerySection(
   title: 'IsharaTextField · search',
   subtitle: 'showLabel: false + compact clear button',
