@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/auth/presentation/screens/splash_screen.dart';
 import 'package:ishara_app/features/auth/presentation/widgets/splash_intro.dart';
 import 'package:material_ui/material_ui.dart';
@@ -66,6 +67,25 @@ void main() {
     expect(find.byType(SplashScreen), findsOneWidget);
 
     await tester.pump(SplashMotion.reducedHold);
+    await tester.pumpAndSettle();
+    expect(find.text(learnStub), findsOneWidget);
+  });
+
+  testWidgets('waits on the last frame until the session is restored', (
+    tester,
+  ) async {
+    final container = await pumpSplashRouter(
+      tester,
+      const SplashScreen(),
+      disableAnimations: true,
+      session: SessionState.restoring,
+    );
+    await tester.pump();
+    await tester.pump(SplashMotion.reducedHold * 3);
+    await tester.pumpAndSettle();
+    expect(find.byType(SplashScreen), findsOneWidget);
+
+    container.read(sessionProvider.notifier).debugOverride(loggedIn: false);
     await tester.pumpAndSettle();
     expect(find.text(learnStub), findsOneWidget);
   });

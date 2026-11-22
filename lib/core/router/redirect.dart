@@ -1,4 +1,4 @@
-import '../../features/auth/presentation/providers/fake_session_provider.dart';
+import '../../features/auth/presentation/providers/session_provider.dart';
 
 /// Route paths the redirect needs (router.md). Widgets navigate with the typed
 /// routes in `app_routes.dart`, never with these strings.
@@ -16,7 +16,7 @@ abstract final class RedirectPaths {
 
 /// router.md redirect order: no session → /welcome; onboarding incomplete →
 /// onboarding; else allow. Returns the path to go to, or null to stay.
-String? sessionRedirect(FakeSessionState session, String location) {
+String? sessionRedirect(SessionFlags session, String location) {
   // Splash decides where to go itself; the gallery is a debug tool.
   if (location == RedirectPaths.splash || location == RedirectPaths.gallery) {
     return null;

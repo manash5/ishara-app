@@ -5,15 +5,19 @@ import '../../../../core/utils/async_value_x.dart';
 
 import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/user_profile.dart';
-import '../../domain/usecases/get_profile.dart';
+import '../../domain/usecases/watch_profile.dart';
 
 part 'profile_provider.g.dart';
 
-/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
-/// their stats from here; invalidate it to refetch.
+/// The signed-in learner (`GET /me`), cache-first: the cached profile at
+/// once, then the fresh one, then every change (settings, onboarding).
+/// Learn, lesson and gamification read their stats from here; invalidate it
+/// to refetch. A fetch failure without a cached profile is an `AsyncError`
+/// carrying a `Failure`.
 @Riverpod(keepAlive: true)
-Future<UserProfile> userProfile(Ref ref) async =>
-    (await GetProfile(ref.watch(profileRepositoryProvider))()).getOrThrow();
+Stream<UserProfile> userProfile(Ref ref) => WatchProfile(
+  ref.watch(profileRepositoryProvider),
+)().map((result) => result.getOrThrow());
 
 /// What Figma "16 Profile" shows about the learner.
 @immutable

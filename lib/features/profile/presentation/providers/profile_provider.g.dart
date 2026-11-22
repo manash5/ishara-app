@@ -8,25 +8,34 @@ part of 'profile_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
-/// their stats from here; invalidate it to refetch.
+/// The signed-in learner (`GET /me`), cache-first: the cached profile at
+/// once, then the fresh one, then every change (settings, onboarding).
+/// Learn, lesson and gamification read their stats from here; invalidate it
+/// to refetch. A fetch failure without a cached profile is an `AsyncError`
+/// carrying a `Failure`.
 
 @ProviderFor(userProfile)
 final userProfileProvider = UserProfileProvider._();
 
-/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
-/// their stats from here; invalidate it to refetch.
+/// The signed-in learner (`GET /me`), cache-first: the cached profile at
+/// once, then the fresh one, then every change (settings, onboarding).
+/// Learn, lesson and gamification read their stats from here; invalidate it
+/// to refetch. A fetch failure without a cached profile is an `AsyncError`
+/// carrying a `Failure`.
 
 final class UserProfileProvider
     extends
         $FunctionalProvider<
           AsyncValue<UserProfile>,
           UserProfile,
-          FutureOr<UserProfile>
+          Stream<UserProfile>
         >
-    with $FutureModifier<UserProfile>, $FutureProvider<UserProfile> {
-  /// The signed-in learner (`GET /me`). Learn, lesson and gamification read
-  /// their stats from here; invalidate it to refetch.
+    with $FutureModifier<UserProfile>, $StreamProvider<UserProfile> {
+  /// The signed-in learner (`GET /me`), cache-first: the cached profile at
+  /// once, then the fresh one, then every change (settings, onboarding).
+  /// Learn, lesson and gamification read their stats from here; invalidate it
+  /// to refetch. A fetch failure without a cached profile is an `AsyncError`
+  /// carrying a `Failure`.
   UserProfileProvider._()
     : super(
         from: null,
@@ -43,17 +52,17 @@ final class UserProfileProvider
 
   @$internal
   @override
-  $FutureProviderElement<UserProfile> $createElement(
+  $StreamProviderElement<UserProfile> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<UserProfile> create(Ref ref) {
+  Stream<UserProfile> create(Ref ref) {
     return userProfile(ref);
   }
 }
 
-String _$userProfileHash() => r'4d93bb643ee26d71247e557b06d9ada4c20b3b3c';
+String _$userProfileHash() => r'1d0e8e62e2fcb771db576af2d41aff2de9918eb6';
 
 /// Derived synchronously so an error shows at once, even while Riverpod
 /// retries [userProfile].
@@ -108,4 +117,4 @@ final class ProfileSummaryProvider
   }
 }
 
-String _$profileSummaryHash() => r'9665bbe1c64510a236cfadcd1b257f4a55056933';
+String _$profileSummaryHash() => r'2ae84380a544dc7b76662eb2e206b74582ca5e50';

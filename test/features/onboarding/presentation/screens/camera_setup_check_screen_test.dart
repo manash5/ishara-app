@@ -1,13 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/auth/presentation/providers/fake_session_provider.dart';
+import 'package:ishara_app/core/error/failure.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
+import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/onboarding/presentation/screens/camera_setup_check_screen.dart';
 import 'package:ishara_app/features/onboarding/presentation/widgets/framing_guide.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../auth/auth_test_utils.dart';
 import '../onboarding_test_utils.dart';
 
 void main() {
@@ -44,17 +45,39 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Looks good finishes onboarding and lands on Learn', (
-    tester,
-  ) async {
-    final container = await pumpApp(
-      tester,
+  group('Looks good with the mock API', () {
+    const onboarding = SessionState(
+      ready: true,
       loggedIn: true,
-      location: const CameraCheckRoute().location,
+      onboardingDone: false,
     );
-    await tester.tap(find.text('Looks good'));
-    await tester.pumpAndSettle();
-    expect(container.read(fakeSessionProvider).onboardingDone, isTrue);
-    expect(currentLocation(container), const LearnRoute().location);
+
+    testWidgets('finishes onboarding and lands on Learn', (tester) async {
+      final env = AuthTestEnv(session: onboarding);
+      final container = await pumpAuthFlow(
+        tester,
+        env,
+        location: '/onboarding/camera-check',
+      );
+      await tester.tap(find.text('Looks good'));
+      await settleFlow(tester);
+      expect(container.read(sessionProvider).onboardingDone, isTrue);
+      expect(find.text(learnStub), findsOneWidget);
+    });
+
+    testWidgets('a failure shows a snackbar and stays', (tester) async {
+      final env = AuthTestEnv(session: onboarding)
+        ..simulation = MockApiSimulation.serverError;
+      final container = await pumpAuthFlow(
+        tester,
+        env,
+        location: '/onboarding/camera-check',
+      );
+      await tester.tap(find.text('Looks good'));
+      await settleFlow(tester);
+      expect(container.read(sessionProvider).onboardingDone, isFalse);
+      expect(find.text(const ServerFailure().message), findsOneWidget);
+      expect(find.text(learnStub), findsNothing);
+    });
   });
 }

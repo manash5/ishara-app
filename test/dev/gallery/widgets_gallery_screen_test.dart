@@ -11,6 +11,8 @@ import 'package:ishara_app/core/router/app_router.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../helpers/mock_api.dart';
+
 void main() {
   setUp(() {
     TestWidgetsFlutterBinding.instance.defaultBinaryMessenger
@@ -23,6 +25,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
+        overrides: mockApiOverrides(),
         child: MaterialApp(home: WidgetsGalleryScreen(initialBrightness: b)),
       ),
     );
@@ -65,8 +68,8 @@ void main() {
   test('a section per exported widget plus each added variant', () {
     // 35 base widgets (SettingsGroup shares the SettingsTile variant section)
     // + 13 variant sections + 5 widgets consolidated from features
-    // + LoadStateView.
-    expect(widgetSections, hasLength(54));
+    // + LoadStateView + ConfirmDialog.
+    expect(widgetSections, hasLength(55));
   });
 
   testWidgets('toggle switches light ↔ dark', (tester) async {

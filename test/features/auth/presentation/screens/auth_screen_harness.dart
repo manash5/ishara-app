@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ishara_app/core/theme/theme.dart';
+import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Text of the stub page the splash harness lands on after `/learn`.
-const learnStub = 'Learn stub';
+import '../../auth_test_utils.dart';
+
+export '../../auth_test_utils.dart' show learnStub;
 
 void _phoneView(WidgetTester tester) {
   tester.view.physicalSize = const Size(1080, 2400);
@@ -37,7 +39,12 @@ Future<ProviderContainer> pumpAuthScreen(
   double textScale = 1,
 }) async {
   _phoneView(tester);
-  final container = ProviderContainer(overrides: overrides);
+  final container = ProviderContainer(
+    overrides: [
+      ...AuthTestEnv(session: SessionState.signedOut).overrides,
+      ...overrides,
+    ],
+  );
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -62,11 +69,13 @@ Future<ProviderContainer> pumpAuthScreen(
 
 /// Pumps a minimal GoRouter app: `/splash` shows [splash], `/learn` shows
 /// [learnStub]. Does not settle, so tests can step through the animation.
-Future<void> pumpSplashRouter(
+/// [session] defaults to a restored (ready) signed-out session.
+Future<ProviderContainer> pumpSplashRouter(
   WidgetTester tester,
   Widget splash, {
   ThemeMode mode = ThemeMode.light,
   bool disableAnimations = false,
+  SessionState session = SessionState.signedOut,
 }) async {
   _phoneView(tester);
   final router = GoRouter(
@@ -80,18 +89,26 @@ Future<void> pumpSplashRouter(
     ],
   );
   addTearDown(router.dispose);
+  final container = ProviderContainer(
+    overrides: AuthTestEnv(session: session).overrides,
+  );
+  addTearDown(container.dispose);
   await tester.pumpWidget(
-    MaterialApp.router(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: mode,
-      routerConfig: router,
-      builder: (context, child) => _media(
-        context,
-        child,
-        disableAnimations: disableAnimations,
-        textScale: 1,
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp.router(
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: mode,
+        routerConfig: router,
+        builder: (context, child) => _media(
+          context,
+          child,
+          disableAnimations: disableAnimations,
+          textScale: 1,
+        ),
       ),
     ),
   );
+  return container;
 }

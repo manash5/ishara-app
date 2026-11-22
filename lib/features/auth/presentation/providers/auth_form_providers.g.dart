@@ -121,117 +121,167 @@ abstract class _$PasswordVisible extends $Notifier<bool> {
   }
 }
 
-/// Error under the Log in password field (Figma "04 Log in" error state).
-///
-/// UI-only phase: there is no real auth yet, so this is always null; the
-/// data layer will surface "Incorrect password. Try again." here.
+/// Figma "04 Log in": email + password or Google.
 
-@ProviderFor(logInPasswordError)
-final logInPasswordErrorProvider = LogInPasswordErrorProvider._();
+@ProviderFor(LogInForm)
+final logInFormProvider = LogInFormProvider._();
 
-/// Error under the Log in password field (Figma "04 Log in" error state).
-///
-/// UI-only phase: there is no real auth yet, so this is always null; the
-/// data layer will surface "Incorrect password. Try again." here.
-
-final class LogInPasswordErrorProvider
-    extends $FunctionalProvider<String?, String?, String?>
-    with $Provider<String?> {
-  /// Error under the Log in password field (Figma "04 Log in" error state).
-  ///
-  /// UI-only phase: there is no real auth yet, so this is always null; the
-  /// data layer will surface "Incorrect password. Try again." here.
-  LogInPasswordErrorProvider._()
+/// Figma "04 Log in": email + password or Google.
+final class LogInFormProvider
+    extends $NotifierProvider<LogInForm, AuthFormState> {
+  /// Figma "04 Log in": email + password or Google.
+  LogInFormProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'logInPasswordErrorProvider',
+        name: r'logInFormProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$logInPasswordErrorHash();
+  String debugGetCreateSourceHash() => _$logInFormHash();
 
   @$internal
   @override
-  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String? create(Ref ref) {
-    return logInPasswordError(ref);
-  }
+  LogInForm create() => LogInForm();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String? value) {
+  Override overrideWithValue(AuthFormState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String?>(value),
+      providerOverride: $SyncValueProvider<AuthFormState>(value),
     );
   }
 }
 
-String _$logInPasswordErrorHash() =>
-    r'64c8cf3e3a0878209dfb0b037aa9e4964804cb5a';
+String _$logInFormHash() => r'56bf0a8476b3ad5d9ffbf8a148ce505b6a83a7df';
 
-/// Whether the reset link has been sent (Figma "05 Forgot password" shows the
-/// sent state: success notice + "Resend link").
+/// Figma "04 Log in": email + password or Google.
 
-@ProviderFor(ResetLinkSent)
-final resetLinkSentProvider = ResetLinkSentProvider._();
-
-/// Whether the reset link has been sent (Figma "05 Forgot password" shows the
-/// sent state: success notice + "Resend link").
-final class ResetLinkSentProvider
-    extends $NotifierProvider<ResetLinkSent, bool> {
-  /// Whether the reset link has been sent (Figma "05 Forgot password" shows the
-  /// sent state: success notice + "Resend link").
-  ResetLinkSentProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'resetLinkSentProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$resetLinkSentHash();
-
-  @$internal
-  @override
-  ResetLinkSent create() => ResetLinkSent();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$resetLinkSentHash() => r'f1af3b253d5d636007300fbe40cd4528f710c7bd';
-
-/// Whether the reset link has been sent (Figma "05 Forgot password" shows the
-/// sent state: success notice + "Resend link").
-
-abstract class _$ResetLinkSent extends $Notifier<bool> {
-  bool build();
+abstract class _$LogInForm extends $Notifier<AuthFormState> {
+  AuthFormState build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<bool, bool>;
+    final ref = this.ref as $Ref<AuthFormState, AuthFormState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
+              AnyNotifier<AuthFormState, AuthFormState>,
+              AuthFormState,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+/// Figma "03 Sign up": name, email, password or Google.
+
+@ProviderFor(SignUpForm)
+final signUpFormProvider = SignUpFormProvider._();
+
+/// Figma "03 Sign up": name, email, password or Google.
+final class SignUpFormProvider
+    extends $NotifierProvider<SignUpForm, AuthFormState> {
+  /// Figma "03 Sign up": name, email, password or Google.
+  SignUpFormProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'signUpFormProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$signUpFormHash();
+
+  @$internal
+  @override
+  SignUpForm create() => SignUpForm();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AuthFormState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AuthFormState>(value),
+    );
+  }
+}
+
+String _$signUpFormHash() => r'1f27daaf0d7462933aa7bb0948f4c22c38a0bef8';
+
+/// Figma "03 Sign up": name, email, password or Google.
+
+abstract class _$SignUpForm extends $Notifier<AuthFormState> {
+  AuthFormState build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AuthFormState, AuthFormState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AuthFormState, AuthFormState>,
+              AuthFormState,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(PasswordResetForm)
+final passwordResetFormProvider = PasswordResetFormProvider._();
+
+final class PasswordResetFormProvider
+    extends $NotifierProvider<PasswordResetForm, PasswordResetState> {
+  PasswordResetFormProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'passwordResetFormProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$passwordResetFormHash();
+
+  @$internal
+  @override
+  PasswordResetForm create() => PasswordResetForm();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PasswordResetState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PasswordResetState>(value),
+    );
+  }
+}
+
+String _$passwordResetFormHash() => r'ddbf1334983184edcc46da16523a5fc5ee917d69';
+
+abstract class _$PasswordResetForm extends $Notifier<PasswordResetState> {
+  PasswordResetState build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<PasswordResetState, PasswordResetState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<PasswordResetState, PasswordResetState>,
+              PasswordResetState,
               Object?,
               Object?
             >;

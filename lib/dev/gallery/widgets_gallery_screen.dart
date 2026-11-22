@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../core/services/api/mock_api_settings.dart';
 import '../../core/theme/theme.dart';
 import '../../core/widgets/widgets.dart';
-import '../../features/auth/presentation/providers/fake_session_provider.dart';
+import '../../features/auth/presentation/providers/session_provider.dart';
 import '../../features/learn/presentation/providers/learn_path_provider.dart';
 import 'sections/gallery_section.dart';
 import 'sections/widget_sections.dart';
@@ -71,18 +71,18 @@ class _WidgetsGalleryScreenState extends State<WidgetsGalleryScreen> {
 }
 
 /// Debug controls shown above the widget sections.
-const _debugSections = <Widget>[FakeSessionSection(), MockApiSection()];
+const _debugSections = <Widget>[SessionSection(), MockApiSection()];
 
 /// Switches for the fake session; changes re-run the router redirects.
-class FakeSessionSection extends ConsumerWidget {
-  const FakeSessionSection({super.key});
+class SessionSection extends ConsumerWidget {
+  const SessionSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final session = ref.watch(fakeSessionProvider);
-    final notifier = ref.read(fakeSessionProvider.notifier);
+    final session = ref.watch(sessionProvider);
+    final notifier = ref.read(sessionProvider.notifier);
     return GallerySection(
-      title: 'Fake session',
+      title: 'Session',
       subtitle: 'Drives the redirects and fake states until real data lands',
       children: [
         SettingsTile(
@@ -91,7 +91,7 @@ class FakeSessionSection extends ConsumerWidget {
           label: 'Logged in',
           trailing: SettingsTrailing.toggle,
           switchValue: session.loggedIn,
-          onSwitchChanged: notifier.setLoggedIn,
+          onSwitchChanged: (v) => notifier.debugOverride(loggedIn: v),
         ),
         SettingsTile(
           key: const Key('gallery-session-onboarded'),
@@ -99,7 +99,7 @@ class FakeSessionSection extends ConsumerWidget {
           label: 'Onboarding done',
           trailing: SettingsTrailing.toggle,
           switchValue: session.onboardingDone,
-          onSwitchChanged: notifier.setOnboardingDone,
+          onSwitchChanged: (v) => notifier.debugOverride(onboardingDone: v),
         ),
         SettingsTile(
           key: const Key('gallery-learn-offline'),

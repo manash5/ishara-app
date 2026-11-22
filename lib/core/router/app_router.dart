@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../features/auth/presentation/providers/fake_session_provider.dart';
+import '../../features/auth/presentation/providers/session_provider.dart';
 import 'app_routes.dart';
 import 'redirect.dart';
 
@@ -20,17 +20,15 @@ List<RouteBase> get appRoutes => [
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
   // Re-run redirects whenever the (fake) session changes.
-  final refresh = ValueNotifier<FakeSessionState>(
-    ref.read(fakeSessionProvider),
-  );
-  ref.listen(fakeSessionProvider, (_, next) => refresh.value = next);
+  final refresh = ValueNotifier<SessionState>(ref.read(sessionProvider));
+  ref.listen(sessionProvider, (_, next) => refresh.value = next);
 
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: const SplashRoute().location,
     refreshListenable: refresh,
     redirect: (context, state) =>
-        sessionRedirect(ref.read(fakeSessionProvider), state.matchedLocation),
+        sessionRedirect(ref.read(sessionProvider).flags, state.matchedLocation),
     routes: appRoutes,
   );
   ref.onDispose(() {

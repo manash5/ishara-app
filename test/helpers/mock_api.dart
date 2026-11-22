@@ -9,6 +9,10 @@ import 'package:ishara_app/core/services/api/api_client.dart';
 import 'package:ishara_app/core/services/api/mock_api_adapter.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/api/token_storage.dart';
+import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
+import 'package:ishara_app/core/services/storage/hive_service.dart';
+
+import 'test_hive.dart';
 
 /// Reads `assets/mock_api/` straight from disk, so fixture loads finish
 /// within a widget test's frame instead of going through the asset channel.
@@ -36,7 +40,7 @@ ApiClient mockApiClient({
   TokenStorage? tokens,
   Duration latency = Duration.zero,
 }) {
-  FlutterSecureStorage.setMockInitialValues({});
+  if (tokens == null) FlutterSecureStorage.setMockInitialValues({});
   return ApiClient(
     tokenStorage: tokens ?? TokenStorage(),
     adapter: MockApiAdapter(
@@ -49,19 +53,30 @@ ApiClient mockApiClient({
   );
 }
 
-/// Overrides that make screens load the fixtures instantly. [simulation]
-/// fakes offline / 404 / 500 (see `MockApiSimulation`).
+/// Overrides that make screens load the fixtures instantly, with the
+/// in-memory test Hive. [simulation] fakes offline / 404 / 500 (see
+/// `MockApiSimulation`).
 List<Override> mockApiOverrides({
   MockApiSimulation? simulation,
   Duration latency = Duration.zero,
-}) => [
-  apiClientProvider.overrideWith(
-    (ref) => mockApiClient(
-      simulation: simulation == null ? null : () => simulation,
-      latency: latency,
+}) {
+  FlutterSecureStorage.setMockInitialValues({});
+  return [
+    // Shares the app's TokenStorage, so a failed refresh reaches the session.
+    apiClientProvider.overrideWith(
+      (ref) => mockApiClient(
+        simulation: simulation == null ? null : () => simulation,
+        latency: latency,
+        tokens: ref.watch(tokenStorageProvider),
+      ),
     ),
-  ),
-];
+    hiveServiceProvider.overrideWithValue(TestHive.instance),
+    // No connectivity plugin in tests: online unless simulating offline.
+    isOnlineProvider.overrideWith(
+      (ref) => Stream.value(simulation != MockApiSimulation.offline),
+    ),
+  ];
+}
 
 /// Stable ids from the fixtures.
 abstract final class FixtureIds {

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../helpers/pump_themed.dart';
+import '../../auth/auth_test_utils.dart';
 
 /// Pumps an onboarding [screen] on a phone-sized view (Ahem test font is
 /// wide) in [mode], optionally at a larger [textScale]. Returns the container
@@ -18,8 +19,7 @@ Future<ProviderContainer> pumpOnboardingScreen(
   tester.view.devicePixelRatio = 2.625;
   addTearDown(tester.view.reset);
 
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
+  final container = AuthTestEnv().container();
   await pumpThemed(
     tester,
     UncontrolledProviderScope(

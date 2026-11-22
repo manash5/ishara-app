@@ -4,8 +4,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../auth/presentation/providers/fake_session_provider.dart';
 import '../providers/camera_setup_checks_provider.dart';
+import '../providers/onboarding_completion_provider.dart';
 import '../widgets/framing_guide.dart';
 import '../widgets/setup_check_row.dart';
 
@@ -13,8 +13,9 @@ import '../widgets/setup_check_row.dart';
 /// guide and a checklist sheet. Finishing onboarding lets the redirect take
 /// the learner to /learn.
 ///
-/// UI-only phase: [CameraFeed] shows its placeholder art and the checklist is
-/// fake. Privacy: no frame or landmark is stored, uploaded or logged.
+/// "Looks good" sends the onboarding answers (`POST /me/onboarding`).
+/// [CameraFeed] still shows its placeholder art and the checklist is fake.
+/// Privacy: no frame or landmark is stored, uploaded or logged.
 class CameraSetupCheckScreen extends ConsumerWidget {
   const CameraSetupCheckScreen({super.key});
 
@@ -23,6 +24,7 @@ class CameraSetupCheckScreen extends ConsumerWidget {
     final c = context.colors;
     final checks = ref.watch(cameraSetupChecksProvider);
     final navigator = Navigator.of(context);
+    final saving = ref.watch(onboardingCompletionProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -85,10 +87,20 @@ class CameraSetupCheckScreen extends ConsumerWidget {
               children: [
                 for (final check in checks) SetupCheckRow(check: check),
                 IsharaButton(
-                  label: 'Looks good',
-                  onPressed: () => ref
-                      .read(fakeSessionProvider.notifier)
-                      .completeOnboarding(),
+                  label: saving ? 'Saving…' : 'Looks good',
+                  onPressed: saving
+                      ? null
+                      : () async {
+                          final failure = await ref
+                              .read(onboardingCompletionProvider.notifier)
+                              .complete();
+                          if (failure != null && context.mounted) {
+                            IsharaSnackbar.show(
+                              context,
+                              message: failure.message,
+                            );
+                          }
+                        },
                 ),
                 if (MediaQuery.paddingOf(context).bottom case final b
                     when b > 0)
