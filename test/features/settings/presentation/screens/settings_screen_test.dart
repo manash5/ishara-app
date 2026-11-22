@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
@@ -260,6 +261,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
 
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfileScreen), findsOneWidget);
+  });
+
+  // Regression: on a phone (status bar on top) the header was squeezed: the
+  // title was cut off and there was no back button to tap.
+  testWidgets('under a status bar: full title and a working back button', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      loggedIn: true,
+      onboardingDone: true,
+      location: const ProfileRoute().location,
+    );
+    tester.view.padding = const FakeViewPadding(top: 63); // 24dp
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
+
+    // The full 64dp toolbar sits below the 24dp status bar.
+    final bar = tester.getRect(find.byType(IsharaTopAppBar));
+    expect(bar.height, 24 + IsharaSizes.appBarHeight);
+    final toolbarMiddle = 24 + IsharaSizes.appBarHeight / 2;
+    expect(
+      tester.getRect(find.text('Settings')).center.dy,
+      closeTo(toolbarMiddle, 1),
+    );
+    expect(
+      tester.getRect(find.byTooltip('Back')).center.dy,
+      closeTo(toolbarMiddle, 1),
+    );
     await tester.tap(find.byTooltip('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(ProfileScreen), findsOneWidget);

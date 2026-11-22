@@ -47,8 +47,11 @@ class IsharaTopAppBar extends StatelessWidget implements PreferredSizeWidget {
       IsharaAppBarLeading.close => (IsharaIcons.close, 'Close'),
     };
     // Fixed height so it doesn't fill loose constraints outside Scaffold.appBar.
+    // The AppBar draws under the status bar and pads its toolbar below it,
+    // so the box must include that inset or the toolbar gets squeezed (title
+    // cut off, back button hidden). Inside a SafeArea the inset is 0.
     return SizedBox(
-      height: IsharaSizes.appBarHeight,
+      height: IsharaSizes.appBarHeight + MediaQuery.paddingOf(context).top,
       child: AppBar(
         toolbarHeight: IsharaSizes.appBarHeight,
         backgroundColor: c.bgCanvas,
