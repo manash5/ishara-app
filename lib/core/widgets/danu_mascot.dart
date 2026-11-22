@@ -38,15 +38,22 @@ class DanuMascot extends StatelessWidget {
   final DanuPose pose;
   final double size;
 
-  /// Bring Danu to life (roadmap only): the wave pose waves its wing, bobs
-  /// its head, sways its crest and blinks, on a loop. Other poses, and
-  /// reduced motion, show the still artwork.
+  /// Bring Danu to life (roadmap and results only), on a loop: the wave
+  /// pose waves its wing, bobs its head, sways its crest and blinks; the
+  /// celebrate pose cheers with both wings, hops, and its confetti
+  /// twinkles. Other poses, and reduced motion, show the still artwork.
   final bool animated;
 
   @override
   Widget build(BuildContext context) {
-    final live =
-        animated && pose == DanuPose.wave && !IsharaMotion.reduced(context);
+    final live = animated && !IsharaMotion.reduced(context);
+    final Widget? alive = !live
+        ? null
+        : switch (pose) {
+            DanuPose.wave => _WavingDanu(size: size),
+            DanuPose.celebrate => _CelebratingDanu(size: size),
+            _ => null,
+          };
     return Semantics(
       container: true,
       image: true,
@@ -54,21 +61,21 @@ class DanuMascot extends StatelessWidget {
       excludeSemantics: true,
       child: SizedBox.square(
         dimension: size,
-        child: live
-            ? _WavingDanu(size: size)
-            : AnimatedSwitcher(
-                duration: IsharaMotion.duration(context, IsharaMotion.fast),
-                switchInCurve: IsharaMotion.enter,
-                switchOutCurve: IsharaMotion.exit,
-                child: SvgPicture.asset(
-                  pose.asset,
-                  key: ValueKey(pose),
-                  width: size,
-                  height: size,
-                  fit: BoxFit.contain,
-                  excludeFromSemantics: true,
-                ),
+        child:
+            alive ??
+            AnimatedSwitcher(
+              duration: IsharaMotion.duration(context, IsharaMotion.fast),
+              switchInCurve: IsharaMotion.enter,
+              switchOutCurve: IsharaMotion.exit,
+              child: SvgPicture.asset(
+                pose.asset,
+                key: ValueKey(pose),
+                width: size,
+                height: size,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
               ),
+            ),
       ),
     );
   }
@@ -216,6 +223,172 @@ class _WavingDanuState extends State<_WavingDanu>
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+/// The celebrate pose in layers (assets/mascot/celebrate_layers/, same
+/// 200 × 207 artwork), bottom → top.
+abstract final class DanuCelebrateLayers {
+  static const String _dir = 'assets/mascot/celebrate_layers';
+  static const String back = '$_dir/back.svg'; // tail, legs, body
+  static const String wingLeft = '$_dir/wing_left.svg';
+  static const String wingRight = '$_dir/wing_right.svg';
+  static const String head = '$_dir/head.svg';
+  static const String eye = '$_dir/eye.svg';
+  static const String crest = '$_dir/crest.svg';
+  static const String confetti = '$_dir/confetti.svg';
+
+  static const List<String> all = [
+    back,
+    wingLeft,
+    wingRight,
+    head,
+    eye,
+    crest,
+    confetti,
+  ];
+}
+
+/// Timing and pivots of the celebrate loop (artboard px on the 200 × 207
+/// pose).
+abstract final class DanuCelebrateMotion {
+  /// One cheer: a wing flap and a hop.
+  static const Duration period = Duration(milliseconds: 1000);
+
+  /// Blinks once every this many cheers.
+  static const int blinkEvery = 3;
+
+  static const double wingFlap = 12; // degrees
+  static const double hop = 5; // artboard px
+  static const double headBob = 3; // degrees
+  static const double crestSway = 6; // degrees
+  static const double confettiDrift = 3; // artboard px
+
+  static const Offset leftShoulder = Offset(71, 108);
+  static const Offset rightShoulder = Offset(129, 108);
+  static const Offset neck = Offset(105, 86);
+  static const Offset crestBase = Offset(105, 44);
+  static const Offset eyeCentre = Offset(119, 64);
+
+  static const double artboardWidth = 200;
+  static const double artboardHeight = 207;
+}
+
+class _CelebratingDanu extends StatefulWidget {
+  const _CelebratingDanu({required this.size});
+
+  final double size;
+
+  @override
+  State<_CelebratingDanu> createState() => _CelebratingDanuState();
+}
+
+class _CelebratingDanuState extends State<_CelebratingDanu>
+    with SingleTickerProviderStateMixin {
+  // One controller spans [blinkEvery] cheers so the blink stays in step.
+  late final AnimationController _loop = AnimationController(
+    vsync: this,
+    duration: DanuCelebrateMotion.period * DanuCelebrateMotion.blinkEvery,
+  )..repeat();
+
+  @override
+  void dispose() {
+    _loop.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = widget.size;
+    // BoxFit.contain of the 200 × 207 artboard into the square box.
+    final k = size / DanuCelebrateMotion.artboardHeight;
+    final dx = (size - DanuCelebrateMotion.artboardWidth * k) / 2;
+    Offset px(Offset p) => Offset(dx + p.dx * k, p.dy * k);
+    Widget layer(String asset) => SvgPicture.asset(
+      asset,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      excludeFromSemantics: true,
+    );
+    Widget turn(double degrees, Offset pivot, Widget child) => Transform.rotate(
+      angle: degrees * math.pi / 180,
+      alignment: Alignment.topLeft,
+      origin: px(pivot),
+      child: child,
+    );
+
+    return AnimatedBuilder(
+      animation: _loop,
+      builder: (context, _) {
+        final cycles = _loop.value * DanuCelebrateMotion.blinkEvery;
+        final a = 2 * math.pi * cycles; // one cheer per 2π
+        final flap = math.sin(a);
+        // One hop per cheer: quick off the ground, soft at the top.
+        final lift = math.sin(a / 2).abs();
+        final local = cycles - (DanuCelebrateMotion.blinkEvery - 1);
+        final blink = local > 0.88
+            ? 1 - 0.85 * math.sin(math.pi * (local - 0.88) / 0.12)
+            : 1.0;
+        final eye = px(DanuCelebrateMotion.eyeCentre);
+
+        return Stack(
+          children: [
+            Transform.translate(
+              offset: Offset(0, -DanuCelebrateMotion.hop * k * lift),
+              child: Stack(
+                children: [
+                  layer(DanuCelebrateLayers.back),
+                  // Both wings pump up and out, mirrored.
+                  turn(
+                    -DanuCelebrateMotion.wingFlap * flap,
+                    DanuCelebrateMotion.leftShoulder,
+                    layer(DanuCelebrateLayers.wingLeft),
+                  ),
+                  turn(
+                    DanuCelebrateMotion.wingFlap * flap,
+                    DanuCelebrateMotion.rightShoulder,
+                    layer(DanuCelebrateLayers.wingRight),
+                  ),
+                  // Head, eye and crest move together; the crest lags.
+                  turn(
+                    DanuCelebrateMotion.headBob * math.sin(a - 0.6),
+                    DanuCelebrateMotion.neck,
+                    Stack(
+                      children: [
+                        layer(DanuCelebrateLayers.head),
+                        Transform(
+                          alignment: Alignment.topLeft,
+                          origin: eye,
+                          transform: Matrix4.diagonal3Values(1, blink, 1),
+                          child: layer(DanuCelebrateLayers.eye),
+                        ),
+                        turn(
+                          DanuCelebrateMotion.crestSway * math.sin(a - 1.2),
+                          DanuCelebrateMotion.crestBase,
+                          layer(DanuCelebrateLayers.crest),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Confetti stays in the air: it twinkles and drifts.
+            Opacity(
+              opacity: 0.6 + 0.4 * math.cos(a / 2).abs(),
+              child: Transform.translate(
+                offset: Offset(
+                  0,
+                  DanuCelebrateMotion.confettiDrift * k * math.sin(a / 2),
+                ),
+                child: layer(DanuCelebrateLayers.confetti),
+              ),
+            ),
+          ],
         );
       },
     );

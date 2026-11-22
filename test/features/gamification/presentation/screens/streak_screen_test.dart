@@ -77,18 +77,26 @@ void main() {
         ),
         findsOneWidget,
       );
-      // Danu on the left of the flame, clear of the backdrop shapes (right),
-      // with the flame still centred.
-      final danuRect = tester.getRect(find.byType(DanuMascot));
-      final heroWidth = tester.getSize(find.byType(HeroBackdrop)).width;
+      // Like 26: the flame left of the count, Danu on the right beside the
+      // text, straddling the hero and the panel.
       final flame = tester.getRect(
         find.byWidgetPredicate(
           (w) => w is IsharaFilledIcon && w.kind == IsharaFilledIconKind.flame,
         ),
       );
-      expect(danuRect.right, lessThanOrEqualTo(flame.left));
-      expect(danuRect.right, lessThan(heroWidth * 226 / 412));
-      expect(flame.center.dx, closeTo(heroWidth / 2, 1));
+      final count = tester.getRect(find.text('12'));
+      final caption = tester.getRect(find.text('day streak'));
+      expect(flame.right, lessThan(count.left));
+      expect(flame.right, lessThan(caption.left));
+      final danuRect = tester.getRect(find.byType(DanuMascot));
+      final heroRect = tester.getRect(find.byType(HeroBackdrop));
+      final panelTop = tester.getRect(find.byType(ContentPanel)).top;
+      expect(danuRect.left, greaterThan(heroRect.width / 2));
+      // A little higher than on 26: Danu starts beside the count.
+      expect(danuRect.top, lessThan(count.bottom));
+      expect(danuRect.top, greaterThan(count.top));
+      expect(danuRect.top, lessThan(panelTop));
+      expect(danuRect.bottom, greaterThan(panelTop));
       // Today (Sunday, the last "S") is labelled in text/primary, other
       // days tertiary.
       expect(renderedStyle(tester, find.text('S').last)?.color, c.textPrimary);
@@ -100,19 +108,19 @@ void main() {
     });
   }
 
-  testWidgets('celebrates: count-up, Danu waving, confetti, medium haptic', (
+  testWidgets('celebrates: count-up, Danu cheering, confetti, medium haptic', (
     tester,
   ) async {
     await pumpStreak(tester);
     expect(haptics, contains('HapticFeedbackType.mediumImpact'));
     final danu = tester.widget<DanuMascot>(find.byType(DanuMascot));
-    expect(danu.pose, DanuPose.wave);
+    expect(danu.pose, DanuPose.celebrate);
     expect(danu.animated, isTrue);
     expect(find.text('12'), findsNothing);
     await tester.pump(IsharaMotion.celebrate);
     await tester.pump(IsharaMotion.fast);
     expect(find.text('12'), findsOneWidget);
-    // The wave loops forever, so pump fixed time instead of settling.
+    // The cheer loops forever, so pump fixed time instead of settling.
     await tester.pump(IsharaMotion.confetti);
     expect(
       find.descendant(

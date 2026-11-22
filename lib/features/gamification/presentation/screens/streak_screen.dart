@@ -9,8 +9,10 @@ import '../providers/streak_provider.dart';
 import '../widgets/week_streak_row.dart';
 
 /// Figma "27 Streak" (Light 15:2665 · Dark 60:7125): shown after a lesson
-/// that extended the streak. Flame pop, Danu waving, day count-up and
-/// a short confetti burst, with a medium haptic. Continue → Learn.
+/// that extended the streak. Laid out like 26: the flame badge left of the
+/// day count, Danu celebrating at the hero's right edge over the panel.
+/// Flame pop, day count-up and a short confetti burst, with a medium haptic.
+/// Continue → Learn.
 class StreakScreen extends ConsumerStatefulWidget {
   const StreakScreen({super.key});
 
@@ -43,68 +45,70 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
       );
     }
     return ResultsScaffold(
+      // Same hero as 26: badge + text a little lower, clear of the backdrop
+      // circles; Danu on the right beside the text, straddling the panel.
       heroPadding: const EdgeInsets.fromLTRB(
         IsharaSpacing.screenMargin,
-        IsharaSpacing.s8,
+        IsharaSizes.resultHeroTop + IsharaSpacing.s4,
         IsharaSpacing.screenMargin,
-        IsharaSpacing.s12 + IsharaSpacing.s1,
+        IsharaSizes.resultHeroBottom,
       ),
-      hero: Column(
+      backdrop: HeroBackdropLayout.results,
+      // Danu cheers, a little higher than on 26: right by the count.
+      danu: const ResultsDanu(
+        size: IsharaSizes.resultMascotLarge,
+        pose: DanuPose.celebrate,
+      ),
+      danuRise: IsharaSizes.streakMascotRise,
+      hero: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Danu on the left, clear of the backdrop shapes (right).
-              const ResultsDanu(),
-              PopIn(
-                child: Container(
-                  width: IsharaSizes.streakHero,
-                  height: IsharaSizes.streakHero,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: c.funTealHeroLip,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IsharaFilledIcon(
-                    IsharaFilledIconKind.flame,
-                    size: IsharaSizes.streakHeroIcon,
-                    color: c.funGold,
-                  ),
-                ),
+          PopIn(
+            child: Container(
+              width: IsharaSizes.resultBadge,
+              height: IsharaSizes.resultBadge,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: c.funTealHeroLip,
+                shape: BoxShape.circle,
               ),
-              // Balances Danu so the flame stays centred.
-              const SizedBox(width: IsharaSizes.resultMascot),
-            ],
+              child: IsharaFilledIcon(
+                IsharaFilledIconKind.flame,
+                size: IsharaSizes.resultBadgeIcon,
+                color: c.funGold,
+              ),
+            ),
           ),
-          const SizedBox(height: IsharaSpacing.s1),
-          Semantics(
-            header: true,
-            label: '${streak.days} day streak',
-            excludeSemantics: true,
-            child: Column(
-              children: [
-                CountUp(
-                  value: streak.days,
-                  builder: (_, days) => Text(
-                    '$days',
-                    style: s.displaySmall.copyWith(
-                      fontSize: IsharaSizes.streakNumber,
-                      height:
-                          IsharaSizes.streakNumberLine /
-                          IsharaSizes.streakNumber,
-                      color: c.staticWhite,
+          const SizedBox(width: IsharaSpacing.s4),
+          Expanded(
+            child: Semantics(
+              header: true,
+              label: '${streak.days} day streak',
+              excludeSemantics: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CountUp(
+                    value: streak.days,
+                    builder: (_, days) => Text(
+                      '$days',
+                      style: s.displaySmall.copyWith(
+                        fontSize: IsharaSizes.streakNumber,
+                        height:
+                            IsharaSizes.streakNumberLine /
+                            IsharaSizes.streakNumber,
+                        color: c.staticWhite,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: IsharaSpacing.s1),
-                Opacity(
-                  opacity: IsharaSizes.heroCaptionOpacity,
-                  child: Text(
-                    'day streak',
-                    style: s.titleLarge.copyWith(color: c.staticWhite),
+                  Opacity(
+                    opacity: IsharaSizes.heroCaptionOpacity,
+                    child: Text(
+                      'day streak',
+                      style: s.titleLarge.copyWith(color: c.staticWhite),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

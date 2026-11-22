@@ -100,6 +100,62 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('animated celebrate cheers: wings flap mirrored, Danu hops', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.celebrate, size: 130, animated: true),
+    );
+    expect(assetsShown(tester), DanuCelebrateLayers.all.toSet());
+
+    Matrix4 transformAbove(String asset) {
+      final layer = find.ancestor(
+        of: find.byWidgetPredicate(
+          (w) =>
+              w is SvgPicture &&
+              (w.bytesLoader as SvgAssetLoader).assetName == asset,
+        ),
+        matching: find.byType(Transform),
+      );
+      return tester.widget<Transform>(layer.first).transform;
+    }
+
+    // At a quarter cheer the wings are at full flap, in opposite directions.
+    await tester.pump(DanuCelebrateMotion.period ~/ 4);
+    final left = transformAbove(DanuCelebrateLayers.wingLeft).storage[1];
+    final right = transformAbove(DanuCelebrateLayers.wingRight).storage[1];
+    expect(left, isNot(closeTo(0, 1e-3)));
+    expect(right, closeTo(-left, 1e-6));
+    // Mid-hop the body (the back layer's outer transform) is lifted.
+    final hop = find.ancestor(
+      of: find.byWidgetPredicate(
+        (w) =>
+            w is SvgPicture &&
+            (w.bytesLoader as SvgAssetLoader).assetName ==
+                DanuCelebrateLayers.back,
+      ),
+      matching: find.byType(Transform),
+    );
+    expect(
+      tester.widget<Transform>(hop.last).transform.getTranslation().y,
+      lessThan(0),
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('reduced motion shows the still celebrate artwork', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.celebrate, animated: true),
+      disableAnimations: true,
+    );
+    expect(assetsShown(tester), {DanuPose.celebrate.asset});
+  });
+
   testWidgets('reduced motion shows the still wave artwork', (tester) async {
     await pumpThemed(
       tester,
@@ -117,9 +173,9 @@ void main() {
     expect(assetsShown(tester), {DanuPose.think.asset});
   });
 
-  test('wave layer assets are bundled', () async {
+  test('wave and celebrate layer assets are bundled', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    for (final asset in DanuWaveLayers.all) {
+    for (final asset in [...DanuWaveLayers.all, ...DanuCelebrateLayers.all]) {
       expect((await rootBundle.loadString(asset)).contains('<svg'), isTrue);
     }
   });

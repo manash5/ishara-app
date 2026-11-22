@@ -20,6 +20,7 @@ class ResultsScaffold extends StatelessWidget {
     required this.onContinue,
     this.backdrop = HeroBackdropLayout.header,
     this.danu,
+    this.danuRise = IsharaSizes.resultMascotOverlap,
   });
 
   /// Hero content under the status bar.
@@ -36,6 +37,9 @@ class ResultsScaffold extends StatelessWidget {
   /// Optional Danu at the right edge where hero meets panel, overlapping the
   /// panel's top (26). Painted above both.
   final Widget? danu;
+
+  /// How far [danu] rises above the panel's top (the rest overlaps it).
+  final double danuRise;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +96,7 @@ class ResultsScaffold extends StatelessWidget {
                               if (danu != null)
                                 Positioned(
                                   right: IsharaSpacing.screenMargin,
-                                  top: -IsharaSizes.resultMascotOverlap,
+                                  top: -danuRise,
                                   child: danu!,
                                 ),
                             ],
@@ -113,19 +117,25 @@ class ResultsScaffold extends StatelessWidget {
 }
 
 /// Danu on the results hero (26, 27): pops in just after the badge/flame,
-/// then waves on a loop with the same layered animation as on the Learn
-/// roadmap. Reduced motion shows the still wave pose.
+/// then plays [pose] on a loop (wave: the Learn roadmap animation;
+/// celebrate: cheering wings, a hop and twinkling confetti). Reduced
+/// motion shows the still pose.
 ///
-/// Place Danu on the left of the hero: the [HeroBackdrop] header shapes
-/// all sit on the right.
+/// Pass it as [ResultsScaffold.danu] with [HeroBackdropLayout.results]:
+/// Danu then sits at the hero's right edge, clear of the backdrop circles.
 class ResultsDanu extends StatelessWidget {
-  const ResultsDanu({super.key, this.size = IsharaSizes.resultMascot});
+  const ResultsDanu({
+    super.key,
+    this.size = IsharaSizes.resultMascot,
+    this.pose = DanuPose.wave,
+  });
 
   final double size;
+  final DanuPose pose;
 
   @override
   Widget build(BuildContext context) => PopIn(
     delay: IsharaMotion.fast,
-    child: DanuMascot(pose: DanuPose.wave, size: size, animated: true),
+    child: DanuMascot(pose: pose, size: size, animated: true),
   );
 }

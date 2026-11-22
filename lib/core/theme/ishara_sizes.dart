@@ -128,7 +128,6 @@ abstract final class IsharaSizes {
   static const double resultBadge = 64;
   static const double resultBadgeIcon = 32;
   static const double streakHero = 128;
-  static const double streakHeroIcon = 88;
   static const double streakDay = 32;
   static const double streakDayGap = 6;
   static const double resultMascot = 96;
@@ -145,6 +144,9 @@ abstract final class IsharaSizes {
   /// the panel's top, beside "Your results"). A little more than
   /// [resultHeroBottom], so Danu sits just under the title.
   static const double resultMascotOverlap = 76;
+
+  /// 27: Danu rises higher than on 26, level with the day count.
+  static const double streakMascotRise = 96;
   static const double streakNumber = 56; // 27 hero count (56/64 ExtraBold)
   static const double streakNumberLine = 64;
 
