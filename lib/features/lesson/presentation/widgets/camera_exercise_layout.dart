@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
+import 'exercise_prompt.dart';
 
 /// Shared layout of the camera exercises (Figma 23–25), always in the dark
 /// theme: prompt row (optional reference video), optional extra row, the
@@ -66,23 +67,7 @@ class CameraExerciseLayout extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        eyebrow.toUpperCase(),
-                        style: s.labelSmall.copyWith(color: c.accentText),
-                      ),
-                      const SizedBox(height: IsharaSpacing.s1),
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          title,
-                          style: s.titleLarge.copyWith(color: c.textPrimary),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: ExercisePrompt(eyebrow: eyebrow, title: title),
                 ),
                 if (showReference) ...[
                   const SizedBox(width: IsharaSpacing.s3),

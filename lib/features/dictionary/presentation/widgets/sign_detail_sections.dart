@@ -15,34 +15,6 @@ const signStepsPendingVerification =
 // TODO(tokens): Figma's 24dp step-number circle has no IsharaSizes token.
 const double _stepBadge = 24;
 
-/// The large [SignVideoPlayer] with its own slow-mo / mirror toggle state.
-class SignVideoSection extends StatefulWidget {
-  const SignVideoSection({super.key, required this.signName});
-
-  final String signName;
-
-  @override
-  State<SignVideoSection> createState() => _SignVideoSectionState();
-}
-
-class _SignVideoSectionState extends State<SignVideoSection> {
-  bool _mirrored = false;
-  bool _slowMotion = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return SignVideoPlayer(
-      semanticLabel: 'Sign video: ${widget.signName}',
-      mirrored: _mirrored,
-      slowMotion: _slowMotion,
-      // Replay restarts the injected video; the placeholder has nothing to do.
-      onReplay: () {},
-      onToggleSlowMotion: () => setState(() => _slowMotion = !_slowMotion),
-      onToggleMirror: () => setState(() => _mirrored = !_mirrored),
-    );
-  }
-}
-
 /// Figma `meaning` (12:1162): headline + status chip, then the description.
 class SignMeaningSection extends StatelessWidget {
   const SignMeaningSection({

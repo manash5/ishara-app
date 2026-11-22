@@ -1,9 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
 import 'exercise_prompt.dart';
-import 'lesson_sign_video.dart';
 import 'lesson_tip_card.dart';
 
 /// Figma "18 Watch & learn": a new sign's video, its description and a tip.
@@ -21,7 +21,7 @@ class WatchExerciseView extends StatelessWidget {
           title: exercise.title,
           subtitle: 'Watch closely, then try it yourself.',
         ),
-        LessonSignVideo(semanticLabel: 'Sign video: ${exercise.title}'),
+        SignVideo(semanticLabel: 'Sign video: ${exercise.title}'),
         Text(
           exercise.description,
           style: context.textStyles.bodyMedium.copyWith(

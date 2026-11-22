@@ -10,7 +10,6 @@ import '../providers/dictionary_providers.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/dictionary_hero_header.dart';
 import '../widgets/dictionary_search_field.dart';
-import '../widgets/dictionary_state_message.dart';
 import '../widgets/sign_status_tone.dart';
 
 /// Figma "13 Dictionary" (Light 12:820 · Dark 60:6816): a tab root in the
@@ -84,13 +83,16 @@ class _SignList extends ConsumerWidget {
     final signs = ref.watch(filteredDictionarySignsProvider);
     return switch (signs) {
       AsyncValue(:final value?, hasValue: true) => _data(context, ref, value),
-      AsyncValue(hasError: true) => DictionaryStateMessage(
+      AsyncValue(hasError: true) => StateMessage(
         title: 'Couldn’t load signs',
         body: 'Check your connection and try again.',
         actionLabel: 'Try again',
         onAction: () => ref.invalidate(dictionarySignsProvider),
       ),
-      _ => const SignListSkeleton(),
+      _ => const ListSkeleton(
+        itemHeight: IsharaSizes.listTileHeight,
+        semanticLabel: 'Loading signs',
+      ),
     };
   }
 
@@ -100,13 +102,13 @@ class _SignList extends ConsumerWidget {
           ref.watch(dictionaryQueryProvider).trim().isNotEmpty ||
           ref.watch(dictionaryCategoryProvider) != null;
       if (!filtered) {
-        return const DictionaryStateMessage(
+        return const StateMessage(
           title: 'No signs yet',
           body: 'Signs you can learn will appear here.',
         );
       }
       final query = ref.watch(dictionaryQueryProvider).trim();
-      return DictionaryStateMessage(
+      return StateMessage(
         title: 'No signs found',
         body: query.isEmpty
             ? 'There are no signs in this category yet.'

@@ -92,7 +92,7 @@ void main() {
           weeklyLeaderboardProvider.overrideWith((_) => pending.future),
         ],
       );
-      expect(find.byType(LeaderboardSkeleton), findsOneWidget);
+      expect(find.byType(ListSkeleton), findsOneWidget);
       expect(find.text('Ranks'), findsOneWidget);
     });
 

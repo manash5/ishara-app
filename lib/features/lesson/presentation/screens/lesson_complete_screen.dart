@@ -5,7 +5,6 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_summary_provider.dart';
-import '../widgets/results_scaffold.dart';
 
 /// "4:12".
 String formatLessonTime(Duration d) =>

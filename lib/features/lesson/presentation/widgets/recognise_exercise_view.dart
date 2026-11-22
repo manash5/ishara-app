@@ -4,7 +4,6 @@ import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
 import 'exercise_prompt.dart';
-import 'lesson_sign_video.dart';
 import 'option_states.dart';
 
 /// Figma "19 Recognise" / "20 Recognise – correct": watch a sign, pick its
@@ -31,7 +30,7 @@ class RecogniseExerciseView extends StatelessWidget {
           title: 'What does this sign mean?',
         ),
         // Don't name the sign: that would give the answer away.
-        const LessonSignVideo(semanticLabel: 'Sign video'),
+        const SignVideo(semanticLabel: 'Sign video'),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

@@ -4,7 +4,6 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../lesson/presentation/widgets/results_scaffold.dart';
 import '../providers/streak_provider.dart';
 import '../widgets/week_streak_row.dart';
 

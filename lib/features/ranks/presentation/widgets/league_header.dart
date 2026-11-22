@@ -14,8 +14,8 @@ const double _headerPaddingBottom = IsharaSpacing.s8 + IsharaSpacing.s1;
 const double _subtitleOpacity = IsharaSizes.heroCaptionOpacity;
 
 /// `leagueBadge` (56:3591): 56dp gold square, 28dp trophy.
-const double _leagueBadge = 56;
-const double _leagueBadgeIcon = 28;
+const double _leagueBadge = IsharaSizes.heroBadge;
+const double _leagueBadgeIcon = IsharaSizes.heroBadgeIcon;
 
 /// `countdown` (56:3599) padding: left 12, right 14, vertical 6.
 const EdgeInsets _countdownPadding = EdgeInsets.fromLTRB(

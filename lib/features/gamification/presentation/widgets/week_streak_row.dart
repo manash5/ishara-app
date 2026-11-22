@@ -1,17 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
-
-const List<String> _dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-const List<String> _dayNames = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
+import '../../../../core/utils/weekdays.dart';
 
 /// Figma 27 `week`: Monday→Sunday, each day a label and a 32dp circle —
 /// accent with a check when practised, surface-muted otherwise. Today's
@@ -40,11 +30,11 @@ class WeekStreakRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (var i = 0; i < _dayLetters.length; i++)
+          for (var i = 0; i < Weekdays.initials.length; i++)
             Semantics(
               container: true,
               label:
-                  '${_dayNames[i]}, '
+                  '${Weekdays.names[i]}, '
                   '${practised[i] ? 'practised' : 'not practised'}'
                   '${i == todayIndex ? ', today' : ''}',
               excludeSemantics: true,
@@ -52,7 +42,7 @@ class WeekStreakRow extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _dayLetters[i],
+                    Weekdays.initials[i],
                     style: context.textStyles.labelMedium.copyWith(
                       color: i == todayIndex ? c.textPrimary : c.textTertiary,
                     ),

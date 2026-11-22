@@ -23,7 +23,7 @@ class RanksScreen extends ConsumerWidget {
       AsyncValue(hasValue: true, value: final b?) =>
         b.entries.isEmpty
             ? const [
-                RanksStateMessage(
+                StateMessage(
                   title: 'No one here yet',
                   body: 'Finish a lesson to join this week’s league.',
                 ),
@@ -37,14 +37,21 @@ class RanksScreen extends ConsumerWidget {
                 _Leaderboard(board: b),
               ],
       AsyncValue(hasError: true) => [
-        RanksStateMessage(
+        StateMessage(
           title: 'Couldn’t load the leaderboard',
           body: 'Check your connection and try again.',
           actionLabel: 'Try again',
           onAction: () => ref.invalidate(weeklyLeaderboardProvider),
         ),
       ],
-      _ => const [LeaderboardSkeleton()],
+      _ => const [
+        ListSkeleton(
+          itemHeight: IsharaSizes.compactTileHeight,
+          semanticLabel: 'Loading leaderboard',
+          count: 7,
+          gap: IsharaSpacing.s1,
+        ),
+      ],
     };
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

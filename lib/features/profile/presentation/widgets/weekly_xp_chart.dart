@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/weekdays.dart';
 
 // TODO(core): Figma `xpChart` (node 12:1396) has no shared widget or size
 // tokens yet — these mirror the Figma frame until core adds them.
@@ -10,17 +11,6 @@ const double _barAreaHeight = 74; // 128 card − 2×16 padding − 16 label −
 const double _barWidth = 22;
 const double _barRadius = 6;
 const double _labelGap = 6;
-
-const List<String> _dayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-const List<String> _dayNames = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
 
 /// Figma "16 Profile" → `thisWeek/xpChart`: seven daily XP bars, today in
 /// accent, the rest in bg/surface-muted.
@@ -42,7 +32,7 @@ class WeeklyXpChart extends StatelessWidget {
     final peak = math.max(1, weeklyXp.reduce(math.max));
     final summary = [
       for (var i = 0; i < 7; i++)
-        '${_dayNames[i]}${i == todayIndex ? ' (today)' : ''} ${weeklyXp[i]} XP',
+        '${Weekdays.names[i]}${i == todayIndex ? ' (today)' : ''} ${weeklyXp[i]} XP',
     ].join(', ');
 
     return Semantics(
@@ -89,7 +79,7 @@ class WeeklyXpChart extends StatelessWidget {
                   ),
                   const SizedBox(height: _labelGap),
                   Text(
-                    _dayInitials[i],
+                    Weekdays.initials[i],
                     style: s.labelMedium.copyWith(
                       color: i == todayIndex ? c.textPrimary : c.textTertiary,
                     ),

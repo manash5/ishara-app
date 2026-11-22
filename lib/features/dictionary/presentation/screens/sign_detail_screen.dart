@@ -7,7 +7,6 @@ import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/dictionary_models.dart';
 import '../providers/dictionary_providers.dart';
-import '../widgets/dictionary_state_message.dart';
 import '../widgets/sign_detail_sections.dart';
 import '../widgets/sign_status_tone.dart';
 
@@ -38,7 +37,7 @@ class SignDetailScreen extends ConsumerWidget {
         AsyncValue(hasValue: true, :final value) =>
           value == null
               ? _Message(
-                  child: DictionaryStateMessage(
+                  child: StateMessage(
                     title: 'Sign not found',
                     body: 'This sign isn’t in the dictionary.',
                     actionLabel: 'Back to dictionary',
@@ -47,7 +46,7 @@ class SignDetailScreen extends ConsumerWidget {
                 )
               : _SignDetailBody(detail: value),
         AsyncValue(hasError: true) => _Message(
-          child: DictionaryStateMessage(
+          child: StateMessage(
             title: 'Couldn’t load this sign',
             body: 'Check your connection and try again.',
             actionLabel: 'Try again',
@@ -82,7 +81,7 @@ class _SignDetailBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SignVideoSection(signName: sign.name),
+                SignVideo(semanticLabel: 'Sign video: ${sign.name}'),
                 const SizedBox(height: IsharaSpacing.s6),
                 SignMeaningSection(
                   name: sign.name,

@@ -5,7 +5,6 @@ import 'package:ishara_app/core/config/game_rules.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/gamification/presentation/widgets/out_of_hearts_sheet.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exercise_view.dart';

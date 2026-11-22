@@ -5,7 +5,6 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../gamification/presentation/widgets/out_of_hearts_sheet.dart';
 import '../providers/lesson_models.dart';
 import '../providers/lesson_player_provider.dart';
 import '../widgets/fingerspell_exercise_view.dart';
