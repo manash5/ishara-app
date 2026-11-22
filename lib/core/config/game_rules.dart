@@ -10,4 +10,7 @@ abstract final class GameRules {
 
   /// Hearts refill by one every this many hours.
   static const int heartRefillHours = 4;
+
+  /// "Can't use camera now" keeps camera exercises off for this long.
+  static const int cameraSkipMinutes = 15;
 }

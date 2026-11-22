@@ -47,7 +47,7 @@ final class FakeSessionProvider
   }
 }
 
-String _$fakeSessionHash() => r'6d57afcebcb6d126f9f302e52a1ce706873001da';
+String _$fakeSessionHash() => r'dc037c60f23e29a4b05bda10fa5644f82f56fc20';
 
 /// Stand-in for Supabase auth + `/me` onboarding state until the data layer
 /// lands. Flip it from the debug `/gallery` screen to exercise the redirects.

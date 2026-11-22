@@ -4,10 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'app.dart';
+import 'core/services/storage/hive_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   registerFontLicenses();
-  runApp(const ProviderScope(child: IsharaApp()));
+  final hive = await HiveService.init();
+  runApp(
+    ProviderScope(
+      overrides: [hiveServiceProvider.overrideWithValue(hive)],
+      child: const IsharaApp(),
+    ),
+  );
 }
 
 /// Adds the bundled fonts' OFL licences to the app's licence page.

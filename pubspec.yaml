@@ -40,6 +40,15 @@ dependencies:
   go_router: ^18.1.4
   flutter_riverpod: ^3.5.0
   riverpod_annotation: ^4.0.8
+  dio: ^5.11.1
+  dio_smart_retry: ^7.0.1
+  pretty_dio_logger: ^1.4.0
+  flutter_secure_storage: ^11.2.0
+  connectivity_plus: ^7.3.2
+  hive_ce: ^2.24.0
+  # 2.6.0 adds a zlib native build hook that needs MSVC on Windows hosts,
+  # which breaks `flutter test` there. 2.5.x has no native code.
+  hive_ce_flutter: ">=2.5.0 <2.6.0"
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +63,7 @@ dev_dependencies:
   riverpod_generator: ^4.0.10
   build_runner: ^2.17.1
   go_router_builder: ^4.5.3
+  mocktail: ^1.0.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -79,6 +89,10 @@ flutter:
     # Wave pose split into layers so Danu can wave (same artwork).
     - assets/mascot/wave_layers/
     - assets/roadmap/
+    # Mock API fixtures (USE_MOCK_API=true); shapes documented in docs/api-contract.md.
+    - assets/mock_api/
+    - assets/mock_api/auth/
+    - assets/mock_api/me/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;
   # Anek Devanagari (variable) for Nepali glyphs only.

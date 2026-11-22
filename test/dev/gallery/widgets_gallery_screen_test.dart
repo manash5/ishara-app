@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/theme/theme.dart';
+import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/dev/gallery/sections/widget_sections.dart';
 import 'package:ishara_app/dev/gallery/widgets_gallery_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,6 +77,26 @@ void main() {
     await tester.tap(find.byKey(const Key('widgets-gallery-theme-toggle')));
     await tester.pump();
     expect(brightness(tester), Brightness.light);
+  });
+
+  testWidgets('Mock API chips switch the simulation', (tester) async {
+    await pumpGallery(tester, Brightness.light);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(WidgetsGalleryScreen)),
+    );
+    expect(container.read(mockApiSettingsProvider), MockApiSimulation.none);
+    for (final simulation in MockApiSimulation.values.reversed) {
+      final chip = find.byKey(Key('gallery-mock-api-${simulation.name}'));
+      // The section sits near the top, below the fake-session switches.
+      await tester.tap(chip);
+      await tester.pump();
+      expect(container.read(mockApiSettingsProvider), simulation);
+      expect(
+        tester.widget<IsharaChip>(chip).selected,
+        isTrue,
+        reason: simulation.name,
+      );
+    }
   });
 
   test('/gallery route is registered in debug builds', () {

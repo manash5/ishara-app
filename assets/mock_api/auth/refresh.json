@@ -1,0 +1,10 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "Session refreshed",
+  "data": {
+    "accessToken": "replaced-by-mock-adapter",
+    "refreshToken": "replaced-by-mock-adapter",
+    "expiresAt": "2026-01-01T00:00:00.000Z"
+  }
+}

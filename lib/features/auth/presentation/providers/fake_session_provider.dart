@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/services/api/token_storage.dart';
+
 part 'fake_session_provider.g.dart';
 
 /// What the router needs to know about the user (UI-only phase).
@@ -10,7 +12,15 @@ typedef FakeSessionState = ({bool loggedIn, bool onboardingDone});
 @Riverpod(keepAlive: true)
 class FakeSession extends _$FakeSession {
   @override
-  FakeSessionState build() => (loggedIn: false, onboardingDone: false);
+  FakeSessionState build() {
+    // A cleared session (logout, failed token refresh) signs the user out;
+    // the router redirect then sends them to /welcome.
+    final sub = ref.watch(tokenStorageProvider).sessionChanges.listen((status) {
+      if (status == SessionStatus.signedOut) logOut();
+    });
+    ref.onDispose(sub.cancel);
+    return (loggedIn: false, onboardingDone: false);
+  }
 
   /// New account: logged in, onboarding still to do.
   void signUp() => state = (loggedIn: true, onboardingDone: false);
