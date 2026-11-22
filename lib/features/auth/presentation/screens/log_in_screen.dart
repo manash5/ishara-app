@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/auth_form_providers.dart';
@@ -10,6 +9,7 @@ import '../widgets/auth_form_scaffold.dart';
 import '../widgets/auth_link.dart';
 import '../widgets/or_divider.dart';
 import '../widgets/password_field.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "04 Log in" (7:206).
 ///

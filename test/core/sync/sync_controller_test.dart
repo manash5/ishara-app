@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/error/failure.dart';
 import 'package:ishara_app/core/error/result.dart';
-import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
 import 'package:ishara_app/core/sync/sync_controller.dart';
 import 'package:ishara_app/core/sync/sync_event.dart';
 import 'package:ishara_app/core/sync/sync_service.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:ishara_app/core/connectivity/is_online.dart';
 
 class _MockService extends Mock implements SyncService {}
 

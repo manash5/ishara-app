@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/features/auth/data/models/auth_session_dto.dart';
+import 'package:ishara_app/features/auth/domain/entities/auth_session.dart';
 import 'package:ishara_app/features/profile/domain/entities/user_profile.dart';
 
 import '../../../../helpers/mock_api.dart';
@@ -13,12 +14,15 @@ void main() {
     'auth/reset_password_200',
   ]) {
     test('parses the $name session', () {
-      final session = AuthSessionDto.fromJson(
+      final dto = AuthSessionDto.fromJson(
         fixtureData<Map<String, dynamic>>(name),
-      ).toEntity();
-      expect(session.accessToken, isNotEmpty);
-      expect(session.refreshToken, isNotEmpty);
-      expect(session.expiresAt.isUtc, isTrue);
+      );
+      expect(dto.accessToken, isNotEmpty);
+      expect(dto.refreshToken, isNotEmpty);
+      expect(dto.expiresAt.isUtc, isTrue);
+      // The domain session carries the learner, never the tokens.
+      final session = dto.toEntity();
+      expect(session, AuthSession(user: dto.user.toEntity()));
       expect(session.user.id, isNotEmpty);
       expect(session.user.dominantHand, Hand.right);
     });

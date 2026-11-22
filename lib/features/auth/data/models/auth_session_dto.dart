@@ -21,10 +21,6 @@ abstract class AuthSessionDto with _$AuthSessionDto {
   factory AuthSessionDto.fromJson(Map<String, dynamic> json) =>
       _$AuthSessionDtoFromJson(json);
 
-  AuthSession toEntity() => AuthSession(
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-    expiresAt: expiresAt,
-    user: user.toEntity(),
-  );
+  /// The domain session: the learner only (tokens go to `TokenStorage`).
+  AuthSession toEntity() => AuthSession(user: user.toEntity());
 }

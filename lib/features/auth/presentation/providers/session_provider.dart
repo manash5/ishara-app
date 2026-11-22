@@ -16,7 +16,7 @@ import '../../domain/usecases/watch_auth_status.dart';
 
 part 'session_provider.g.dart';
 
-/// What the router redirect needs (same shape as the old fake session).
+/// What the router redirect needs.
 typedef SessionFlags = ({bool loggedIn, bool onboardingDone});
 
 /// The learner's session as the app sees it. [ready] is false while the

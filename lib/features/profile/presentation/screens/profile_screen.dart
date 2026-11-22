@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/relative_time.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_hero.dart';
 import '../widgets/weekly_xp_chart.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// "1240" → "1,240".
 String groupThousands(int n) =>

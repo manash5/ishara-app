@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../error/app_exception.dart';
 import '../api/api_client.dart';
-import '../api/api_endpoints.dart';
-import '../api/mock_api_settings.dart';
+import 'health_remote_data_source.dart';
 
 part 'connectivity_service.g.dart';
 
@@ -17,10 +14,10 @@ part 'connectivity_service.g.dart';
 /// connection or a timeout counts as offline, as does a Wi-Fi link with no
 /// internet.
 class ConnectivityService {
-  ConnectivityService(this._connectivity, this._api);
+  ConnectivityService(this._connectivity, this._health);
 
   final Connectivity _connectivity;
-  final ApiClient _api;
+  final HealthRemoteDataSource _health;
 
   Future<bool> isOnline() async =>
       _reachable(await _connectivity.checkConnectivity());
@@ -70,11 +67,7 @@ class ConnectivityService {
   Future<bool> _reachable(List<ConnectivityResult> links) async {
     if (links.every((l) => l == ConnectivityResult.none)) return false;
     try {
-      // One quick probe: no retries with back-off.
-      await _api.get(
-        ApiEndpoints.health,
-        options: Options()..disableRetry = true,
-      );
+      await _health.check();
       return true;
     } on NetworkException {
       return false;
@@ -86,15 +79,7 @@ class ConnectivityService {
 }
 
 @Riverpod(keepAlive: true)
-ConnectivityService connectivityService(Ref ref) =>
-    ConnectivityService(Connectivity(), ref.watch(apiClientProvider));
-
-/// Whether the API is reachable now, updated as the network changes and
-/// re-checked while offline. With the mock API it also re-checks whenever the
-/// debug simulation changes, so the `/gallery` Offline toggle applies at once.
-/// Invalidate it to re-check (app resume).
-@Riverpod(keepAlive: true)
-Stream<bool> isOnline(Ref ref) {
-  if (ApiEndpoints.useMockApi) ref.watch(mockApiSettingsProvider);
-  return ref.watch(connectivityServiceProvider).watchOnline();
-}
+ConnectivityService connectivityService(Ref ref) => ConnectivityService(
+  Connectivity(),
+  HealthRemoteDataSource(ref.watch(apiClientProvider)),
+);

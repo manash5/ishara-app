@@ -12,7 +12,7 @@ import '../../../profile/domain/entities/user_profile.dart';
 import '../../domain/entities/auth_session.dart';
 import '../../domain/entities/auth_status.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../../domain/repositories/google_id_token_provider.dart';
+import '../../domain/services/google_id_token_provider.dart';
 import '../datasources/auth_remote_data_source.dart';
 import '../datasources/google_id_token_source.dart';
 import '../models/auth_session_dto.dart';

@@ -89,7 +89,7 @@ final class SyncServiceProvider
   }
 }
 
-String _$syncServiceHash() => r'57f693b354073d11664676bd3d4fdac2f0164f63';
+String _$syncServiceHash() => r'8bf6ba0d1815a58860359896093b8a89c23a7f2f';
 
 /// How many changes are waiting to sync.
 

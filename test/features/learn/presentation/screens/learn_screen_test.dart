@@ -135,14 +135,28 @@ void main() {
     await pumpLearn(tester);
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('lesson sheet · Thank you'), findsOneWidget);
+    // The sheet names the tapped node's lesson.
+    expect(
+      find.descendant(
+        of: find.byType(LearnLessonSheet),
+        matching: find.text('Thank you'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('learned waypoints reopen their lesson', (tester) async {
     await pumpLearn(tester);
     await tester.tap(find.text('Namaste'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('lesson sheet · Namaste'), findsOneWidget);
+    // The sheet names the tapped node's lesson.
+    expect(
+      find.descendant(
+        of: find.byType(LearnLessonSheet),
+        matching: find.text('Namaste'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('locked waypoints explain themselves visually', (tester) async {
@@ -283,7 +297,12 @@ void main() {
           theme: AppTheme.light,
           home: ProviderScope(
             overrides: mockApiOverrides(simulation: MockApiSimulation.offline),
-            child: const Scaffold(body: LearnLessonSheet(title: 'Thank you')),
+            child: const Scaffold(
+              body: LearnLessonSheet(
+                lessonId: FixtureIds.currentLesson,
+                title: 'Thank you',
+              ),
+            ),
           ),
         ),
       );

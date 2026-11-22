@@ -7,6 +7,7 @@ import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/api/token_storage.dart';
 import 'package:ishara_app/core/sync/sync_event.dart';
 import 'package:ishara_app/core/sync/sync_queue.dart';
+import 'package:ishara_app/core/sync/sync_remote_data_source.dart';
 import 'package:ishara_app/core/sync/sync_service.dart';
 
 import '../../helpers/fake_http_adapter.dart';
@@ -39,11 +40,13 @@ void main() {
       adapter = FakeHttpAdapter((_) => envelope({'results': <Object>[]}));
       service = SyncService(
         queue,
-        ApiClient(
-          tokenStorage: TokenStorage(),
-          adapter: adapter,
-          retryDelays: const [],
-          enableLogging: false,
+        SyncRemoteDataSource(
+          ApiClient(
+            tokenStorage: TokenStorage(),
+            adapter: adapter,
+            retryDelays: const [],
+            enableLogging: false,
+          ),
         ),
       );
     });
@@ -142,7 +145,7 @@ void main() {
     var simulation = MockApiSimulation.offline;
     final service = SyncService(
       queue,
-      mockApiClient(simulation: () => simulation),
+      SyncRemoteDataSource(mockApiClient(simulation: () => simulation)),
     );
     await queue.enqueue(event('e-1'));
 

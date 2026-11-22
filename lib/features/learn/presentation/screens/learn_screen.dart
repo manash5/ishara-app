@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
@@ -10,6 +9,7 @@ import '../providers/learn_path_provider.dart';
 import '../widgets/learn_offline_notice.dart';
 import '../widgets/learn_path_view.dart';
 import 'learn_lesson_sheet.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "10 Learn" (10:457): StatsBar over the scrolling roadmap. Tapping a
 /// lesson opens the lesson sheet (11). Offline (12) the cached roadmap stays,
@@ -40,11 +40,10 @@ class LearnScreen extends ConsumerWidget {
       case PathNodeState.current ||
           PathNodeState.completed ||
           PathNodeState.review:
-        showLearnLessonSheet(
-          context,
-          lessonId: stop.lessonId,
-          title: stop.title,
-        );
+        // Lesson stops always carry their lesson id (`GET /path`).
+        if (stop.lessonId case final lessonId?) {
+          showLearnLessonSheet(context, lessonId: lessonId, title: stop.title);
+        }
       case PathNodeState.chest:
         IsharaSnackbar.show(
           context,

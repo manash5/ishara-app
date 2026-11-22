@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ishara_app/core/error/app_exception.dart';
 import 'package:ishara_app/features/auth/data/datasources/google_id_token_source.dart';
-import 'package:ishara_app/features/auth/domain/repositories/google_id_token_provider.dart';
+import 'package:ishara_app/features/auth/domain/services/google_id_token_provider.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGoogleSignIn extends Mock implements GoogleSignIn {}

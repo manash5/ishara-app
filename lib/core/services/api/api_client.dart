@@ -4,13 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'api_endpoints.dart';
 import 'api_exception_mapper.dart';
 import 'api_response.dart';
 import 'auth_interceptor.dart';
 import 'mock_api_adapter.dart';
 import 'mock_api_settings.dart';
+import 'token_refresh_remote_data_source.dart';
 import 'token_storage.dart';
+import '../../config/api_config.dart';
 
 part 'api_client.g.dart';
 
@@ -18,7 +19,7 @@ part 'api_client.g.dart';
 ApiClient apiClient(Ref ref) {
   final client = ApiClient(
     tokenStorage: ref.watch(tokenStorageProvider),
-    adapter: ApiEndpoints.useMockApi
+    adapter: ApiConfig.useMockApi
         ? MockApiAdapter(simulation: () => ref.read(mockApiSettingsProvider))
         : null,
   );
@@ -37,10 +38,10 @@ class ApiClient {
     bool enableLogging = kDebugMode,
   }) {
     final options = BaseOptions(
-      baseUrl: ApiEndpoints.baseUrl,
-      connectTimeout: ApiEndpoints.connectionTimeout,
-      receiveTimeout: ApiEndpoints.receiveTimeout,
-      sendTimeout: ApiEndpoints.sendTimeout,
+      baseUrl: ApiConfig.baseUrl,
+      connectTimeout: ApiConfig.connectionTimeout,
+      receiveTimeout: ApiConfig.receiveTimeout,
+      sendTimeout: ApiConfig.sendTimeout,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -59,16 +60,7 @@ class ApiClient {
       AuthInterceptor(
         tokens: tokenStorage,
         dio: _dio,
-        refresh: (refreshToken) async {
-          final response = await refreshDio.post<dynamic>(
-            ApiEndpoints.refreshToken,
-            data: {'refreshToken': refreshToken},
-          );
-          return ApiEnvelope.fromJson(
-            response.data,
-            AuthTokens.fromJson,
-          ).requireData;
-        },
+        refresh: TokenRefreshRemoteDataSource(refreshDio).refresh,
       ),
     );
 

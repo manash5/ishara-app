@@ -11,6 +11,8 @@ import 'package:ishara_app/core/services/api/token_storage.dart';
 
 import '../../../helpers/fake_http_adapter.dart';
 
+import 'package:ishara_app/core/config/api_config.dart';
+
 void main() {
   late TokenStorage storage;
   late FakeHttpAdapter adapter;
@@ -31,7 +33,7 @@ void main() {
 
   test('uses the configured base URL, timeouts and JSON headers', () {
     final options = client.dio.options;
-    expect(options.baseUrl, ApiEndpoints.baseUrl);
+    expect(options.baseUrl, ApiConfig.baseUrl);
     expect(options.connectTimeout, const Duration(seconds: 30));
     expect(options.receiveTimeout, const Duration(seconds: 30));
     expect(options.headers['Accept'], 'application/json');
@@ -106,8 +108,8 @@ void main() {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     final dio = container.read(apiClientProvider).dio;
-    expect(ApiEndpoints.useMockApi, isTrue);
+    expect(ApiConfig.useMockApi, isTrue);
     expect(dio.httpClientAdapter, isA<MockApiAdapter>());
-    expect(dio.options.baseUrl, ApiEndpoints.mockBaseUrl);
+    expect(dio.options.baseUrl, ApiConfig.mockBaseUrl);
   });
 }

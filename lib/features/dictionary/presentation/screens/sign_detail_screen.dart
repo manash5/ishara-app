@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/dictionary_models.dart';
 import '../providers/dictionary_providers.dart';
 import '../widgets/sign_detail_sections.dart';
 import '../widgets/sign_status_tone.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "14 Sign detail" (Light 12:1025 · Dark 60:6840): pushed inside the
 /// Dictionary branch, so the floating bottom bar stays visible and the

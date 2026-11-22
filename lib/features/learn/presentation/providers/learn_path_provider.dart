@@ -17,9 +17,9 @@ class PathStop {
   const PathStop({
     required this.state,
     required this.title,
+    required this.signs,
+    required this.minutes,
     this.lessonId,
-    this.signs = 3,
-    this.minutes = 5,
   });
 
   final PathNodeState state;

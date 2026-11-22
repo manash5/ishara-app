@@ -3,8 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/config/google_auth_config.dart';
 import '../../../../core/error/app_exception.dart';
-import '../../../../core/services/api/api_endpoints.dart';
-import '../../domain/repositories/google_id_token_provider.dart';
+import '../../domain/services/google_id_token_provider.dart';
+import '../../../../core/config/api_config.dart';
 
 part 'google_id_token_source.g.dart';
 
@@ -74,6 +74,6 @@ class FakeGoogleIdTokenProvider implements GoogleIdTokenProvider {
 
 /// The real Google picker, or the fake one with the mock API.
 @Riverpod(keepAlive: true)
-GoogleIdTokenProvider googleIdTokenSource(Ref ref) => ApiEndpoints.useMockApi
+GoogleIdTokenProvider googleIdTokenSource(Ref ref) => ApiConfig.useMockApi
     ? const FakeGoogleIdTokenProvider()
     : GoogleSignInIdTokenProvider();

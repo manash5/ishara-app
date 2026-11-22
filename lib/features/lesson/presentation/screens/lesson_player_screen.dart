@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
@@ -16,6 +15,7 @@ import '../widgets/recognise_exercise_view.dart';
 import '../widgets/sign_it_exercise_view.dart';
 import '../widgets/watch_exercise_view.dart';
 import 'quit_lesson_dialog.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma copy for the XP shown in a correct `FeedbackSheet` (20).
 const String _xpCopy = '+3 XP';

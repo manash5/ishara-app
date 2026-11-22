@@ -1,28 +1,7 @@
-/// REST API paths and settings (`/api/v1`, contract in `docs/api-contract.md`).
-/// Values come from `--dart-define-from-file=env/dev.json`.
+/// REST API paths (`/api/v1`, contract in `docs/api-contract.md`). Settings
+/// (base URL, mock mode, timeouts) live in `ApiConfig` (`lib/core/config/`).
 class ApiEndpoints {
   ApiEndpoints._();
-
-  /// Serve `assets/mock_api/` fixtures instead of calling a server.
-  static const bool useMockApi = bool.fromEnvironment(
-    'USE_MOCK_API',
-    defaultValue: true,
-  );
-
-  static const String _configuredBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-  );
-
-  /// Host the mock adapter pretends to be when no base URL is configured.
-  static const String mockBaseUrl = 'https://mock.ishara.local/api/v1';
-
-  static String get baseUrl => _configuredBaseUrl.isEmpty && useMockApi
-      ? mockBaseUrl
-      : _configuredBaseUrl;
-
-  static const Duration connectionTimeout = Duration(seconds: 30);
-  static const Duration receiveTimeout = Duration(seconds: 30);
-  static const Duration sendTimeout = Duration(seconds: 30);
 
   // =========== Auth Endpoints ===========
   static const String userRegister = '/auth/register';

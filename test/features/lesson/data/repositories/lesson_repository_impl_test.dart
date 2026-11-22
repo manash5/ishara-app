@@ -6,6 +6,7 @@ import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
 import 'package:ishara_app/core/sync/sync_event.dart';
 import 'package:ishara_app/core/sync/sync_queue.dart';
+import 'package:ishara_app/core/sync/sync_remote_data_source.dart';
 import 'package:ishara_app/core/sync/sync_service.dart';
 import 'package:ishara_app/features/lesson/data/datasources/lesson_local_data_source.dart';
 import 'package:ishara_app/features/lesson/data/datasources/lesson_remote_data_source.dart';
@@ -268,8 +269,10 @@ void main() {
           SyncQueue(TestHive.instance),
         );
 
-    SyncService sync([MockApiSimulation Function()? s]) =>
-        SyncService(SyncQueue(TestHive.instance), mockApiClient(simulation: s));
+    SyncService sync([MockApiSimulation Function()? s]) => SyncService(
+      SyncQueue(TestHive.instance),
+      SyncRemoteDataSource(mockApiClient(simulation: s)),
+    );
 
     test(
       'maps the lesson and one exercise of each type, and caches it',

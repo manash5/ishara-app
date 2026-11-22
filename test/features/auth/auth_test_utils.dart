@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ishara_app/core/router/redirect.dart';
 import 'package:ishara_app/core/services/api/api_client.dart';
@@ -11,7 +10,7 @@ import 'package:ishara_app/core/services/api/token_storage.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/features/auth/data/datasources/google_id_token_source.dart';
-import 'package:ishara_app/features/auth/domain/repositories/google_id_token_provider.dart';
+import 'package:ishara_app/features/auth/domain/services/google_id_token_provider.dart';
 import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:ishara_app/features/auth/presentation/screens/log_in_screen.dart';
@@ -22,6 +21,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/mock_api.dart';
 import '../../helpers/test_hive.dart';
+
+import 'package:ishara_app/core/connectivity/is_online.dart';
 
 /// One token store shared by the API client (its auth interceptor) and the
 /// session, the zero-latency mock API (whose [simulation] can change

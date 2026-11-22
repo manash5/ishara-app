@@ -5,11 +5,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../error/result.dart';
 import '../services/api/api_client.dart';
-import '../services/connectivity/connectivity_service.dart';
 import '../services/storage/hive_service.dart';
 import 'sync_event.dart';
 import 'sync_queue.dart';
+import 'sync_remote_data_source.dart';
 import 'sync_service.dart';
+import '../connectivity/is_online.dart';
 
 part 'sync_controller.g.dart';
 
@@ -17,8 +18,10 @@ part 'sync_controller.g.dart';
 SyncQueue syncQueue(Ref ref) => SyncQueue(ref.watch(hiveServiceProvider));
 
 @Riverpod(keepAlive: true)
-SyncService syncService(Ref ref) =>
-    SyncService(ref.watch(syncQueueProvider), ref.watch(apiClientProvider));
+SyncService syncService(Ref ref) => SyncService(
+  ref.watch(syncQueueProvider),
+  SyncRemoteDataSource(ref.watch(apiClientProvider)),
+);
 
 /// How many changes are waiting to sync.
 @riverpod

@@ -2,13 +2,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/relative_time.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/ranks_providers.dart';
 import '../widgets/league_header.dart';
 import '../widgets/leaderboard_parts.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "15 Ranks" (Light 12:1204 · Dark 60:6872): a tab root in the
 /// bottom-bar shell. League hero header, then a content panel with the

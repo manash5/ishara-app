@@ -9,7 +9,7 @@ import 'package:ishara_app/features/auth/data/datasources/google_id_token_source
 import 'package:ishara_app/features/auth/data/models/auth_session_dto.dart';
 import 'package:ishara_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:ishara_app/features/auth/domain/entities/auth_status.dart';
-import 'package:ishara_app/features/auth/domain/repositories/google_id_token_provider.dart';
+import 'package:ishara_app/features/auth/domain/services/google_id_token_provider.dart';
 import 'package:ishara_app/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:ishara_app/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ishara_app/features/profile/data/models/user_profile_dto.dart';

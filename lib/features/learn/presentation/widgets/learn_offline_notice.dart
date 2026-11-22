@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/services/connectivity/connectivity_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "12 Learn – offline": the roadmap stays (cached) and this
 /// [IsharaSnackbar] sits above the bottom bar while offline. OK hides it

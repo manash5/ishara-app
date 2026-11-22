@@ -9,12 +9,13 @@ import 'package:ishara_app/core/services/api/api_client.dart';
 import 'package:ishara_app/core/services/api/mock_api_adapter.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/api/token_storage.dart';
-import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
 import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:ishara_app/features/recognition/data/sign_template_source.dart';
 
 import 'test_hive.dart';
+
+import 'package:ishara_app/core/connectivity/is_online.dart';
 
 /// Reads `assets/mock_api/` straight from disk, so fixture loads finish
 /// within a widget test's frame instead of going through the asset channel.

@@ -10,10 +10,13 @@ import 'package:ishara_app/core/services/api/api_client.dart';
 import 'package:ishara_app/core/services/api/api_endpoints.dart';
 import 'package:ishara_app/core/services/api/token_storage.dart';
 import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
+import 'package:ishara_app/core/services/connectivity/health_remote_data_source.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/fake_http_adapter.dart';
 import '../../../helpers/mock_api.dart';
+
+import 'package:ishara_app/core/connectivity/is_online.dart';
 
 class _MockConnectivity extends Mock implements Connectivity {}
 
@@ -34,11 +37,13 @@ void main() {
     );
     service = ConnectivityService(
       connectivity,
-      ApiClient(
-        tokenStorage: storage,
-        adapter: adapter,
-        retryDelays: const [Duration.zero],
-        enableLogging: false,
+      HealthRemoteDataSource(
+        ApiClient(
+          tokenStorage: storage,
+          adapter: adapter,
+          retryDelays: const [Duration.zero],
+          enableLogging: false,
+        ),
       ),
     );
   });
@@ -156,8 +161,10 @@ void main() {
         connectivityServiceProvider.overrideWith(
           (ref) => ConnectivityService(
             connectivity,
-            mockApiClient(
-              simulation: () => container.read(mockApiSettingsProvider),
+            HealthRemoteDataSource(
+              mockApiClient(
+                simulation: () => container.read(mockApiSettingsProvider),
+              ),
             ),
           ),
         ),

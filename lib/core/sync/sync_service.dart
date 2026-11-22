@@ -1,20 +1,18 @@
-import '../error/app_exception.dart';
 import '../error/result.dart';
-import '../services/api/api_client.dart';
-import '../services/api/api_endpoints.dart';
-import '../services/api/api_response.dart';
 import 'sync_event.dart';
 import 'sync_queue.dart';
+import 'sync_remote_data_source.dart';
+import 'sync_result_dto.dart';
 
 /// Sends the offline queue through `POST /progress/sync` (oldest first).
 /// Applied, duplicate and rejected events leave the queue; on any failure
 /// every event stays (never dropped) and is marked failed. Replays are safe:
 /// the server is idempotent on `clientEventId`.
 class SyncService {
-  SyncService(this._queue, this._api);
+  SyncService(this._queue, this._remote);
 
   final SyncQueue _queue;
-  final ApiClient _api;
+  final SyncRemoteDataSource _remote;
 
   /// The flush in progress, shared by concurrent callers.
   Future<Result<SyncReport>>? _flushing;
@@ -48,7 +46,7 @@ class SyncService {
     }
     if (events.isEmpty) return const Ok(SyncReport());
 
-    final sent = await guard(() => _send(events));
+    final sent = await guard(() => _remote.sync(events));
     switch (sent) {
       case Err(:final failure):
         await guard(() => _queue.markFailed(events));
@@ -58,23 +56,9 @@ class SyncService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _send(List<SyncEvent> events) async {
-    final response = await _api.post(
-      ApiEndpoints.syncProgress,
-      data: {
-        'events': [for (final e in events) e.toWire()],
-      },
-    );
-    return ApiEnvelope.fromJson(response.data, (d) {
-      final results = (d! as Map<String, dynamic>)['results'];
-      if (results is! List) throw const UnknownException();
-      return results.cast<Map<String, dynamic>>();
-    }).requireData;
-  }
-
   Future<SyncReport> _apply(
     List<SyncEvent> events,
-    List<Map<String, dynamic>> results,
+    List<SyncResultDto> results,
   ) async {
     final byId = {for (final e in events) e.clientEventId: e};
     final done = <String>{};
@@ -82,16 +66,16 @@ class SyncService {
     var duplicates = 0;
     var rejected = 0;
     for (final r in results) {
-      final event = byId[r['clientEventId']];
+      final event = byId[r.clientEventId];
       if (event == null) continue;
-      switch (r['status']) {
+      switch (r.status) {
         case 'applied':
           done.add(event.clientEventId);
           applied.add(
             SyncApplied(
               clientEventId: event.clientEventId,
               type: event.type,
-              result: r['result'] as Map<String, dynamic>?,
+              result: r.result,
             ),
           );
         case 'duplicate':

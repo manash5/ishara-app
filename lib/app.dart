@@ -3,10 +3,10 @@ import 'package:material_ui/material_ui.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/theme.dart';
-import 'core/services/connectivity/connectivity_service.dart';
 import 'core/sync/sync_controller.dart';
 import 'features/lesson/presentation/providers/lesson_sync_listener.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
+import 'core/connectivity/is_online.dart';
 
 /// Root widget: Ishara light/dark themes (the learner's saved choice,
 /// system by default), go_router, and the offline lesson queue flushed on
