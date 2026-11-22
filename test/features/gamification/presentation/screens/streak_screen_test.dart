@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +34,7 @@ void main() {
     WidgetTester tester, {
     ThemeMode mode = ThemeMode.light,
     bool reduced = false,
+    double textScale = 1,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
@@ -45,7 +48,10 @@ void main() {
           themeMode: mode,
           home: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(disableAnimations: reduced),
+              data: MediaQuery.of(context).copyWith(
+                disableAnimations: reduced,
+                textScaler: TextScaler.linear(textScale),
+              ),
               child: const StreakScreen(),
             ),
           ),
@@ -77,8 +83,8 @@ void main() {
         ),
         findsOneWidget,
       );
-      // Like 26: the flame left of the count, Danu on the right beside the
-      // text, straddling the hero and the panel.
+      // Flame + the count over "day streak", centred left of Danu; Danu
+      // (bigger than on 26) at the right edge, feet on the white panel.
       final flame = tester.getRect(
         find.byWidgetPredicate(
           (w) => w is IsharaFilledIcon && w.kind == IsharaFilledIconKind.flame,
@@ -86,17 +92,37 @@ void main() {
       );
       final count = tester.getRect(find.text('12'));
       final caption = tester.getRect(find.text('day streak'));
-      expect(flame.right, lessThan(count.left));
-      expect(flame.right, lessThan(caption.left));
       final danuRect = tester.getRect(find.byType(DanuMascot));
-      final heroRect = tester.getRect(find.byType(HeroBackdrop));
+      final heroWidth = tester.getSize(find.byType(HeroBackdrop)).width;
       final panelTop = tester.getRect(find.byType(ContentPanel)).top;
-      expect(danuRect.left, greaterThan(heroRect.width / 2));
-      // A little higher than on 26: Danu starts beside the count.
-      expect(danuRect.top, lessThan(count.bottom));
-      expect(danuRect.top, greaterThan(count.top));
-      expect(danuRect.top, lessThan(panelTop));
-      expect(danuRect.bottom, greaterThan(panelTop));
+      expect(flame.right, lessThan(count.left));
+      expect(caption.left, count.left);
+      expect(caption.top, greaterThanOrEqualTo(count.bottom));
+      expect(danuRect.size, const Size.square(IsharaSizes.streakMascot));
+      expect(danuRect.right, heroWidth - IsharaSpacing.screenMargin);
+      expect(
+        math.max(count.right, caption.right),
+        lessThanOrEqualTo(danuRect.left),
+      );
+      // Centred in the space left of Danu: the hero row spans exactly that
+      // space and centres its content.
+      final heroRow = find
+          .ancestor(
+            of: find.text('day streak'),
+            matching: find.byWidgetPredicate(
+              (w) =>
+                  w is Row && w.mainAxisAlignment == MainAxisAlignment.center,
+            ),
+          )
+          .first;
+      final rowRect = tester.getRect(heroRow);
+      expect(rowRect.left, IsharaSpacing.screenMargin);
+      expect(rowRect.right, closeTo(danuRect.left, 0.01));
+      // Beside the text, not below it.
+      expect(danuRect.top, lessThanOrEqualTo(caption.top));
+      expect(danuRect.bottom, greaterThan(caption.bottom));
+      // Just touching the white.
+      expect(danuRect.bottom - panelTop, IsharaSizes.streakMascotDip);
       // Today (Sunday, the last "S") is labelled in text/primary, other
       // days tertiary.
       expect(renderedStyle(tester, find.text('S').last)?.color, c.textPrimary);
@@ -128,6 +154,17 @@ void main() {
         matching: find.byType(CustomPaint),
       ),
       findsNothing,
+    );
+  });
+
+  testWidgets('the one-line hero fits at 1.3x text scale', (tester) async {
+    await pumpStreak(tester, reduced: true, textScale: 1.3);
+    expect(tester.takeException(), isNull);
+    expect(find.text('day streak'), findsOneWidget);
+    final hero = tester.getRect(find.byType(HeroBackdrop));
+    expect(
+      tester.getRect(find.byType(DanuMascot)).right,
+      lessThanOrEqualTo(hero.right),
     );
   });
 

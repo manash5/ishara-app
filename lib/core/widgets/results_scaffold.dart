@@ -121,8 +121,8 @@ class ResultsScaffold extends StatelessWidget {
 /// celebrate: cheering wings, a hop and twinkling confetti). Reduced
 /// motion shows the still pose.
 ///
-/// Pass it as [ResultsScaffold.danu] with [HeroBackdropLayout.results]:
-/// Danu then sits at the hero's right edge, clear of the backdrop circles.
+/// Pass it as [ResultsScaffold.danu]: it sits at the hero's right edge,
+/// drawn over the panel's top.
 class ResultsDanu extends StatelessWidget {
   const ResultsDanu({
     super.key,
