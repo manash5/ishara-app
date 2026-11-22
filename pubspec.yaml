@@ -105,6 +105,8 @@ flutter:
     - assets/mock_api/path/
     - assets/mock_api/progress/
     - assets/mock_api/signs/
+    # Greeting reference templates for DTW (synthetic until ishara-systems/ml).
+    - assets/ml/templates/greetings/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;
   # Anek Devanagari (variable) for Nepali glyphs only.

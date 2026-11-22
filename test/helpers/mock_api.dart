@@ -11,6 +11,8 @@ import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/services/api/token_storage.dart';
 import 'package:ishara_app/core/services/connectivity/connectivity_service.dart';
 import 'package:ishara_app/core/services/storage/hive_service.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
+import 'package:ishara_app/features/recognition/data/sign_template_source.dart';
 
 import 'test_hive.dart';
 
@@ -71,6 +73,10 @@ List<Override> mockApiOverrides({
       ),
     ),
     hiveServiceProvider.overrideWithValue(TestHive.instance),
+    // Greeting templates read from disk (instant under fake time).
+    signTemplateSourceProvider.overrideWithValue(
+      SignTemplateSource(FixtureBundle()),
+    ),
     // No connectivity plugin in tests: online unless simulating offline.
     isOnlineProvider.overrideWith(
       (ref) => Stream.value(simulation != MockApiSimulation.offline),
