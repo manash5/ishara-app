@@ -212,8 +212,8 @@ return $default(_that.units);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _PathDto extends PathDto {
   const _PathDto({required  List<PathUnitDto> units}): _units = units,super._();
   factory _PathDto.fromJson(Map<String, dynamic> json) => _$PathDtoFromJson(json);
@@ -494,8 +494,8 @@ return $default(_that.id,_that.number,_that.title,_that.color,_that.learnedCount
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _PathUnitDto extends PathUnitDto {
   const _PathUnitDto({required this.id, required this.number, required this.title, required this.color, required this.learnedCount, required this.totalCount, required  List<PathStopDto> stops}): _stops = stops,super._();
   factory _PathUnitDto.fromJson(Map<String, dynamic> json) => _$PathUnitDtoFromJson(json);
@@ -798,8 +798,8 @@ return $default(_that.id,_that.type,_that.state,_that.title,_that.lesson);case _
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _PathStopDto extends PathStopDto {
   const _PathStopDto({required this.id, required this.type, required this.state, required this.title, this.lesson}): super._();
   factory _PathStopDto.fromJson(Map<String, dynamic> json) => _$PathStopDtoFromJson(json);

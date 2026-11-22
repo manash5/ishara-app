@@ -13,7 +13,7 @@ _PathDto _$PathDtoFromJson(Map<String, dynamic> json) => _PathDto(
 );
 
 Map<String, dynamic> _$PathDtoToJson(_PathDto instance) => <String, dynamic>{
-  'units': instance.units,
+  'units': instance.units.map((e) => e.toJson()).toList(),
 };
 
 _PathUnitDto _$PathUnitDtoFromJson(Map<String, dynamic> json) => _PathUnitDto(
@@ -36,7 +36,7 @@ Map<String, dynamic> _$PathUnitDtoToJson(_PathUnitDto instance) =>
       'color': instance.color,
       'learnedCount': instance.learnedCount,
       'totalCount': instance.totalCount,
-      'stops': instance.stops,
+      'stops': instance.stops.map((e) => e.toJson()).toList(),
     };
 
 _PathStopDto _$PathStopDtoFromJson(Map<String, dynamic> json) => _PathStopDto(
@@ -55,7 +55,7 @@ Map<String, dynamic> _$PathStopDtoToJson(_PathStopDto instance) =>
       'type': instance.type,
       'state': instance.state,
       'title': instance.title,
-      'lesson': instance.lesson,
+      'lesson': instance.lesson?.toJson(),
     };
 
 _LessonSummaryDto _$LessonSummaryDtoFromJson(Map<String, dynamic> json) =>

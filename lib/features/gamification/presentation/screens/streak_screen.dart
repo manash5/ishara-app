@@ -112,14 +112,17 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
       onContinue: () => const LearnRoute().go(context),
       children: [
         const SectionHeader(title: 'This week'),
-        WeekStreakRow(practised: streak.week, todayIndex: streak.todayIndex),
+        WeekStreakRow(
+          practised: streak.practisedDays,
+          todayIndex: streak.todayIndex,
+        ),
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: StatCard(
-                  value: '${streak.longest}',
+                  value: '${streak.longestDays}',
                   caption: 'Longest streak',
                   kind: IsharaFilledIconKind.star,
                   tint: StatCardTint.peach,

@@ -91,8 +91,8 @@ class LearnScreen extends ConsumerWidget {
                   top: MediaQuery.paddingOf(context).top,
                 ),
                 child: StatsBar(
-                  streak: stats.streak,
-                  xp: stats.xp,
+                  streak: stats.streakDays,
+                  xp: stats.totalXp,
                   hearts: stats.hearts,
                   onCourse: () => IsharaSnackbar.show(
                     context,

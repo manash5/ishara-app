@@ -1,14 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/utils/async_value_x.dart';
-
 import '../../../../core/widgets/widgets.dart';
-import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../../gamification/domain/entities/game_stats.dart';
+import '../../../gamification/presentation/providers/progress_stats_provider.dart';
 import '../../data/repositories/path_repository_impl.dart';
 import '../../domain/entities/lesson_summary.dart';
 import '../../domain/entities/path_unit.dart' as domain;
-import '../../domain/usecases/get_path.dart';
+import '../../domain/usecases/watch_path.dart';
 
 part 'learn_path_provider.g.dart';
 
@@ -56,9 +55,6 @@ class PathUnit {
   final List<PathStop> stops;
 }
 
-/// Header stats on the Learn tab (Figma StatsBar 10:466).
-typedef LearnStats = ({int streak, int xp, int hearts});
-
 /// Domain path → roadmap view models.
 PathUnit pathUnitFromDomain(domain.PathUnit u) => PathUnit(
   number: u.number,
@@ -86,26 +82,20 @@ PathUnit pathUnitFromDomain(domain.PathUnit u) => PathUnit(
   ],
 );
 
-/// The roadmap (`GET /path`).
+/// The roadmap (`GET /path`): the cached path first (so Learn works
+/// offline), then the fresh one. Errors only when nothing is cached; retry
+/// with `ref.invalidate(learnPathProvider)`.
 @riverpod
-Future<List<PathUnit>> learnPath(Ref ref) async {
-  final units = (await GetPath(
-    ref.watch(pathRepositoryProvider),
-  )()).getOrThrow();
-  return [for (final u in units) pathUnitFromDomain(u)];
-}
+Stream<List<PathUnit>> learnPath(Ref ref) =>
+    WatchPath(ref.watch(pathRepositoryProvider))().map(
+      (result) => [for (final u in result.getOrThrow()) pathUnitFromDomain(u)],
+    );
 
-/// Header stats from the learner's profile (`GET /me`).
+/// Header stats on the Learn tab (Figma StatsBar 10:466), from the
+/// learner's profile (`GET /me`).
 @riverpod
-AsyncValue<LearnStats> learnStats(Ref ref) =>
-    ref.watch(userProfileProvider).mapKeepingError((p) {
-      final stats = p.stats;
-      return (
-        streak: stats.streakDays,
-        xp: stats.totalXp,
-        hearts: stats.hearts,
-      );
-    });
+AsyncValue<ProgressStats> learnStats(Ref ref) =>
+    ref.watch(progressStatsProvider);
 
 /// Fake connectivity for frame 12 (Learn – offline). Flip it from the debug
 /// `/gallery` until real connectivity lands.

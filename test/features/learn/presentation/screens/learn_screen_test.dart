@@ -1,20 +1,26 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/error/failure.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:ishara_app/features/learn/data/datasources/path_local_data_source.dart';
 import 'package:ishara_app/features/learn/presentation/providers/learn_path_provider.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_offline_view.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/learn_path_view.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/trek_painters.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/trek_widgets.dart';
+import 'package:ishara_app/features/profile/presentation/providers/profile_provider.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/load_states.dart';
 import '../../../../helpers/mock_api.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/test_hive.dart';
+import '../../../gamification/test_profile.dart';
 
 Finder markerIn(PathNodeState state) =>
     find.byWidgetPredicate((w) => w is WaypointMarker && w.state == state);
@@ -232,4 +238,61 @@ void main() {
     errorTitle: 'Couldn’t load your path',
     loadingLabel: 'Loading your path',
   );
+
+  group('offline (cache first)', () {
+    // The profile comes from the profile feature (cached there); pin it so
+    // these tests are about the path alone.
+    final profile = userProfileProvider.overrideWithValue(
+      AsyncData(testProfile()),
+    );
+
+    testWidgets('with a cached path: shows the cached roadmap, no error', (
+      tester,
+    ) async {
+      await TestHive.instance.putCache(
+        PathLocalDataSource.cacheKey,
+        fixtureData<Map<String, dynamic>>('path/get_200'),
+      );
+      await pumpApp(
+        tester,
+        loggedIn: true,
+        onboardingDone: true,
+        location: const LearnRoute().location,
+        simulation: MockApiSimulation.offline,
+        overrides: [profile],
+      );
+      await pumpApi(tester);
+      expect(find.byType(LearnPathView), findsOneWidget);
+      expect(find.text('Greetings & etiquette'), findsOneWidget);
+      expect(find.byType(CurrentLessonCard), findsOneWidget);
+      expect(find.text('Couldn’t load your path'), findsNothing);
+      expect(find.text(const NetworkFailure().message), findsNothing);
+    });
+
+    testWidgets('without a cache: the error state with Try again', (
+      tester,
+    ) async {
+      await pumpApp(
+        tester,
+        loggedIn: true,
+        onboardingDone: true,
+        location: const LearnRoute().location,
+        simulation: MockApiSimulation.offline,
+        overrides: [profile],
+      );
+      await pumpApi(tester);
+      expect(find.byType(LearnPathView), findsNothing);
+      expect(find.text('Couldn’t load your path'), findsOneWidget);
+      expect(find.text(const NetworkFailure().message), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+    });
+
+    testWidgets('a fetched path is cached for next time', (tester) async {
+      await pumpLearn(tester);
+      expect(
+        TestHive.instance.cache.containsKey(PathLocalDataSource.cacheKey),
+        isTrue,
+      );
+    });
+  });
 }

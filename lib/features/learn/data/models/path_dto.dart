@@ -1,3 +1,6 @@
+// explicitToJson on the factories makes toJson() plain JSON for the cache.
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/lesson_summary.dart';
@@ -11,6 +14,7 @@ part 'path_dto.g.dart';
 abstract class PathDto with _$PathDto {
   const PathDto._();
 
+  @JsonSerializable(explicitToJson: true)
   const factory PathDto({required List<PathUnitDto> units}) = _PathDto;
 
   factory PathDto.fromJson(Map<String, dynamic> json) =>
@@ -23,6 +27,7 @@ abstract class PathDto with _$PathDto {
 abstract class PathUnitDto with _$PathUnitDto {
   const PathUnitDto._();
 
+  @JsonSerializable(explicitToJson: true)
   const factory PathUnitDto({
     required String id,
     required int number,
@@ -51,6 +56,7 @@ abstract class PathUnitDto with _$PathUnitDto {
 abstract class PathStopDto with _$PathStopDto {
   const PathStopDto._();
 
+  @JsonSerializable(explicitToJson: true)
   const factory PathStopDto({
     required String id,
     required String type,
