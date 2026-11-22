@@ -403,6 +403,24 @@ Widget sharedLoadStateView(BuildContext context) => GallerySection(
   ],
 );
 
+Widget sharedConfirmDialog(BuildContext context) => GallerySection(
+  title: 'ConfirmDialog',
+  subtitle:
+      'asks before an irreversible action (29 quit lesson, delete account)',
+  children: [
+    ConfirmDialog(
+      title: 'Delete your account?',
+      body:
+          'This permanently deletes your account, progress and streak from '
+          'Ishara. You can’t undo this.',
+      confirmLabel: 'Delete account',
+      cancelLabel: 'Cancel',
+      onConfirm: () {},
+      onCancel: () {},
+    ),
+  ],
+);
+
 Widget sharedResultsDanu(BuildContext context) => GallerySection(
   title: 'ResultsScaffold · ResultsDanu',
   subtitle:

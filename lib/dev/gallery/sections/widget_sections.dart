@@ -63,6 +63,7 @@ final List<WidgetBuilder> widgetSections = [
   sharedStateMessage,
   sharedListSkeleton,
   sharedLoadStateView,
+  sharedConfirmDialog,
   _settingsTiles,
   settingsDestructiveAndGroup,
   _statCards,

@@ -1,5 +1,6 @@
 export 'answer_option.dart';
 export 'camera_feed.dart';
+export 'confirm_dialog.dart';
 export 'content_panel.dart';
 export 'danu_mascot.dart';
 export 'feedback_sheet.dart';
