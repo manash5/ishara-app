@@ -53,4 +53,4 @@ final class LessonRepositoryProvider
   }
 }
 
-String _$lessonRepositoryHash() => r'783659a5b9465aaacca638fbfb8656e8fa8c4b85';
+String _$lessonRepositoryHash() => r'27dfda80a522394b0371c9d88b5ead03edb5ae16';

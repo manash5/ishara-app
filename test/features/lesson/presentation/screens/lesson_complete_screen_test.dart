@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/sign_detail_screen.dart';
@@ -13,6 +14,7 @@ import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
 import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 void main() {
   late List<Object?> haptics;
@@ -177,6 +179,28 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(find.byType(StreakScreen), findsOneWidget);
+  });
+
+  testWidgets('offline: error with Try again, and the attempt is queued', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      loggedIn: true,
+      onboardingDone: true,
+      location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+          .location,
+      simulation: MockApiSimulation.offline,
+    );
+    expect(find.text('Couldn’t save your lesson'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+    expect(TestHive.instance.syncQueue.length, 1);
+
+    // Try again resends the same clientEventId: still one queued entry.
+    await tester.tap(find.text('Try again'));
+    await pumpApi(tester);
+    await tester.pumpAndSettle();
+    expect(TestHive.instance.syncQueue.length, 1);
   });
 
   test('formatLessonTime pads seconds', () {

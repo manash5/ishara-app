@@ -42,11 +42,3 @@ abstract class LessonResultDto with _$LessonResultDto {
     completedAt: completedAt,
   );
 }
-
-/// The `POST /lessons/:id/complete` body.
-Map<String, Object> lessonAttemptToJson(LessonAttempt attempt) => {
-  'clientEventId': attempt.clientEventId,
-  'mistakes': attempt.mistakes,
-  'durationSeconds': attempt.duration.inSeconds,
-  'completedAt': attempt.completedAt.toUtc().toIso8601String(),
-};

@@ -28,7 +28,9 @@ class LessonPlayer extends _$LessonPlayer {
     _clientEventId = const Uuid().v4();
     _startedAt = DateTime.now();
     return LessonPlayerState(
-      exercises: ref.watch(lessonProvider(lessonId)).requireValue.exercises,
+      // Read once: the cache-first lesson refreshes in the background, and
+      // that mustn't restart a lesson in progress.
+      exercises: ref.read(lessonProvider(lessonId)).requireValue.exercises,
       // Read once: a later profile refresh mustn't restart the lesson.
       hearts: ref.read(startingHeartsProvider),
     );

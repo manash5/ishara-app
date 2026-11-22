@@ -79,7 +79,7 @@ final class LessonPlayerProvider
   }
 }
 
-String _$lessonPlayerHash() => r'0f2f8f54a10f2da68aed165ad6ba5adacbd5065e';
+String _$lessonPlayerHash() => r'9cd61fc87a88835c8193132498e0bcf9f7e4dcc6';
 
 /// Drives the lesson player (Figma 18–25) over the loaded lesson. The
 /// screen builds it only once [lessonProvider] has data.

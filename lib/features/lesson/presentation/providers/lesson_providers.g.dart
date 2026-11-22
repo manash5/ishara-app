@@ -8,17 +8,20 @@ part of 'lesson_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// A lesson and its exercises (`GET /lessons/:id`).
+/// A lesson and its exercises (`GET /lessons/:id`): the cached lesson first,
+/// then the fresh one. Invalidate to retry.
 
 @ProviderFor(lesson)
 final lessonProvider = LessonFamily._();
 
-/// A lesson and its exercises (`GET /lessons/:id`).
+/// A lesson and its exercises (`GET /lessons/:id`): the cached lesson first,
+/// then the fresh one. Invalidate to retry.
 
 final class LessonProvider
-    extends $FunctionalProvider<AsyncValue<Lesson>, Lesson, FutureOr<Lesson>>
-    with $FutureModifier<Lesson>, $FutureProvider<Lesson> {
-  /// A lesson and its exercises (`GET /lessons/:id`).
+    extends $FunctionalProvider<AsyncValue<Lesson>, Lesson, Stream<Lesson>>
+    with $FutureModifier<Lesson>, $StreamProvider<Lesson> {
+  /// A lesson and its exercises (`GET /lessons/:id`): the cached lesson first,
+  /// then the fresh one. Invalidate to retry.
   LessonProvider._({
     required LessonFamily super.from,
     required String super.argument,
@@ -42,11 +45,11 @@ final class LessonProvider
 
   @$internal
   @override
-  $FutureProviderElement<Lesson> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $StreamProviderElement<Lesson> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
 
   @override
-  FutureOr<Lesson> create(Ref ref) {
+  Stream<Lesson> create(Ref ref) {
     final argument = this.argument as String;
     return lesson(ref, argument);
   }
@@ -62,12 +65,13 @@ final class LessonProvider
   }
 }
 
-String _$lessonHash() => r'ca5c3fbd7040257687fb267d7632fb383190ef30';
+String _$lessonHash() => r'033ad2e62d5972b668d7e4761cd09ef56c21636b';
 
-/// A lesson and its exercises (`GET /lessons/:id`).
+/// A lesson and its exercises (`GET /lessons/:id`): the cached lesson first,
+/// then the fresh one. Invalidate to retry.
 
 final class LessonFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<Lesson>, String> {
+    with $FunctionalFamilyOverride<Stream<Lesson>, String> {
   LessonFamily._()
     : super(
         retry: null,
@@ -77,7 +81,8 @@ final class LessonFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// A lesson and its exercises (`GET /lessons/:id`).
+  /// A lesson and its exercises (`GET /lessons/:id`): the cached lesson first,
+  /// then the fresh one. Invalidate to retry.
 
   LessonProvider call(String lessonId) =>
       LessonProvider._(argument: lessonId, from: this);
@@ -201,14 +206,81 @@ abstract class _$LessonAttempts extends $Notifier<Map<String, LessonAttempt>> {
   }
 }
 
+/// The last lesson the server recorded this session (hearts, XP, streak),
+/// or null until one completes. The Streak screen (27) reads it.
+
+@ProviderFor(LatestLessonResult)
+final latestLessonResultProvider = LatestLessonResultProvider._();
+
+/// The last lesson the server recorded this session (hearts, XP, streak),
+/// or null until one completes. The Streak screen (27) reads it.
+final class LatestLessonResultProvider
+    extends $NotifierProvider<LatestLessonResult, LessonResult?> {
+  /// The last lesson the server recorded this session (hearts, XP, streak),
+  /// or null until one completes. The Streak screen (27) reads it.
+  LatestLessonResultProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'latestLessonResultProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$latestLessonResultHash();
+
+  @$internal
+  @override
+  LatestLessonResult create() => LatestLessonResult();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LessonResult? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LessonResult?>(value),
+    );
+  }
+}
+
+String _$latestLessonResultHash() =>
+    r'a11ecada48eac974c2599ea695750540c678371a';
+
+/// The last lesson the server recorded this session (hearts, XP, streak),
+/// or null until one completes. The Streak screen (27) reads it.
+
+abstract class _$LatestLessonResult extends $Notifier<LessonResult?> {
+  LessonResult? build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<LessonResult?, LessonResult?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<LessonResult?, LessonResult?>,
+              LessonResult?,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`).
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
+/// the attempt is queued for `POST /progress/sync` and this fails with a
+/// `NetworkFailure`; Try again resends the same `clientEventId`.
 
 @ProviderFor(lessonResult)
 final lessonResultProvider = LessonResultFamily._();
 
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`).
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
+/// the attempt is queued for `POST /progress/sync` and this fails with a
+/// `NetworkFailure`; Try again resends the same `clientEventId`.
 
 final class LessonResultProvider
     extends
@@ -219,7 +291,9 @@ final class LessonResultProvider
         >
     with $FutureModifier<LessonResult>, $FutureProvider<LessonResult> {
   /// What the server awarded for the finished lesson
-  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`).
+  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
+  /// the attempt is queued for `POST /progress/sync` and this fails with a
+  /// `NetworkFailure`; Try again resends the same `clientEventId`.
   LessonResultProvider._({
     required LessonResultFamily super.from,
     required String super.argument,
@@ -264,10 +338,12 @@ final class LessonResultProvider
   }
 }
 
-String _$lessonResultHash() => r'fa0bba83938056a9a67ecc00ed9291af943ac683';
+String _$lessonResultHash() => r'8ed75acfd4d44d5714c48db0420e5a1cb232d1af';
 
 /// What the server awarded for the finished lesson
-/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`).
+/// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
+/// the attempt is queued for `POST /progress/sync` and this fails with a
+/// `NetworkFailure`; Try again resends the same `clientEventId`.
 
 final class LessonResultFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<LessonResult>, String> {
@@ -281,7 +357,9 @@ final class LessonResultFamily extends $Family
       );
 
   /// What the server awarded for the finished lesson
-  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`).
+  /// (`POST /lessons/:id/complete`, idempotent on `clientEventId`). Offline,
+  /// the attempt is queued for `POST /progress/sync` and this fails with a
+  /// `NetworkFailure`; Try again resends the same `clientEventId`.
 
   LessonResultProvider call(String lessonId) =>
       LessonResultProvider._(argument: lessonId, from: this);
