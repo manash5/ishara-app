@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/config/game_rules.dart';
 import '../../../../core/theme/theme.dart';
 
 part 'daily_goal_options_provider.g.dart';
@@ -27,35 +28,25 @@ class DailyGoalOption {
       '$minutes min a day · $lessons ${lessons == 1 ? 'lesson' : 'lessons'}';
 }
 
-/// Fake goal options (Figma 9:225) until the backend serves them.
+/// The daily-goal choices on "06 Daily goal" (Figma 9:225): one per goal
+/// the API accepts ([GameRules.dailyGoalMinutes]), named and drawn as in
+/// Figma.
 @riverpod
-List<DailyGoalOption> dailyGoalOptions(Ref ref) => const [
-  DailyGoalOption(
-    id: 'casual',
-    title: 'Casual',
-    minutes: 5,
-    lessons: 1,
-    icon: IsharaIcons.clock,
-  ),
-  DailyGoalOption(
-    id: 'regular',
-    title: 'Regular',
-    minutes: 10,
-    lessons: 2,
-    icon: IsharaIcons.target,
-  ),
-  DailyGoalOption(
-    id: 'serious',
-    title: 'Serious',
-    minutes: 15,
-    lessons: 3,
-    icon: IsharaIcons.flame,
-  ),
-  DailyGoalOption(
-    id: 'intense',
-    title: 'Intense',
-    minutes: 20,
-    lessons: 4,
-    icon: IsharaIcons.zap,
-  ),
+List<DailyGoalOption> dailyGoalOptions(Ref ref) => [
+  for (final (i, minutes) in GameRules.dailyGoalMinutes.indexed)
+    DailyGoalOption(
+      id: _names[i % _names.length].id,
+      title: _names[i % _names.length].title,
+      minutes: minutes,
+      lessons: (minutes / GameRules.minutesPerLesson).ceil(),
+      icon: _names[i % _names.length].icon,
+    ),
+];
+
+/// Figma's name and icon for each goal, lightest first.
+const _names = [
+  (id: 'casual', title: 'Casual', icon: IsharaIcons.clock),
+  (id: 'regular', title: 'Regular', icon: IsharaIcons.target),
+  (id: 'serious', title: 'Serious', icon: IsharaIcons.flame),
+  (id: 'intense', title: 'Intense', icon: IsharaIcons.zap),
 ];

@@ -5,6 +5,7 @@ import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/onboarding/presentation/screens/camera_setup_check_screen.dart';
 import 'package:ishara_app/features/onboarding/presentation/widgets/framing_guide.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_themed.dart';
@@ -12,29 +13,50 @@ import '../../../auth/auth_test_utils.dart';
 import '../onboarding_test_utils.dart';
 
 void main() {
+  IsharaChip chip(WidgetTester tester, String label) =>
+      tester.widget<IsharaChip>(find.widgetWithText(IsharaChip, label));
+
   for (final mode in themeModes) {
-    testWidgets('camera placeholder + checklist ($mode)', (tester) async {
+    testWidgets('a hand in view passes every check ($mode)', (tester) async {
       await pumpOnboardingScreen(
         tester,
         const CameraSetupCheckScreen(),
         mode: mode,
       );
+      await tester.pump(const Duration(seconds: 1));
       final c = tokensFor(mode);
 
-      expect(find.byType(CameraFeed), findsOneWidget);
       expect(find.byType(FramingGuide), findsOneWidget);
       expect(textColor(tester, 'Check your setup'), c.staticWhite);
       expect(textColor(tester, 'Lighting'), c.textPrimary);
-
-      IsharaChip chip(String label) =>
-          tester.widget<IsharaChip>(find.widgetWithText(IsharaChip, label));
-      expect(chip('Good').tone, IsharaChipTone.success);
-      expect(chip('Move a bit closer').tone, IsharaChipTone.accent);
-      expect(chip('Detected').tone, IsharaChipTone.success);
+      // Lighting and distance both read "Good"; the hand is detected.
+      expect(find.widgetWithText(IsharaChip, 'Good'), findsNWidgets(2));
+      expect(chip(tester, 'Detected').tone, IsharaChipTone.success);
+      final feed = tester.widget<CameraFeed>(find.byType(CameraFeed));
+      expect(feed.landmarks, hasLength(21));
+      expect(feed.overlay, HandOverlayStyle.live);
       expect(find.widgetWithText(FilledButton, 'Looks good'), findsOneWidget);
       expect(find.byTooltip('Close'), findsOneWidget);
     });
   }
+
+  testWidgets('no hand: every check asks for one, ghost pose', (tester) async {
+    await pumpOnboardingScreen(
+      tester,
+      const CameraSetupCheckScreen(),
+      camera: FakeCameraScenario.noHand,
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.widgetWithText(IsharaChip, 'Show your hand'), findsNWidgets(3));
+    for (final c in tester.widgetList<IsharaChip>(
+      find.widgetWithText(IsharaChip, 'Show your hand'),
+    )) {
+      expect(c.tone, IsharaChipTone.accent);
+    }
+    final feed = tester.widget<CameraFeed>(find.byType(CameraFeed));
+    expect(feed.landmarks, isNull);
+    expect(feed.overlay, HandOverlayStyle.ghost);
+  });
 
   testWidgets('fits at 1.3× text scale', (tester) async {
     await pumpOnboardingScreen(

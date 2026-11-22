@@ -8,12 +8,16 @@ part of 'daily_goal_options_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Fake goal options (Figma 9:225) until the backend serves them.
+/// The daily-goal choices on "06 Daily goal" (Figma 9:225): one per goal
+/// the API accepts ([GameRules.dailyGoalMinutes]), named and drawn as in
+/// Figma.
 
 @ProviderFor(dailyGoalOptions)
 final dailyGoalOptionsProvider = DailyGoalOptionsProvider._();
 
-/// Fake goal options (Figma 9:225) until the backend serves them.
+/// The daily-goal choices on "06 Daily goal" (Figma 9:225): one per goal
+/// the API accepts ([GameRules.dailyGoalMinutes]), named and drawn as in
+/// Figma.
 
 final class DailyGoalOptionsProvider
     extends
@@ -23,7 +27,9 @@ final class DailyGoalOptionsProvider
           List<DailyGoalOption>
         >
     with $Provider<List<DailyGoalOption>> {
-  /// Fake goal options (Figma 9:225) until the backend serves them.
+  /// The daily-goal choices on "06 Daily goal" (Figma 9:225): one per goal
+  /// the API accepts ([GameRules.dailyGoalMinutes]), named and drawn as in
+  /// Figma.
   DailyGoalOptionsProvider._()
     : super(
         from: null,
@@ -58,4 +64,4 @@ final class DailyGoalOptionsProvider
   }
 }
 
-String _$dailyGoalOptionsHash() => r'd58d955b75736acfa3663c1cca25df8b32cce781';
+String _$dailyGoalOptionsHash() => r'8ef17934b7cf8c4de31daabfae4b8c156469f77d';

@@ -7,6 +7,7 @@ import '../../data/repositories/settings_repository_impl.dart';
 import '../../domain/entities/app_preferences.dart';
 import '../../domain/usecases/get_preferences.dart';
 import '../../domain/usecases/save_preferences.dart';
+import '../../../../core/config/game_rules.dart';
 
 export '../../domain/entities/app_preferences.dart' show ThemePreference;
 
@@ -82,7 +83,8 @@ class SettingsValues {
 }
 
 /// The daily goals Settings cycles through (minutes).
-const dailyGoalChoices = [5, 10, 15, 20];
+/// The daily goals Settings cycles through (the API's choices).
+const dailyGoalChoices = GameRules.dailyGoalMinutes;
 
 /// The goal after [current] in [dailyGoalChoices] (wrapping round).
 int nextDailyGoal(int? current) {

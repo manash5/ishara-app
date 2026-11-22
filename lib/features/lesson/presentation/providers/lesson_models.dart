@@ -81,7 +81,7 @@ class LessonPlayerState {
   /// Fingerspelling: index of the letter being signed.
   final int letterIndex;
 
-  /// Last fake camera result on the current exercise (24 shows "almost").
+  /// Last recognition result on the current exercise (24 shows "almost").
   final CameraOutcome? cameraOutcome;
 
   /// "Can't use the camera now" was used — no more camera exercises.

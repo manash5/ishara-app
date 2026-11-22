@@ -8,18 +8,18 @@ part of 'onboarding_choices_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Stand-in for the onboarding answers until the `/me` repository lands.
-/// Defaults match the Figma frames (Regular goal, right hand selected).
+/// The onboarding answers in progress. Defaults match the Figma frames
+/// (Regular goal, right hand selected).
 
 @ProviderFor(OnboardingChoices)
 final onboardingChoicesProvider = OnboardingChoicesProvider._();
 
-/// Stand-in for the onboarding answers until the `/me` repository lands.
-/// Defaults match the Figma frames (Regular goal, right hand selected).
+/// The onboarding answers in progress. Defaults match the Figma frames
+/// (Regular goal, right hand selected).
 final class OnboardingChoicesProvider
     extends $NotifierProvider<OnboardingChoices, OnboardingChoicesState> {
-  /// Stand-in for the onboarding answers until the `/me` repository lands.
-  /// Defaults match the Figma frames (Regular goal, right hand selected).
+  /// The onboarding answers in progress. Defaults match the Figma frames
+  /// (Regular goal, right hand selected).
   OnboardingChoicesProvider._()
     : super(
         from: null,
@@ -49,8 +49,8 @@ final class OnboardingChoicesProvider
 
 String _$onboardingChoicesHash() => r'dc237ae3b2c9caf8f1132f8598515cff41f3365e';
 
-/// Stand-in for the onboarding answers until the `/me` repository lands.
-/// Defaults match the Figma frames (Regular goal, right hand selected).
+/// The onboarding answers in progress. Defaults match the Figma frames
+/// (Regular goal, right hand selected).
 
 abstract class _$OnboardingChoices extends $Notifier<OnboardingChoicesState> {
   OnboardingChoicesState build();

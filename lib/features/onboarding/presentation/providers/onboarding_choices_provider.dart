@@ -5,18 +5,20 @@ part 'onboarding_choices_provider.g.dart';
 /// The hand a learner signs with (Figma "07 Dominant hand").
 enum DominantHand { right, left }
 
-/// What the learner picked during onboarding (UI-only phase).
+/// What the learner picked during onboarding, sent by
+/// `OnboardingCompletion` (`POST /me/onboarding`).
 ///
-/// [cameraAllowed] is null until "08 Camera permission" is answered; the
-/// "Allow camera" answer is fake until the permission plugin lands.
+/// [cameraAllowed] is null until "08 Camera permission" is answered. It only
+/// records the learner's answer: the OS permission request comes with the
+/// camera plugin.
 typedef OnboardingChoicesState = ({
   String dailyGoalId,
   DominantHand hand,
   bool? cameraAllowed,
 });
 
-/// Stand-in for the onboarding answers until the `/me` repository lands.
-/// Defaults match the Figma frames (Regular goal, right hand selected).
+/// The onboarding answers in progress. Defaults match the Figma frames
+/// (Regular goal, right hand selected).
 @Riverpod(keepAlive: true)
 class OnboardingChoices extends _$OnboardingChoices {
   @override

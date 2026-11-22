@@ -13,8 +13,9 @@ import '../widgets/setup_check_row.dart';
 /// guide and a checklist sheet. Finishing onboarding lets the redirect take
 /// the learner to /learn.
 ///
-/// "Looks good" sends the onboarding answers (`POST /me/onboarding`).
-/// [CameraFeed] still shows its placeholder art and the checklist is fake.
+/// "Looks good" sends the onboarding answers (`POST /me/onboarding`). The
+/// checklist and the hand overlay come from the hand landmark detector
+/// ([cameraSetupChecksProvider]; the fake camera until the real one lands).
 /// Privacy: no frame or landmark is stored, uploaded or logged.
 class CameraSetupCheckScreen extends ConsumerWidget {
   const CameraSetupCheckScreen({super.key});
@@ -22,7 +23,8 @@ class CameraSetupCheckScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    final checks = ref.watch(cameraSetupChecksProvider);
+    final setup = ref.watch(cameraSetupChecksProvider);
+    final checks = setup.checks;
     final navigator = Navigator.of(context);
     final saving = ref.watch(onboardingCompletionProvider);
 
@@ -37,8 +39,12 @@ class CameraSetupCheckScreen extends ConsumerWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  const CameraFeed(
-                    semanticLabel: 'Camera preview, placeholder',
+                  CameraFeed(
+                    semanticLabel: 'Camera preview',
+                    landmarks: setup.landmarks,
+                    overlay: setup.landmarks == null
+                        ? HandOverlayStyle.ghost
+                        : HandOverlayStyle.live,
                   ),
                   const FramingGuide(),
                   // Figma `overlayBar` (9:520).
