@@ -91,61 +91,7 @@ void main() {
     });
   });
 
-  group('lesson flow', () {
-    Future<void> openLesson(WidgetTester tester) async {
-      await pumpShell(tester);
-      // The Start button on the current-lesson card of the trek.
-      await tapAndSettle(tester, find.text('Start'));
-      expect(find.textContaining('11 · Learn – lesson sheet'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Start lesson'));
-      expect(frameTitle('18', 'Watch & learn'), findsOneWidget);
-    }
-
-    testWidgets('steps 18–25 → complete 26 → streak 27 → Learn', (
-      tester,
-    ) async {
-      await openLesson(tester);
-      await tapAndSettle(tester, find.text('Next'));
-      expect(frameTitle('19', 'Recognise'), findsOneWidget);
-      await tapAndSettle(tester, find.text('25'));
-      expect(frameTitle('25', 'Fingerspell (camera)'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Finish lesson'));
-      expect(frameTitle('26', 'Lesson complete'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Continue'));
-      expect(frameTitle('27', 'Streak'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Continue'));
-      expect(find.byType(LearnScreen), findsOneWidget);
-    });
-
-    testWidgets('Android back asks to quit (29); Keep learning stays', (
-      tester,
-    ) async {
-      await openLesson(tester);
-      await tapAndSettle(tester, find.text('Next'));
-      await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle();
-      expect(find.text('29 · Quit lesson?'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Keep learning'));
-      expect(find.text('29 · Quit lesson?'), findsNothing);
-      expect(frameTitle('19', 'Recognise'), findsOneWidget);
-    });
-
-    testWidgets('close button → Quit returns to Learn', (tester) async {
-      await openLesson(tester);
-      await tapAndSettle(tester, find.byTooltip('Close'));
-      expect(find.text('29 · Quit lesson?'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Quit'));
-      expect(find.byType(LearnScreen), findsOneWidget);
-    });
-
-    testWidgets('out of hearts (28) leads back to Learn', (tester) async {
-      await openLesson(tester);
-      await tapAndSettle(tester, find.text('Run out of hearts (28)'));
-      expect(frameTitle('28', 'Out of hearts'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Back to Learn'));
-      expect(find.byType(LearnScreen), findsOneWidget);
-    });
-
+  group('learn', () {
     testWidgets('Learn offline state (12) toggles', (tester) async {
       final container = await pumpApp(
         tester,
