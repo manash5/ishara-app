@@ -1,0 +1,53 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": [
+    {
+      "id": "ae8e451f-0433-533e-b24e-982a7179a48c",
+      "name": "Ga",
+      "category": "alphabet",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "52618e26-6f46-5e5a-897e-bc67aad06255",
+      "name": "One",
+      "category": "numbers",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "b2a57cfa-a8c6-5afa-8d22-47eb26e5943b",
+      "name": "Two",
+      "category": "numbers",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "7b0bdbf7-69f2-5f03-b7f6-1205f96b8c35",
+      "name": "Three",
+      "category": "numbers",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    }
+  ],
+  "meta": {
+    "page": 2,
+    "limit": 8,
+    "total": 12,
+    "totalPages": 2
+  }
+}

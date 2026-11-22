@@ -8,12 +8,14 @@ part of 'dictionary_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// All dictionary signs (fake; a repository replaces this later).
+/// All dictionary signs (`GET /signs`, every page). Search, filters and
+/// sort run locally over this list.
 
 @ProviderFor(dictionarySigns)
 final dictionarySignsProvider = DictionarySignsProvider._();
 
-/// All dictionary signs (fake; a repository replaces this later).
+/// All dictionary signs (`GET /signs`, every page). Search, filters and
+/// sort run locally over this list.
 
 final class DictionarySignsProvider
     extends
@@ -25,7 +27,8 @@ final class DictionarySignsProvider
     with
         $FutureModifier<List<DictionarySign>>,
         $FutureProvider<List<DictionarySign>> {
-  /// All dictionary signs (fake; a repository replaces this later).
+  /// All dictionary signs (`GET /signs`, every page). Search, filters and
+  /// sort run locally over this list.
   DictionarySignsProvider._()
     : super(
         from: null,
@@ -52,7 +55,7 @@ final class DictionarySignsProvider
   }
 }
 
-String _$dictionarySignsHash() => r'f43487b451d3135c267556f0484aa63339284de2';
+String _$dictionarySignsHash() => r'3411ef85f00ab31131ccaf28708e37182a8ccb57';
 
 /// The search box text.
 
@@ -286,22 +289,25 @@ final class FilteredDictionarySignsProvider
 String _$filteredDictionarySignsHash() =>
     r'549fe8232828f3551c268d5438e2042db13a0840';
 
-/// One sign's detail (data null when [signId] is unknown).
+/// One sign's detail (`GET /signs/:id`); data null when there's no such
+/// sign.
 
 @ProviderFor(signDetail)
 final signDetailProvider = SignDetailFamily._();
 
-/// One sign's detail (data null when [signId] is unknown).
+/// One sign's detail (`GET /signs/:id`); data null when there's no such
+/// sign.
 
 final class SignDetailProvider
     extends
         $FunctionalProvider<
           AsyncValue<SignDetail?>,
-          AsyncValue<SignDetail?>,
-          AsyncValue<SignDetail?>
+          SignDetail?,
+          FutureOr<SignDetail?>
         >
-    with $Provider<AsyncValue<SignDetail?>> {
-  /// One sign's detail (data null when [signId] is unknown).
+    with $FutureModifier<SignDetail?>, $FutureProvider<SignDetail?> {
+  /// One sign's detail (`GET /signs/:id`); data null when there's no such
+  /// sign.
   SignDetailProvider._({
     required SignDetailFamily super.from,
     required String super.argument,
@@ -325,22 +331,14 @@ final class SignDetailProvider
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<SignDetail?>> $createElement(
+  $FutureProviderElement<SignDetail?> $createElement(
     $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  ) => $FutureProviderElement(pointer);
 
   @override
-  AsyncValue<SignDetail?> create(Ref ref) {
+  FutureOr<SignDetail?> create(Ref ref) {
     final argument = this.argument as String;
     return signDetail(ref, argument);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<SignDetail?> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<SignDetail?>>(value),
-    );
   }
 
   @override
@@ -354,12 +352,13 @@ final class SignDetailProvider
   }
 }
 
-String _$signDetailHash() => r'2c08fa6b9c56f0b1ad0f0c1d4a4f375c6f015798';
+String _$signDetailHash() => r'f6fc5da6961dbaf7c56b116e32e9e9e0826e3e0a';
 
-/// One sign's detail (data null when [signId] is unknown).
+/// One sign's detail (`GET /signs/:id`); data null when there's no such
+/// sign.
 
 final class SignDetailFamily extends $Family
-    with $FunctionalFamilyOverride<AsyncValue<SignDetail?>, String> {
+    with $FunctionalFamilyOverride<FutureOr<SignDetail?>, String> {
   SignDetailFamily._()
     : super(
         retry: null,
@@ -369,7 +368,8 @@ final class SignDetailFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One sign's detail (data null when [signId] is unknown).
+  /// One sign's detail (`GET /signs/:id`); data null when there's no such
+  /// sign.
 
   SignDetailProvider call(String signId) =>
       SignDetailProvider._(argument: signId, from: this);

@@ -8,8 +8,10 @@ import 'package:ishara_app/features/profile/presentation/widgets/weekly_xp_chart
 import 'package:ishara_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 void main() {
   void phone(WidgetTester tester) {
@@ -25,7 +27,10 @@ void main() {
     phone(tester);
     await pumpThemed(
       tester,
-      const ProviderScope(child: ProfileScreen()),
+      ProviderScope(
+        overrides: mockApiOverrides(),
+        child: const ProfileScreen(),
+      ),
       mode: mode,
     );
     await tester.pumpAndSettle();
@@ -71,9 +76,12 @@ void main() {
     phone(tester);
     await pumpThemed(
       tester,
-      const MediaQuery(
-        data: MediaQueryData(textScaler: TextScaler.linear(1.3)),
-        child: ProviderScope(child: ProfileScreen()),
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+        child: ProviderScope(
+          overrides: mockApiOverrides(),
+          child: const ProfileScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -105,4 +113,10 @@ void main() {
     expect(find.byType(SettingsScreen), findsOneWidget);
     expect(find.byType(IsharaBottomBar), findsNothing);
   });
+
+  loadStateTests(
+    location: const ProfileRoute().location,
+    errorTitle: 'Couldn’t load your profile',
+    loadingLabel: 'Loading your profile',
+  );
 }

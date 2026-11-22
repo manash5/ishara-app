@@ -1,15 +1,18 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/widgets/widgets.dart';
-import 'fake_lesson_provider.dart';
+import '../../domain/entities/lesson_result.dart';
 import 'lesson_models.dart';
+import 'lesson_providers.dart';
 
 part 'lesson_player_provider.g.dart';
 
 /// What a match-pairs tap did, so the view can add the haptic.
 enum MatchTap { selected, matched, wrong }
 
-/// Drives the lesson player (Figma 18–25) over the fake lesson.
+/// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+/// screen builds it only once [lessonProvider] has data.
 ///
 /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
 /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -17,11 +20,19 @@ enum MatchTap { selected, matched, wrong }
 /// recognise exercise on the same sign, with no penalty.
 @riverpod
 class LessonPlayer extends _$LessonPlayer {
+  late String _clientEventId;
+  late DateTime _startedAt;
+
   @override
-  LessonPlayerState build(String lessonId) => LessonPlayerState(
-    exercises: ref.watch(fakeLessonProvider(lessonId)).exercises,
-    hearts: ref.watch(startingHeartsProvider),
-  );
+  LessonPlayerState build(String lessonId) {
+    _clientEventId = const Uuid().v4();
+    _startedAt = DateTime.now();
+    return LessonPlayerState(
+      exercises: ref.watch(lessonProvider(lessonId)).requireValue.exercises,
+      // Read once: a later profile refresh mustn't restart the lesson.
+      hearts: ref.read(startingHeartsProvider),
+    );
+  }
 
   bool get _answering => state.phase == LessonPhase.answering;
 
@@ -159,6 +170,18 @@ class LessonPlayer extends _$LessonPlayer {
   void continueNext() {
     if (state.phase == LessonPhase.outOfHearts) return;
     if (state.isLast) {
+      final now = DateTime.now();
+      ref
+          .read(lessonAttemptsProvider.notifier)
+          .record(
+            LessonAttempt(
+              clientEventId: _clientEventId,
+              lessonId: lessonId,
+              mistakes: state.mistakes,
+              duration: now.difference(_startedAt),
+              completedAt: now.toUtc(),
+            ),
+          );
       state = state.copyWith(phase: LessonPhase.finished);
       return;
     }

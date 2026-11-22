@@ -50,7 +50,7 @@ class SignDetailScreen extends ConsumerWidget {
             title: 'Couldn’t load this sign',
             body: 'Check your connection and try again.',
             actionLabel: 'Try again',
-            onAction: () => ref.invalidate(dictionarySignsProvider),
+            onAction: () => ref.invalidate(signDetailProvider(signId)),
           ),
         ),
         _ => const _SignDetailSkeleton(),

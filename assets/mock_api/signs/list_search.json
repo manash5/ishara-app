@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": [
+    {
+      "id": "9010db34-4029-511e-bbed-d00a6b244f75",
+      "name": "Thank you",
+      "category": "greetings",
+      "status": "learned",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 8,
+    "total": 1,
+    "totalPages": 1
+  }
+}

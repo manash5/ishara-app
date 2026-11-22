@@ -4,7 +4,7 @@ import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/gamification/presentation/screens/out_of_hearts_screen.dart';
 import 'package:ishara_app/features/gamification/presentation/screens/streak_screen.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_complete_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/quit_lesson_dialog.dart';

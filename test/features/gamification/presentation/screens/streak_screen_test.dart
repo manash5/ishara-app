@@ -9,8 +9,10 @@ import 'package:ishara_app/features/gamification/presentation/widgets/week_strea
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 void main() {
   late List<Object?> haptics;
@@ -36,6 +38,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
+        overrides: mockApiOverrides(),
         child: MaterialApp(
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
@@ -49,6 +52,7 @@ void main() {
         ),
       ),
     );
+    await pumpApi(tester);
   }
 
   for (final mode in themeModes) {
@@ -61,8 +65,8 @@ void main() {
       expect(find.text('day streak'), findsOneWidget);
       expect(find.text('This week'), findsOneWidget);
       expect(find.byType(WeekStreakRow), findsOneWidget);
-      // Mon–Fri practised.
-      expect(find.byIcon(IsharaIcons.check), findsNWidgets(5));
+      // Every day this week earned XP (/me stats), today is Sunday.
+      expect(find.byIcon(IsharaIcons.check), findsNWidgets(7));
       expect(find.text('21'), findsOneWidget);
       expect(find.text('Longest streak'), findsOneWidget);
       expect(find.text('Streak freeze ready'), findsOneWidget);
@@ -85,9 +89,14 @@ void main() {
       expect(danuRect.right, lessThanOrEqualTo(flame.left));
       expect(danuRect.right, lessThan(heroWidth * 226 / 412));
       expect(flame.center.dx, closeTo(heroWidth / 2, 1));
-      // Today (Friday) is labelled in text/primary, other days tertiary.
-      expect(textColor(tester, 'F'), c.textPrimary);
-      expect(textColor(tester, 'M'), c.textTertiary);
+      // Today (Sunday, the last "S") is labelled in text/primary, other
+      // days tertiary.
+      expect(renderedStyle(tester, find.text('S').last)?.color, c.textPrimary);
+      expect(
+        renderedStyle(tester, find.text('S').first)?.color,
+        c.textTertiary,
+      );
+      expect(textColor(tester, 'F'), c.textTertiary);
     });
   }
 
@@ -125,4 +134,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(LearnScreen), findsOneWidget);
   });
+
+  loadStateTests(
+    location: const StreakRoute().location,
+    errorTitle: 'Couldn’t load your streak',
+    loadingLabel: 'Loading your streak',
+  );
 }

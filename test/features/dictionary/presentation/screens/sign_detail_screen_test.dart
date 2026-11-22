@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_models.dart';
@@ -15,12 +16,14 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
-  String signId = 'namaste',
+  String signId = FixtureIds.namaste,
   ThemeMode mode = ThemeMode.light,
   List<Override> overrides = const [],
+  MockApiSimulation? simulation,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.625;
@@ -28,13 +31,16 @@ Future<void> _pump(
   await pumpThemed(
     tester,
     ProviderScope(
-      overrides: overrides,
+      overrides: [
+        ...mockApiOverrides(simulation: simulation),
+        ...overrides,
+      ],
       child: SignDetailScreen(signId: signId),
     ),
     mode: mode,
   );
-  // Let chained futures (and error propagation) settle.
-  await tester.pump();
+  // Let the mock API answer and errors propagate.
+  await pumpApi(tester);
   await tester.pump();
 }
 
@@ -74,11 +80,11 @@ void main() {
       await _pump(
         tester,
         overrides: [
-          signDetailProvider('namaste').overrideWithValue(
+          signDetailProvider(FixtureIds.namaste).overrideWithValue(
             const AsyncData(
               SignDetail(
                 sign: DictionarySign(
-                  id: 'namaste',
+                  id: FixtureIds.namaste,
                   name: 'Namaste',
                   category: SignCategory.greetings,
                   status: SignStatus.newSign,
@@ -121,11 +127,12 @@ void main() {
 
   group('states', () {
     testWidgets('loading', (tester) async {
-      final pending = Completer<List<DictionarySign>>();
+      final pending = Completer<SignDetail?>();
       await _pump(
         tester,
         overrides: [
-          dictionarySignsProvider.overrideWith((_) => pending.future),
+          signDetailProvider(FixtureIds.namaste)
+              .overrideWith((_) => pending.future),
         ],
       );
       expect(find.bySemanticsLabel('Loading sign'), findsOneWidget);
@@ -133,15 +140,9 @@ void main() {
     });
 
     testWidgets('error', (tester) async {
-      await _pump(
-        tester,
-        overrides: [
-          dictionarySignsProvider.overrideWith(
-            (_) async => throw Exception('offline'),
-          ),
-        ],
-      );
+      await _pump(tester, simulation: MockApiSimulation.serverError);
       expect(find.text('Couldn’t load this sign'), findsOneWidget);
+      expect(find.textContaining('Exception'), findsNothing);
       expect(find.text('Try again'), findsOneWidget);
     });
 
@@ -174,7 +175,7 @@ void main() {
         tester,
         loggedIn: true,
         onboardingDone: true,
-        location: const SignDetailRoute(signId: 'namaste').location,
+        location: const SignDetailRoute(signId: FixtureIds.namaste).location,
       );
       expect(find.byType(IsharaBottomBar), findsOneWidget);
       await tester.tap(find.text('Practise this sign'));

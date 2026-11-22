@@ -17,6 +17,13 @@ sealed class Result<T> {
     Ok(:final value) => value,
     Err() => null,
   };
+
+  /// The value, or throws the [Failure] (for async providers, whose
+  /// `AsyncError` then carries it).
+  T getOrThrow() => switch (this) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw failure,
+  };
 }
 
 final class Ok<T> extends Result<T> {

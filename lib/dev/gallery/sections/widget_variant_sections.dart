@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/error/failure.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/widgets/widgets.dart';
 import 'gallery_section.dart';
@@ -373,6 +374,30 @@ Widget sharedListSkeleton(BuildContext context) => GallerySection(
         semanticLabel: 'Loading leaderboard',
         count: 3,
         gap: IsharaSpacing.s1,
+      ),
+    ),
+  ],
+);
+
+Widget sharedLoadStateView(BuildContext context) => GallerySection(
+  title: 'LoadStateView',
+  subtitle: 'whole-screen loading skeleton, and the error with Try again',
+  children: [
+    _phone(
+      LoadStateView(
+        error: null,
+        errorTitle: 'Couldn’t load your path',
+        onRetry: () {},
+        loadingLabel: 'Loading your path',
+      ),
+    ),
+    const SizedBox(height: IsharaSpacing.s4),
+    _phone(
+      LoadStateView(
+        error: const NetworkFailure(),
+        errorTitle: 'Couldn’t load your path',
+        onRetry: () {},
+        loadingLabel: 'Loading your path',
       ),
     ),
   ],

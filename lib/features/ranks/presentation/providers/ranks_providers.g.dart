@@ -8,12 +8,12 @@ part of 'ranks_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The learner's weekly league (fake; a repository replaces this later).
+/// The learner's weekly league (`GET /leaderboard/weekly`).
 
 @ProviderFor(weeklyLeaderboard)
 final weeklyLeaderboardProvider = WeeklyLeaderboardProvider._();
 
-/// The learner's weekly league (fake; a repository replaces this later).
+/// The learner's weekly league (`GET /leaderboard/weekly`).
 
 final class WeeklyLeaderboardProvider
     extends
@@ -25,7 +25,7 @@ final class WeeklyLeaderboardProvider
     with
         $FutureModifier<WeeklyLeaderboard>,
         $FutureProvider<WeeklyLeaderboard> {
-  /// The learner's weekly league (fake; a repository replaces this later).
+  /// The learner's weekly league (`GET /leaderboard/weekly`).
   WeeklyLeaderboardProvider._()
     : super(
         from: null,
@@ -52,4 +52,4 @@ final class WeeklyLeaderboardProvider
   }
 }
 
-String _$weeklyLeaderboardHash() => r'7e764947db4337ebf5d5a72eb7056ce4e1d0d1ec';
+String _$weeklyLeaderboardHash() => r'95d731f419548b241a389bcb623435858b2a98a3';

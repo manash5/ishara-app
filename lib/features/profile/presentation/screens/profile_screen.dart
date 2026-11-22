@@ -21,7 +21,19 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    final p = ref.watch(profileSummaryProvider);
+    final summary = ref.watch(profileSummaryProvider);
+    final p = summary.value;
+    if (p == null) {
+      return Scaffold(
+        backgroundColor: c.bgSurface,
+        body: LoadStateView(
+          error: summary.error,
+          errorTitle: 'Couldn’t load your profile',
+          onRetry: () => ref.invalidate(userProfileProvider),
+          loadingLabel: 'Loading your profile',
+        ),
+      );
+    }
     return AnnotatedRegion<SystemUiOverlayStyle>(
       // White status bar icons over the teal hero in both themes.
       value: SystemUiOverlayStyle.light,

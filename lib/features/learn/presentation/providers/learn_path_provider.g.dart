@@ -8,20 +8,22 @@ part of 'learn_path_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Fake roadmap: units 1–2 follow Figma "10 Learn" (10:509); units 3–4 are
-/// locked so the path scrolls. Unit titles only — no sign descriptions.
+/// The roadmap (`GET /path`).
 
 @ProviderFor(learnPath)
 final learnPathProvider = LearnPathProvider._();
 
-/// Fake roadmap: units 1–2 follow Figma "10 Learn" (10:509); units 3–4 are
-/// locked so the path scrolls. Unit titles only — no sign descriptions.
+/// The roadmap (`GET /path`).
 
 final class LearnPathProvider
-    extends $FunctionalProvider<List<PathUnit>, List<PathUnit>, List<PathUnit>>
-    with $Provider<List<PathUnit>> {
-  /// Fake roadmap: units 1–2 follow Figma "10 Learn" (10:509); units 3–4 are
-  /// locked so the path scrolls. Unit titles only — no sign descriptions.
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PathUnit>>,
+          List<PathUnit>,
+          FutureOr<List<PathUnit>>
+        >
+    with $FutureModifier<List<PathUnit>>, $FutureProvider<List<PathUnit>> {
+  /// The roadmap (`GET /path`).
   LearnPathProvider._()
     : super(
         from: null,
@@ -38,36 +40,34 @@ final class LearnPathProvider
 
   @$internal
   @override
-  $ProviderElement<List<PathUnit>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $FutureProviderElement<List<PathUnit>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  List<PathUnit> create(Ref ref) {
+  FutureOr<List<PathUnit>> create(Ref ref) {
     return learnPath(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<PathUnit> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<PathUnit>>(value),
-    );
   }
 }
 
-String _$learnPathHash() => r'fd5296e094832e8598a2c3b204635d1c716ba9a4';
+String _$learnPathHash() => r'7437e0025542ee39dc580ccefd12629a5ec5cc88';
 
-/// Fake header stats (Figma: 12-day streak, 340 XP, 5 hearts).
+/// Header stats from the learner's profile (`GET /me`).
 
 @ProviderFor(learnStats)
 final learnStatsProvider = LearnStatsProvider._();
 
-/// Fake header stats (Figma: 12-day streak, 340 XP, 5 hearts).
+/// Header stats from the learner's profile (`GET /me`).
 
 final class LearnStatsProvider
-    extends $FunctionalProvider<LearnStats, LearnStats, LearnStats>
-    with $Provider<LearnStats> {
-  /// Fake header stats (Figma: 12-day streak, 340 XP, 5 hearts).
+    extends
+        $FunctionalProvider<
+          AsyncValue<LearnStats>,
+          AsyncValue<LearnStats>,
+          AsyncValue<LearnStats>
+        >
+    with $Provider<AsyncValue<LearnStats>> {
+  /// Header stats from the learner's profile (`GET /me`).
   LearnStatsProvider._()
     : super(
         from: null,
@@ -84,24 +84,25 @@ final class LearnStatsProvider
 
   @$internal
   @override
-  $ProviderElement<LearnStats> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<LearnStats>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  LearnStats create(Ref ref) {
+  AsyncValue<LearnStats> create(Ref ref) {
     return learnStats(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(LearnStats value) {
+  Override overrideWithValue(AsyncValue<LearnStats> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<LearnStats>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<LearnStats>>(value),
     );
   }
 }
 
-String _$learnStatsHash() => r'e119196f546c45e03bfdd1bf9b0614c5fdc9c49b';
+String _$learnStatsHash() => r'6f873d7e8cbbcc21f7dbfa40a522286f2092ac39';
 
 /// Fake connectivity for frame 12 (Learn – offline). Flip it from the debug
 /// `/gallery` until real connectivity lands.

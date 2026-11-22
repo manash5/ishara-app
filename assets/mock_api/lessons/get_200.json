@@ -1,0 +1,98 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": {
+    "lesson": {
+      "id": "bd40c5dd-7e41-5609-bc81-7a678fe0967c",
+      "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+      "title": "Thank you",
+      "kind": "lesson",
+      "state": "current",
+      "signCount": 3,
+      "minutes": 5
+    },
+    "exercises": [
+      {
+        "type": "watch",
+        "signId": "9010db34-4029-511e-bbed-d00a6b244f75",
+        "title": "Thank you",
+        "description": "Touch your chin with a flat hand, then move it forward and down — like blowing a gentle kiss.",
+        "tip": "Tip: play at 0.5× to see the handshape clearly.",
+        "verified": false
+      },
+      {
+        "type": "recognise",
+        "signId": "9010db34-4029-511e-bbed-d00a6b244f75",
+        "options": [
+          "Thank you",
+          "Sorry",
+          "Hello",
+          "Please"
+        ],
+        "answerIndex": 0
+      },
+      {
+        "type": "pickSign",
+        "signId": "386bd0e8-8cf0-51ae-8f63-59b5e755b82b",
+        "meaning": "Sorry",
+        "answerIndex": 1,
+        "optionCount": 4
+      },
+      {
+        "type": "matchPairs",
+        "signId": "15b80b31-b832-58ab-9a83-b8f93bb144e6",
+        "words": [
+          "Hello",
+          "Please",
+          "Sorry"
+        ],
+        "videoOrder": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "type": "signIt",
+        "signId": "91a1aaec-304d-5c72-8be7-3404cc351df2",
+        "title": "Namaste",
+        "almostChip": "Index finger",
+        "almostHint": "Curl your index finger toward your palm.",
+        "verified": false,
+        "fallback": {
+          "type": "recognise",
+          "signId": "91a1aaec-304d-5c72-8be7-3404cc351df2",
+          "options": [
+            "Namaste",
+            "Sorry",
+            "Hello",
+            "Please"
+          ],
+          "answerIndex": 0
+        }
+      },
+      {
+        "type": "fingerspell",
+        "signId": "b4b6da53-a4ea-50c0-a933-4a32d08704dc",
+        "letters": [
+          "क",
+          "म",
+          "ल"
+        ],
+        "meaning": "lotus",
+        "fallback": {
+          "type": "recognise",
+          "signId": "b4b6da53-a4ea-50c0-a933-4a32d08704dc",
+          "options": [
+            "कमल · lotus",
+            "Namaste",
+            "Thank you",
+            "Sorry"
+          ],
+          "answerIndex": 0
+        }
+      }
+    ]
+  }
+}

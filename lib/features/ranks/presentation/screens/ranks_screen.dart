@@ -73,7 +73,9 @@ class RanksScreen extends ConsumerWidget {
                   subtitle:
                       'Week ${data.weekNumber} · '
                       '${data.learnerCount} learners',
-                  countdown: 'Ends in ${formatTimeLeft(data.endsIn)}',
+                  countdown:
+                      'Ends in '
+                      '${formatTimeLeft(data.endsAt.difference(DateTime.now()))}',
                 )
               else
                 const LeagueHeader(title: 'Ranks', badge: false),
@@ -107,10 +109,11 @@ class _Leaderboard extends StatelessWidget {
           ],
           LeaderboardTile(
             rank: i + 1,
-            name: entries[i].name,
+            // Figma labels the learner's own row "You".
+            name: entries[i].isMe ? 'You' : entries[i].displayName,
             xp: entries[i].xp,
             isMe: entries[i].isMe,
-            avatarName: entries[i].avatarName,
+            avatarName: entries[i].isMe ? entries[i].displayName : null,
           ),
         ],
       ],

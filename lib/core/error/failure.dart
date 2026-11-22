@@ -1,8 +1,9 @@
 import 'app_exception.dart';
 
 /// What a repository reports when something goes wrong. [message] is safe to
-/// show to users; raw exception text never is.
-sealed class Failure {
+/// show to users; raw exception text never is. Providers throw it (via
+/// `Result.getOrThrow`) so an `AsyncError` carries a [Failure].
+sealed class Failure implements Exception {
   const Failure();
 
   String get message;
@@ -18,6 +19,10 @@ sealed class Failure {
     UnknownException() => const UnknownFailure(),
   };
 }
+
+/// A user-safe message for any error an `AsyncValue` carries.
+String failureMessage(Object? error) =>
+    error is Failure ? error.message : const UnknownFailure().message;
 
 final class NetworkFailure extends Failure {
   const NetworkFailure();

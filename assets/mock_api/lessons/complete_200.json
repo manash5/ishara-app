@@ -1,0 +1,39 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "Lesson completed",
+  "data": {
+    "lessonId": "bd40c5dd-7e41-5609-bc81-7a678fe0967c",
+    "clientEventId": "7631e15a-2070-5f14-92a6-89bae1d9b430",
+    "xpEarned": 15,
+    "accuracy": 0.92,
+    "durationSeconds": 252,
+    "newSignCount": 5,
+    "signs": [
+      {
+        "id": "91a1aaec-304d-5c72-8be7-3404cc351df2",
+        "name": "Namaste",
+        "category": "greetings",
+        "status": "learned",
+        "videoUrl": null,
+        "meaning": null,
+        "steps": [],
+        "etiquetteTip": null
+      },
+      {
+        "id": "9010db34-4029-511e-bbed-d00a6b244f75",
+        "name": "Thank you",
+        "category": "greetings",
+        "status": "learned",
+        "videoUrl": null,
+        "meaning": null,
+        "steps": [],
+        "etiquetteTip": null
+      }
+    ],
+    "streakExtended": true,
+    "streakDays": 12,
+    "hearts": 5,
+    "completedAt": "2026-11-22T09:00:00.000Z"
+  }
+}

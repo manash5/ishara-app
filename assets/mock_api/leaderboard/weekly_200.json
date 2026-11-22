@@ -1,0 +1,96 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": {
+    "leagueName": "Bronze",
+    "nextLeagueName": "Silver",
+    "weekNumber": 12,
+    "learnerCount": 30,
+    "endsAt": "2026-11-23T18:15:00.000Z",
+    "promotionCount": 5,
+    "xpToPromotion": 60,
+    "entries": [
+      {
+        "rank": 1,
+        "userId": "744f62d8-4564-579f-aeb1-cc57edd42a18",
+        "displayName": "Sujata R.",
+        "avatarUrl": null,
+        "xp": 620,
+        "isMe": false
+      },
+      {
+        "rank": 2,
+        "userId": "b5e698c5-c58d-5aa5-9b51-4a8fbd658721",
+        "displayName": "Bibek T.",
+        "avatarUrl": null,
+        "xp": 585,
+        "isMe": false
+      },
+      {
+        "rank": 3,
+        "userId": "b9fc89d8-7afc-5a71-aaec-c217eca3c57b",
+        "displayName": "Anisha K.",
+        "avatarUrl": null,
+        "xp": 540,
+        "isMe": false
+      },
+      {
+        "rank": 4,
+        "userId": "c1f404b1-361e-5a17-9c75-ec33753089dc",
+        "displayName": "Manash Lamichhane",
+        "avatarUrl": null,
+        "xp": 480,
+        "isMe": true
+      },
+      {
+        "rank": 5,
+        "userId": "bd7cad68-9d98-53f9-88e2-0271e8665f7e",
+        "displayName": "Prakash G.",
+        "avatarUrl": null,
+        "xp": 455,
+        "isMe": false
+      },
+      {
+        "rank": 6,
+        "userId": "7bcc5ae4-7fed-51c4-b6c6-39c7153956de",
+        "displayName": "Rina M.",
+        "avatarUrl": null,
+        "xp": 410,
+        "isMe": false
+      },
+      {
+        "rank": 7,
+        "userId": "f0628302-d2e9-502b-bd1e-1560f97b9f6f",
+        "displayName": "Suman B.",
+        "avatarUrl": null,
+        "xp": 380,
+        "isMe": false
+      },
+      {
+        "rank": 8,
+        "userId": "3ad63d5f-d42b-561c-b4f0-ce609937e616",
+        "displayName": "Nabin S.",
+        "avatarUrl": null,
+        "xp": 345,
+        "isMe": false
+      },
+      {
+        "rank": 9,
+        "userId": "c60f1e79-7953-5ebf-9517-7e1a3d430625",
+        "displayName": "Asmita P.",
+        "avatarUrl": null,
+        "xp": 310,
+        "isMe": false
+      },
+      {
+        "rank": 10,
+        "userId": "a9d1ed1b-0288-52a8-a504-f4f615c7b350",
+        "displayName": "Kiran D.",
+        "avatarUrl": null,
+        "xp": 270,
+        "isMe": false
+      }
+    ]
+  }
+}

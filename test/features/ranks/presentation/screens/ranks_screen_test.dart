@@ -12,6 +12,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -23,11 +24,14 @@ Future<void> _pump(
   addTearDown(tester.view.reset);
   await pumpThemed(
     tester,
-    ProviderScope(overrides: overrides, child: const RanksScreen()),
+    ProviderScope(
+      overrides: [...mockApiOverrides(), ...overrides],
+      child: const RanksScreen(),
+    ),
     mode: mode,
   );
-  // Let chained futures (and error propagation) settle.
-  await tester.pump();
+  // Let the mock API answer and errors propagate.
+  await pumpApi(tester);
   await tester.pump();
 }
 
@@ -47,10 +51,7 @@ void main() {
           find.text('Top 5 move up to Silver. You’re 60 XP away.'),
           findsOneWidget,
         );
-        expect(
-          find.byType(LeaderboardTile),
-          findsNWidgets(fakeWeeklyLeaderboard.entries.length),
-        );
+        expect(find.byType(LeaderboardTile), findsNWidgets(10));
         expect(find.text('PROMOTION ZONE'), findsOneWidget);
         expect(find.byType(HeroBackdrop), findsOneWidget);
 
@@ -115,12 +116,12 @@ void main() {
         tester,
         overrides: [
           weeklyLeaderboardProvider.overrideWith(
-            (_) async => const WeeklyLeaderboard(
+            (_) async => WeeklyLeaderboard(
               leagueName: 'Bronze',
               nextLeagueName: 'Silver',
               weekNumber: 1,
               learnerCount: 0,
-              endsIn: Duration(days: 1),
+              endsAt: DateTime.now().add(const Duration(days: 1)),
               promotionCount: 5,
               xpToPromotion: 0,
               entries: [],

@@ -8,17 +8,25 @@ part of 'streak_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Hard-coded streak matching the Figma frame; the server replaces it.
+/// The learner's streak from their stats (`GET /me`); a day counts as
+/// practised when it earned XP.
 
 @ProviderFor(streakSummary)
 final streakSummaryProvider = StreakSummaryProvider._();
 
-/// Hard-coded streak matching the Figma frame; the server replaces it.
+/// The learner's streak from their stats (`GET /me`); a day counts as
+/// practised when it earned XP.
 
 final class StreakSummaryProvider
-    extends $FunctionalProvider<StreakSummary, StreakSummary, StreakSummary>
-    with $Provider<StreakSummary> {
-  /// Hard-coded streak matching the Figma frame; the server replaces it.
+    extends
+        $FunctionalProvider<
+          AsyncValue<StreakSummary>,
+          AsyncValue<StreakSummary>,
+          AsyncValue<StreakSummary>
+        >
+    with $Provider<AsyncValue<StreakSummary>> {
+  /// The learner's streak from their stats (`GET /me`); a day counts as
+  /// practised when it earned XP.
   StreakSummaryProvider._()
     : super(
         from: null,
@@ -35,21 +43,22 @@ final class StreakSummaryProvider
 
   @$internal
   @override
-  $ProviderElement<StreakSummary> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<StreakSummary>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  StreakSummary create(Ref ref) {
+  AsyncValue<StreakSummary> create(Ref ref) {
     return streakSummary(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(StreakSummary value) {
+  Override overrideWithValue(AsyncValue<StreakSummary> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<StreakSummary>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<StreakSummary>>(value),
     );
   }
 }
 
-String _$streakSummaryHash() => r'e06b5cb1a4ef509060420a4fcfdc3a015e9cdb1b';
+String _$streakSummaryHash() => r'c1386931113df20db27ce43af03cad512b6b0021';

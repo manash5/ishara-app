@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../providers/lesson_summary_provider.dart';
+import '../providers/lesson_providers.dart';
 
 /// "4:12".
 String formatLessonTime(Duration d) =>
@@ -34,7 +34,19 @@ class _LessonCompleteScreenState extends ConsumerState<LessonCompleteScreen> {
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.textStyles;
-    final summary = ref.watch(lessonSummaryProvider(widget.lessonId));
+    final value = ref.watch(lessonResultProvider(widget.lessonId));
+    final summary = value.value;
+    if (summary == null) {
+      return Scaffold(
+        backgroundColor: c.bgSurface,
+        body: LoadStateView(
+          error: value.error,
+          errorTitle: 'Couldn’t save your lesson',
+          onRetry: () => ref.invalidate(lessonResultProvider(widget.lessonId)),
+          loadingLabel: 'Saving your lesson',
+        ),
+      );
+    }
     return ResultsScaffold(
       // Badge + title below the lavender circle, with more teal around them.
       heroPadding: const EdgeInsets.fromLTRB(
@@ -79,7 +91,7 @@ class _LessonCompleteScreenState extends ConsumerState<LessonCompleteScreen> {
                 Opacity(
                   opacity: IsharaSizes.heroCaptionOpacity,
                   child: Text(
-                    'You learned ${summary.newSigns} new greetings.',
+                    'You learned ${summary.newSignCount} new greetings.',
                     style: s.bodyMedium.copyWith(color: c.staticWhite),
                   ),
                 ),
@@ -97,7 +109,7 @@ class _LessonCompleteScreenState extends ConsumerState<LessonCompleteScreen> {
             children: [
               Expanded(
                 child: CountUp(
-                  value: summary.xp,
+                  value: summary.xpEarned,
                   builder: (_, xp) => StatCard(
                     value: '+$xp',
                     caption: 'XP earned',
@@ -123,7 +135,7 @@ class _LessonCompleteScreenState extends ConsumerState<LessonCompleteScreen> {
               const SizedBox(width: IsharaSpacing.s3),
               Expanded(
                 child: StatCard(
-                  value: formatLessonTime(summary.time),
+                  value: formatLessonTime(summary.duration),
                   caption: 'Time',
                   icon: IsharaIcons.clock,
                   iconColor: c.accentText,
@@ -143,7 +155,7 @@ class _LessonCompleteScreenState extends ConsumerState<LessonCompleteScreen> {
                 const SizedBox(height: IsharaSpacing.s3),
                 SignListTile(
                   title: sign.name,
-                  subtitle: sign.category,
+                  subtitle: sign.category.label,
                   statusLabel: 'Learned',
                   onTap: () =>
                       SignDetailRoute(signId: sign.id).push<void>(context),

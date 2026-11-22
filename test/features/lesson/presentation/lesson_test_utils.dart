@@ -1,21 +1,16 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/config/game_rules.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/data/models/lesson_dto.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_models.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The fake lesson's exercises (one of each type, in Figma order).
-List<Exercise> fakeExercises() {
-  final c = ProviderContainer();
-  try {
-    return c.read(fakeLessonProvider('test')).exercises;
-  } finally {
-    c.dispose();
-  }
-}
+import '../../../helpers/mock_api.dart';
+
+/// The fixture lesson's exercises (one of each type, in Figma order).
+List<Exercise> fakeExercises() =>
+    LessonDto.fromJson(fixtureData('lessons/get_200')).toEntity().exercises;
 
 /// The first exercise of type [T] in the fake lesson.
 T fakeExercise<T extends Exercise>() => fakeExercises().whereType<T>().first;

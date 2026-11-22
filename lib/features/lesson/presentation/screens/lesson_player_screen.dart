@@ -7,6 +7,7 @@ import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
 import '../providers/lesson_player_provider.dart';
+import '../providers/lesson_providers.dart';
 import '../widgets/fingerspell_exercise_view.dart';
 import '../widgets/match_pairs_exercise_view.dart';
 import '../widgets/pick_sign_exercise_view.dart';
@@ -28,6 +29,18 @@ class LessonPlayerScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lesson = ref.watch(lessonProvider(lessonId));
+    if (!lesson.hasValue) {
+      return Scaffold(
+        backgroundColor: context.colors.bgSurface,
+        body: LoadStateView(
+          error: lesson.error,
+          errorTitle: 'Couldn’t load this lesson',
+          onRetry: () => ref.invalidate(lessonProvider(lessonId)),
+          loadingLabel: 'Loading the lesson',
+        ),
+      );
+    }
     final provider = lessonPlayerProvider(lessonId);
     final state = ref.watch(provider);
     ref.listen(provider.select((s) => s.phase), (_, phase) {

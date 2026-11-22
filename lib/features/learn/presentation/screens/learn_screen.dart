@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../providers/learn_path_provider.dart';
 import '../widgets/learn_path_view.dart';
 import 'learn_lesson_sheet.dart';
@@ -52,9 +53,24 @@ class LearnScreen extends ConsumerWidget {
         onRetry: () => ref.read(learnOfflineProvider.notifier).set(false),
       );
     }
-    final stats = ref.watch(learnStatsProvider);
-    final units = ref.watch(learnPathProvider);
+    final statsValue = ref.watch(learnStatsProvider);
+    final path = ref.watch(learnPathProvider);
     final c = context.colors;
+    final stats = statsValue.value;
+    final units = path.value;
+    if (stats == null || units == null) {
+      return Scaffold(
+        backgroundColor: c.bgCanvas,
+        body: LoadStateView(
+          error: path.error ?? statsValue.error,
+          errorTitle: 'Couldn’t load your path',
+          onRetry: () => ref
+            ..invalidate(learnPathProvider)
+            ..invalidate(userProfileProvider),
+          loadingLabel: 'Loading your path',
+        ),
+      );
+    }
     final dark = Theme.of(context).brightness == Brightness.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,

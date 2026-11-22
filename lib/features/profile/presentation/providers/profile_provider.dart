@@ -1,9 +1,21 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/utils/async_value_x.dart';
+
+import '../../data/repositories/profile_repository_impl.dart';
+import '../../domain/entities/user_profile.dart';
+import '../../domain/usecases/get_profile.dart';
+
 part 'profile_provider.g.dart';
 
-/// What Figma "16 Profile" shows about the learner (UI-only phase).
+/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
+/// their stats from here; invalidate it to refetch.
+@Riverpod(keepAlive: true)
+Future<UserProfile> userProfile(Ref ref) async =>
+    (await GetProfile(ref.watch(profileRepositoryProvider))()).getOrThrow();
+
+/// What Figma "16 Profile" shows about the learner.
 @immutable
 class ProfileSummary {
   const ProfileSummary({
@@ -16,6 +28,17 @@ class ProfileSummary {
     required this.weeklyXp,
     required this.todayIndex,
   });
+
+  factory ProfileSummary.fromProfile(UserProfile p) => ProfileSummary(
+    name: p.displayName,
+    joined: p.joinedAt.toLocal(),
+    streakDays: p.stats.streakDays,
+    totalXp: p.stats.totalXp,
+    signsLearned: p.stats.signsLearned,
+    cameraAccuracy: p.stats.cameraAccuracy,
+    weeklyXp: p.stats.weekXp,
+    todayIndex: p.stats.todayIndex,
+  );
 
   final String name;
   final DateTime joined;
@@ -33,16 +56,8 @@ class ProfileSummary {
   final int todayIndex;
 }
 
-/// Hard-coded profile matching the Figma frame; a repository-backed
-/// provider replaces it when the data layer lands.
+/// Derived synchronously so an error shows at once, even while Riverpod
+/// retries [userProfile].
 @riverpod
-ProfileSummary profileSummary(Ref ref) => ProfileSummary(
-  name: 'Manash Lamichhane',
-  joined: DateTime(2026, 11),
-  streakDays: 12,
-  totalXp: 1240,
-  signsLearned: 18,
-  cameraAccuracy: 0.87,
-  weeklyXp: const [30, 55, 20, 70, 45, 4, 62],
-  todayIndex: 6,
-);
+AsyncValue<ProfileSummary> profileSummary(Ref ref) =>
+    ref.watch(userProfileProvider).mapKeepingError(ProfileSummary.fromProfile);

@@ -1,9 +1,13 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/utils/async_value_x.dart';
+
+import '../../../profile/presentation/providers/profile_provider.dart';
+
 part 'streak_provider.g.dart';
 
-/// What Figma "27 Streak" shows (UI-only phase).
+/// What Figma "27 Streak" shows.
 @immutable
 class StreakSummary {
   const StreakSummary({
@@ -28,12 +32,17 @@ class StreakSummary {
   final int todayIndex;
 }
 
-/// Hard-coded streak matching the Figma frame; the server replaces it.
+/// The learner's streak from their stats (`GET /me`); a day counts as
+/// practised when it earned XP.
 @riverpod
-StreakSummary streakSummary(Ref ref) => const StreakSummary(
-  days: 12,
-  longest: 21,
-  freezes: 1,
-  week: [true, true, true, true, true, false, false],
-  todayIndex: 4,
-);
+AsyncValue<StreakSummary> streakSummary(Ref ref) =>
+    ref.watch(userProfileProvider).mapKeepingError((profile) {
+      final stats = profile.stats;
+      return StreakSummary(
+        days: stats.streakDays,
+        longest: stats.longestStreakDays,
+        freezes: stats.streakFreezes,
+        week: stats.practisedDays,
+        todayIndex: stats.todayIndex,
+      );
+    });

@@ -1,42 +1,11 @@
 import 'package:flutter/foundation.dart';
 
-/// Dictionary groupings shown as filter chips (Figma "13 Dictionary").
-enum SignCategory {
-  greetings('Greetings'),
-  alphabet('Alphabet'),
-  numbers('Numbers'),
-  etiquette('Etiquette'),
-  questions('Questions');
+import '../../domain/entities/sign.dart';
 
-  const SignCategory(this.label);
-  final String label;
-}
+export '../../domain/entities/sign.dart';
 
-/// The learner's progress on a sign (Figma `SignListTile` status chip).
-enum SignStatus {
-  learned('Learned'),
-  practising('Practising'),
-  newSign('New');
-
-  const SignStatus(this.label);
-  final String label;
-}
-
-/// One dictionary row. UI-only stand-in until the domain entity exists.
-@immutable
-class DictionarySign {
-  const DictionarySign({
-    required this.id,
-    required this.name,
-    required this.category,
-    required this.status,
-  });
-
-  final String id;
-  final String name;
-  final SignCategory category;
-  final SignStatus status;
-}
+/// One dictionary row: the domain [Sign].
+typedef DictionarySign = Sign;
 
 /// Everything Figma "14 Sign detail" shows for one sign.
 ///
@@ -52,7 +21,14 @@ class SignDetail {
     this.etiquetteTip,
   });
 
-  final DictionarySign sign;
+  factory SignDetail.fromSign(Sign sign) => SignDetail(
+    sign: sign,
+    meaning: sign.meaning,
+    steps: sign.steps,
+    etiquetteTip: sign.etiquetteTip,
+  );
+
+  final Sign sign;
   final String? meaning;
   final List<String> steps;
   final String? etiquetteTip;

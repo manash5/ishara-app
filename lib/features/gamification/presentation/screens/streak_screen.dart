@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../providers/streak_provider.dart';
 import '../widgets/week_streak_row.dart';
 
@@ -28,7 +29,19 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.textStyles;
-    final streak = ref.watch(streakSummaryProvider);
+    final value = ref.watch(streakSummaryProvider);
+    final streak = value.value;
+    if (streak == null) {
+      return Scaffold(
+        backgroundColor: c.bgSurface,
+        body: LoadStateView(
+          error: value.error,
+          errorTitle: 'Couldn’t load your streak',
+          onRetry: () => ref.invalidate(userProfileProvider),
+          loadingLabel: 'Loading your streak',
+        ),
+      );
+    }
     return ResultsScaffold(
       heroPadding: const EdgeInsets.fromLTRB(
         IsharaSpacing.screenMargin,

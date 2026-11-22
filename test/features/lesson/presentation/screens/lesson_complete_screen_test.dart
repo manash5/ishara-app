@@ -9,8 +9,10 @@ import 'package:ishara_app/features/gamification/presentation/screens/streak_scr
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_complete_screen.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 void main() {
   late List<Object?> haptics;
@@ -36,6 +38,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
+        overrides: mockApiOverrides(),
         child: MaterialApp(
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
@@ -43,12 +46,15 @@ void main() {
           home: Builder(
             builder: (context) => MediaQuery(
               data: MediaQuery.of(context).copyWith(disableAnimations: reduced),
-              child: const LessonCompleteScreen(lessonId: 'l1'),
+              child: const LessonCompleteScreen(
+                lessonId: FixtureIds.currentLesson,
+              ),
             ),
           ),
         ),
       ),
     );
+    await pumpApi(tester);
   }
 
   DanuMascot danu(WidgetTester tester) =>
@@ -160,7 +166,8 @@ void main() {
       tester,
       loggedIn: true,
       onboardingDone: true,
-      location: const LessonCompleteRoute(lessonId: 'l1').location,
+      location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+          .location,
     );
     await tester.tap(find.widgetWithText(SignListTile, 'Namaste'));
     await tester.pumpAndSettle();
@@ -176,4 +183,11 @@ void main() {
     expect(formatLessonTime(const Duration(minutes: 4, seconds: 12)), '4:12');
     expect(formatLessonTime(const Duration(minutes: 1, seconds: 5)), '1:05');
   });
+
+  loadStateTests(
+    location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+        .location,
+    errorTitle: 'Couldn’t save your lesson',
+    loadingLabel: 'Saving your lesson',
+  );
 }

@@ -13,6 +13,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -24,11 +25,14 @@ Future<void> _pump(
   addTearDown(tester.view.reset);
   await pumpThemed(
     tester,
-    ProviderScope(overrides: overrides, child: const DictionaryScreen()),
+    ProviderScope(
+      overrides: [...mockApiOverrides(), ...overrides],
+      child: const DictionaryScreen(),
+    ),
     mode: mode,
   );
-  // Let chained futures (and error propagation) settle.
-  await tester.pump();
+  // Let the mock API answer and errors propagate.
+  await pumpApi(tester);
   await tester.pump();
 }
 
@@ -42,22 +46,14 @@ void main() {
         final c = tokensFor(mode);
 
         expect(find.text('Dictionary'), findsOneWidget);
-        expect(
-          find.text(
-            '${fakeDictionarySigns.length} signs · Nepali Sign Language',
-          ),
-          findsOneWidget,
-        );
+        expect(find.text('12 signs · Nepali Sign Language'), findsOneWidget);
         expect(find.text('Search signs'), findsOneWidget);
         expect(find.text('All signs'), findsOneWidget);
         expect(find.text('A–Z'), findsOneWidget);
         for (final chip in ['All', 'Greetings', 'Alphabet', 'Numbers']) {
           expect(find.widgetWithText(IsharaChip, chip), findsOneWidget);
         }
-        expect(
-          find.byType(SignListTile),
-          findsNWidgets(fakeDictionarySigns.length),
-        );
+        expect(find.byType(SignListTile), findsNWidgets(12));
         expect(find.byType(HeroBackdrop), findsOneWidget);
         expect(find.byType(ContentPanel), findsOneWidget);
 
@@ -183,7 +179,7 @@ void main() {
 
     expect(
       currentLocation(container),
-      const SignDetailRoute(signId: 'namaste').location,
+      const SignDetailRoute(signId: FixtureIds.namaste).location,
     );
     expect(find.byType(SignDetailScreen), findsOneWidget);
     expect(find.byType(IsharaBottomBar), findsOneWidget);

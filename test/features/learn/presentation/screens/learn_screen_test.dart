@@ -11,6 +11,8 @@ import 'package:ishara_app/features/learn/presentation/widgets/trek_painters.dar
 import 'package:ishara_app/features/learn/presentation/widgets/trek_widgets.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/load_states.dart';
+import '../../../../helpers/mock_api.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
 
@@ -42,7 +44,8 @@ void main() {
       final c = tokensFor(mode);
 
       final stats = tester.widget<StatsBar>(find.byType(StatsBar));
-      expect((stats.streak, stats.xp, stats.hearts), (12, 340, 5));
+      // Total XP from /me (1240), not this week's.
+      expect((stats.streak, stats.xp, stats.hearts), (12, 1240, 5));
 
       // Base camp banner for Unit 1 with its progress.
       expect(find.text('Greetings & etiquette'), findsOneWidget);
@@ -185,7 +188,7 @@ void main() {
       animate: true,
     );
     await tester.pump();
-    await tester.pump();
+    await pumpApi(tester);
     double helloOpacity() => tester
         .widget<Opacity>(
           find
@@ -223,4 +226,10 @@ void main() {
     expect(danu.pose, DanuPose.wave);
     expect(danu.animated, isTrue);
   });
+
+  loadStateTests(
+    location: const LearnRoute().location,
+    errorTitle: 'Couldn’t load your path',
+    loadingLabel: 'Loading your path',
+  );
 }

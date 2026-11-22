@@ -8,20 +8,72 @@ part of 'profile_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Hard-coded profile matching the Figma frame; a repository-backed
-/// provider replaces it when the data layer lands.
+/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
+/// their stats from here; invalidate it to refetch.
+
+@ProviderFor(userProfile)
+final userProfileProvider = UserProfileProvider._();
+
+/// The signed-in learner (`GET /me`). Learn, lesson and gamification read
+/// their stats from here; invalidate it to refetch.
+
+final class UserProfileProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserProfile>,
+          UserProfile,
+          FutureOr<UserProfile>
+        >
+    with $FutureModifier<UserProfile>, $FutureProvider<UserProfile> {
+  /// The signed-in learner (`GET /me`). Learn, lesson and gamification read
+  /// their stats from here; invalidate it to refetch.
+  UserProfileProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userProfileProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userProfileHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<UserProfile> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<UserProfile> create(Ref ref) {
+    return userProfile(ref);
+  }
+}
+
+String _$userProfileHash() => r'4d93bb643ee26d71247e557b06d9ada4c20b3b3c';
+
+/// Derived synchronously so an error shows at once, even while Riverpod
+/// retries [userProfile].
 
 @ProviderFor(profileSummary)
 final profileSummaryProvider = ProfileSummaryProvider._();
 
-/// Hard-coded profile matching the Figma frame; a repository-backed
-/// provider replaces it when the data layer lands.
+/// Derived synchronously so an error shows at once, even while Riverpod
+/// retries [userProfile].
 
 final class ProfileSummaryProvider
-    extends $FunctionalProvider<ProfileSummary, ProfileSummary, ProfileSummary>
-    with $Provider<ProfileSummary> {
-  /// Hard-coded profile matching the Figma frame; a repository-backed
-  /// provider replaces it when the data layer lands.
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProfileSummary>,
+          AsyncValue<ProfileSummary>,
+          AsyncValue<ProfileSummary>
+        >
+    with $Provider<AsyncValue<ProfileSummary>> {
+  /// Derived synchronously so an error shows at once, even while Riverpod
+  /// retries [userProfile].
   ProfileSummaryProvider._()
     : super(
         from: null,
@@ -38,21 +90,22 @@ final class ProfileSummaryProvider
 
   @$internal
   @override
-  $ProviderElement<ProfileSummary> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<ProfileSummary>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  ProfileSummary create(Ref ref) {
+  AsyncValue<ProfileSummary> create(Ref ref) {
     return profileSummary(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ProfileSummary value) {
+  Override overrideWithValue(AsyncValue<ProfileSummary> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ProfileSummary>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<ProfileSummary>>(value),
     );
   }
 }
 
-String _$profileSummaryHash() => r'1e71388ebd56fa1eed927bf8d4d192490a5091b0';
+String _$profileSummaryHash() => r'9665bbe1c64510a236cfadcd1b257f4a55056933';

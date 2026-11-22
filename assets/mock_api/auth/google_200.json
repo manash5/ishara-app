@@ -1,0 +1,44 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "Signed in",
+  "data": {
+    "accessToken": "replaced-by-mock-adapter",
+    "refreshToken": "replaced-by-mock-adapter",
+    "expiresAt": "2026-11-22T10:00:00.000Z",
+    "user": {
+      "id": "c1f404b1-361e-5a17-9c75-ec33753089dc",
+      "email": "learner@ishara.test",
+      "displayName": "Manash Lamichhane",
+      "avatarUrl": null,
+      "joinedAt": "2026-11-01T06:00:00.000Z",
+      "onboardingDone": true,
+      "dailyGoalMinutes": 10,
+      "dominantHand": "right",
+      "timezone": "Asia/Kathmandu",
+      "stats": {
+        "totalXp": 1240,
+        "weeklyXp": 480,
+        "streakDays": 12,
+        "longestStreakDays": 21,
+        "streakFreezes": 1,
+        "hearts": 5,
+        "maxHearts": 5,
+        "heartsRefillAt": null,
+        "signsLearned": 18,
+        "cameraAccuracy": 0.87,
+        "weekStart": "2026-11-16",
+        "weekXp": [
+          30,
+          55,
+          20,
+          70,
+          45,
+          4,
+          62
+        ],
+        "todayIndex": 6
+      }
+    }
+  }
+}

@@ -2,12 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/config/game_rules.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_models.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 
+import '../lesson_test_utils.dart';
+
 void main() {
-  const id = 'greetings-1';
+  const id = 'lesson-1';
   late ProviderContainer container;
   final provider = lessonPlayerProvider(id);
 
@@ -15,6 +17,9 @@ void main() {
     final c = ProviderContainer(
       overrides: [
         if (hearts != null) startingHeartsProvider.overrideWithValue(hearts),
+        lessonProvider(id).overrideWithValue(
+          AsyncData(Lesson(id: id, exercises: fakeExercises())),
+        ),
       ],
     );
     addTearDown(c.dispose);
@@ -233,5 +238,25 @@ void main() {
     player().continueNext();
     expect(state().phase, LessonPhase.finished);
     expect(state().progress, 1);
+  });
+
+  test('finishing records the attempt for Lesson complete', () {
+    container = makeContainer();
+    toRecognise();
+    player()
+      ..select(1)
+      ..check()
+      ..continueNext();
+    toIndex(5);
+    player().continueNext();
+
+    final attempt = container.read(lessonAttemptsProvider)[id]!;
+    expect(attempt.lessonId, id);
+    expect(attempt.mistakes, 1);
+    expect(
+      attempt.clientEventId,
+      matches(RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-')),
+    );
+    expect(attempt.completedAt.isUtc, isTrue);
   });
 }

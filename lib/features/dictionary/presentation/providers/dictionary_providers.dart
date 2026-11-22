@@ -1,90 +1,18 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/error/failure.dart';
+import '../../../../core/error/result.dart';
+import '../../data/repositories/sign_repository_impl.dart';
+import '../../domain/usecases/sign_usecases.dart';
 import 'dictionary_models.dart';
 
 part 'dictionary_providers.g.dart';
 
-/// Fake dictionary for the UI-only phase. Names and categories only — no
-/// sign descriptions (they must come from the verified NDFN dictionary).
-const fakeDictionarySigns = <DictionarySign>[
-  DictionarySign(
-    id: 'namaste',
-    name: 'Namaste',
-    category: SignCategory.greetings,
-    status: SignStatus.learned,
-  ),
-  DictionarySign(
-    id: 'thank-you',
-    name: 'Thank you',
-    category: SignCategory.greetings,
-    status: SignStatus.learned,
-  ),
-  DictionarySign(
-    id: 'sorry',
-    name: 'Sorry',
-    category: SignCategory.etiquette,
-    status: SignStatus.practising,
-  ),
-  DictionarySign(
-    id: 'please',
-    name: 'Please',
-    category: SignCategory.etiquette,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'good-morning',
-    name: 'Good morning',
-    category: SignCategory.greetings,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'how-are-you',
-    name: 'How are you?',
-    category: SignCategory.questions,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'ka',
-    name: 'Ka',
-    category: SignCategory.alphabet,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'kha',
-    name: 'Kha',
-    category: SignCategory.alphabet,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'ga',
-    name: 'Ga',
-    category: SignCategory.alphabet,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'one',
-    name: 'One',
-    category: SignCategory.numbers,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'two',
-    name: 'Two',
-    category: SignCategory.numbers,
-    status: SignStatus.newSign,
-  ),
-  DictionarySign(
-    id: 'three',
-    name: 'Three',
-    category: SignCategory.numbers,
-    status: SignStatus.newSign,
-  ),
-];
-
-/// All dictionary signs (fake; a repository replaces this later).
+/// All dictionary signs (`GET /signs`, every page). Search, filters and
+/// sort run locally over this list.
 @riverpod
 Future<List<DictionarySign>> dictionarySigns(Ref ref) async =>
-    fakeDictionarySigns;
+    (await GetSigns(ref.watch(signRepositoryProvider))()).getOrThrow();
 
 /// The search box text.
 @riverpod
@@ -136,28 +64,14 @@ AsyncValue<List<DictionarySign>> filteredDictionarySigns(Ref ref) {
   return AsyncData(result);
 }
 
-/// Etiquette tips are about Deaf culture, not how a sign is formed.
-const _fakeEtiquetteTips = <String, String>{
-  'namaste':
-      'Keep eye contact — in Deaf culture, looking away while someone signs '
-      'is like turning your back.',
-};
-
-/// One sign's detail (data null when [signId] is unknown).
+/// One sign's detail (`GET /signs/:id`); data null when there's no such
+/// sign.
 @riverpod
-AsyncValue<SignDetail?> signDetail(Ref ref, String signId) {
-  final source = ref.watch(dictionarySignsProvider);
-  if (!source.hasValue) {
-    return source.hasError
-        ? AsyncError(source.error!, source.stackTrace ?? StackTrace.empty)
-        : const AsyncLoading();
-  }
-  for (final sign in source.requireValue) {
-    if (sign.id == signId) {
-      return AsyncData(
-        SignDetail(sign: sign, etiquetteTip: _fakeEtiquetteTips[signId]),
-      );
-    }
-  }
-  return const AsyncData(null);
+Future<SignDetail?> signDetail(Ref ref, String signId) async {
+  final result = await GetSign(ref.watch(signRepositoryProvider))(signId);
+  return switch (result) {
+    Ok(:final value) => SignDetail.fromSign(value),
+    Err(failure: NotFoundFailure()) => null,
+    Err(:final failure) => throw failure,
+  };
 }

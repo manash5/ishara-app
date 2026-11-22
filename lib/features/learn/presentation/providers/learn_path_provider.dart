@@ -1,11 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/utils/async_value_x.dart';
+
 import '../../../../core/widgets/widgets.dart';
+import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../data/repositories/path_repository_impl.dart';
+import '../../domain/entities/lesson_summary.dart';
+import '../../domain/entities/path_unit.dart' as domain;
+import '../../domain/usecases/get_path.dart';
 
 part 'learn_path_provider.g.dart';
 
-/// One stop on the roadmap. UI-only stand-in until the `/path` API lands.
+/// One stop on the roadmap, ready for [PathNode] (from `GET /path`).
 @immutable
 class PathStop {
   const PathStop({
@@ -24,7 +31,7 @@ class PathStop {
   /// Lessons open the lesson sheet; chests and checkpoints have none.
   final String? lessonId;
 
-  /// Fake lesson size shown on the current-lesson card.
+  /// Lesson size shown on the current-lesson card.
   final int signs;
   final int minutes;
 }
@@ -52,100 +59,53 @@ class PathUnit {
 /// Header stats on the Learn tab (Figma StatsBar 10:466).
 typedef LearnStats = ({int streak, int xp, int hearts});
 
-/// Fake roadmap: units 1–2 follow Figma "10 Learn" (10:509); units 3–4 are
-/// locked so the path scrolls. Unit titles only — no sign descriptions.
-@riverpod
-List<PathUnit> learnPath(Ref ref) => const [
-  PathUnit(
-    number: 1,
-    title: 'Greetings & etiquette',
-    color: UnitColor.teal,
-    learned: 4,
-    total: 12,
-    stops: [
+/// Domain path → roadmap view models.
+PathUnit pathUnitFromDomain(domain.PathUnit u) => PathUnit(
+  number: u.number,
+  title: u.title,
+  color: UnitColor.values.byName(u.tint.name),
+  learned: u.learnedCount,
+  total: u.totalCount,
+  stops: [
+    for (final s in u.stops)
       PathStop(
-        state: PathNodeState.completed,
-        title: 'Hello',
-        lessonId: 'greetings-1',
+        state: switch ((s.type, s.state)) {
+          (domain.StopType.chest, _) => PathNodeState.chest,
+          (domain.StopType.checkpoint, _) => PathNodeState.checkpoint,
+          (_, LessonState.locked) => PathNodeState.locked,
+          (domain.StopType.review, _) => PathNodeState.review,
+          (_, LessonState.current) => PathNodeState.current,
+          (_, LessonState.completed) => PathNodeState.completed,
+          (_, LessonState.available) => PathNodeState.current,
+        },
+        title: s.title,
+        lessonId: s.lesson?.id,
+        signs: s.lesson?.signCount ?? 0,
+        minutes: s.lesson?.minutes ?? 0,
       ),
-      PathStop(
-        state: PathNodeState.completed,
-        title: 'Namaste',
-        lessonId: 'greetings-2',
-      ),
-      PathStop(state: PathNodeState.chest, title: 'Reward chest'),
-      PathStop(
-        state: PathNodeState.review,
-        title: 'Review greetings',
-        lessonId: 'greetings-review-1',
-      ),
-      PathStop(
-        state: PathNodeState.current,
-        title: 'Thank you',
-        lessonId: 'greetings-3',
-      ),
-      PathStop(
-        state: PathNodeState.locked,
-        title: 'Sorry',
-        lessonId: 'greetings-4',
-      ),
-      PathStop(
-        state: PathNodeState.locked,
-        title: 'Please',
-        lessonId: 'greetings-5',
-      ),
-      PathStop(state: PathNodeState.checkpoint, title: 'Summit'),
-    ],
-  ),
-  PathUnit(
-    number: 2,
-    title: 'Fingerspelling vowels',
-    color: UnitColor.lavender,
-    learned: 0,
-    total: 10,
-    stops: [
-      PathStop(state: PathNodeState.locked, title: 'अ and आ', lessonId: 'v-1'),
-      PathStop(state: PathNodeState.locked, title: 'इ and ई', lessonId: 'v-2'),
-      PathStop(state: PathNodeState.locked, title: 'उ and ऊ', lessonId: 'v-3'),
-      PathStop(state: PathNodeState.chest, title: 'Reward chest'),
-      PathStop(state: PathNodeState.locked, title: 'ए and ऐ', lessonId: 'v-4'),
-      PathStop(state: PathNodeState.locked, title: 'ओ and औ', lessonId: 'v-5'),
-      PathStop(state: PathNodeState.checkpoint, title: 'Summit'),
-    ],
-  ),
-  PathUnit(
-    number: 3,
-    title: 'Fingerspelling consonants',
-    color: UnitColor.mint,
-    learned: 0,
-    total: 12,
-    stops: [
-      PathStop(state: PathNodeState.locked, title: 'क to ङ', lessonId: 'c-1'),
-      PathStop(state: PathNodeState.locked, title: 'च to ञ', lessonId: 'c-2'),
-      PathStop(state: PathNodeState.locked, title: 'ट to ण', lessonId: 'c-3'),
-      PathStop(state: PathNodeState.chest, title: 'Reward chest'),
-      PathStop(state: PathNodeState.locked, title: 'त to न', lessonId: 'c-4'),
-      PathStop(state: PathNodeState.checkpoint, title: 'Summit'),
-    ],
-  ),
-  PathUnit(
-    number: 4,
-    title: 'Numbers 1–10',
-    color: UnitColor.lime,
-    learned: 0,
-    total: 10,
-    stops: [
-      PathStop(state: PathNodeState.locked, title: '1 to 3', lessonId: 'n-1'),
-      PathStop(state: PathNodeState.locked, title: '4 to 6', lessonId: 'n-2'),
-      PathStop(state: PathNodeState.locked, title: '7 to 10', lessonId: 'n-3'),
-      PathStop(state: PathNodeState.checkpoint, title: 'Summit'),
-    ],
-  ),
-];
+  ],
+);
 
-/// Fake header stats (Figma: 12-day streak, 340 XP, 5 hearts).
+/// The roadmap (`GET /path`).
 @riverpod
-LearnStats learnStats(Ref ref) => (streak: 12, xp: 340, hearts: 5);
+Future<List<PathUnit>> learnPath(Ref ref) async {
+  final units = (await GetPath(
+    ref.watch(pathRepositoryProvider),
+  )()).getOrThrow();
+  return [for (final u in units) pathUnitFromDomain(u)];
+}
+
+/// Header stats from the learner's profile (`GET /me`).
+@riverpod
+AsyncValue<LearnStats> learnStats(Ref ref) =>
+    ref.watch(userProfileProvider).mapKeepingError((p) {
+      final stats = p.stats;
+      return (
+        streak: stats.streakDays,
+        xp: stats.totalXp,
+        hearts: stats.hearts,
+      );
+    });
 
 /// Fake connectivity for frame 12 (Learn – offline). Flip it from the debug
 /// `/gallery` until real connectivity lands.

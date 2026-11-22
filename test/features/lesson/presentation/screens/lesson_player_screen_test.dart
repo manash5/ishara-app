@@ -5,12 +5,14 @@ import 'package:ishara_app/core/config/game_rules.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exercise_view.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/sign_it_exercise_view.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 
 void main() {
@@ -201,4 +203,10 @@ void main() {
     expect(find.byType(FeedbackSheet), findsNothing);
     expect(heartsShown(tester), 0);
   });
+
+  loadStateTests(
+    location: const LessonRoute(lessonId: FixtureIds.currentLesson).location,
+    errorTitle: 'Couldn’t load this lesson',
+    loadingLabel: 'Loading the lesson',
+  );
 }
