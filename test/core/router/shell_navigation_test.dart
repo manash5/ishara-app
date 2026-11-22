@@ -77,7 +77,7 @@ void main() {
       expect(find.text('Practice'), findsWidgets);
       expect(find.byType(IsharaBottomBar), findsNothing);
 
-      await tapAndSettle(tester, find.text('Done'));
+      await tapAndSettle(tester, find.byTooltip('Close'));
       expect(find.byType(LearnScreen), findsOneWidget);
       expect(activeTab(tester), IsharaTab.learn);
     });

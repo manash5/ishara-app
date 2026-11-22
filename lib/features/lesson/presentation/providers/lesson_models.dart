@@ -21,8 +21,8 @@ enum LessonPhase {
   finished,
 }
 
-/// What the fake camera reported (until the recognition pipeline lands).
-enum CameraOutcome { correct, almost }
+/// What the recognition pipeline scored a camera exercise as.
+enum CameraOutcome { correct, almost, wrong }
 
 /// Match-pairs progress: the current word/video picks, finished rows and the
 /// last wrong pair (shown in danger + shake until the next tap).

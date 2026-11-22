@@ -119,14 +119,14 @@ class LessonPlayer extends _$LessonPlayer {
     return MatchTap.wrong;
   }
 
-  /// Fake camera result (until the recognition pipeline lands). Camera
-  /// mistakes never cost hearts. Returns the result to show, or null while
-  /// fingerspelling still has letters to go.
+  /// A recognition result (practice feedback). Camera mistakes never cost
+  /// hearts: almost and wrong both show the Try again sheet. Returns the
+  /// result to show, or null while fingerspelling has letters to go.
   FeedbackResult? cameraResult(CameraOutcome outcome) {
     final e = state.exercise;
     if (!_answering || e is! CameraExercise) return null;
-    if (outcome == CameraOutcome.almost) {
-      state = state.copyWith(cameraOutcome: () => CameraOutcome.almost);
+    if (outcome != CameraOutcome.correct) {
+      state = state.copyWith(cameraOutcome: () => outcome);
       return _showFeedback(FeedbackResult.almost);
     }
     if (e is FingerspellExercise && state.letterIndex < e.letters.length - 1) {

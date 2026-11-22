@@ -121,7 +121,9 @@ class _PlayerController {
 
   void cameraResult(CameraOutcome outcome) {
     final result = player.cameraResult(outcome);
-    if (result != null) _feedback(result);
+    if (result != null) {
+      _feedback(result, differentSign: outcome == CameraOutcome.wrong);
+    }
   }
 
   void skipCamera() => player.skipCamera();
@@ -130,14 +132,20 @@ class _PlayerController {
 
   /// Shows the `FeedbackSheet` (it adds the haptic), then moves on. Leaving
   /// the sheet any other way (e.g. Android back) also moves on.
-  Future<void> _feedback(FeedbackResult result) async {
+  Future<void> _feedback(
+    FeedbackResult result, {
+    bool differentSign = false,
+  }) async {
     final exercise = _state.exercise;
     var skip = false;
     final nav = Navigator.of(context);
     await FeedbackSheet.show(
       context,
       result: result,
-      message: _message(exercise, result),
+      message: differentSign
+          ? 'That looked like a different sign. Watch the reference and '
+                'try again.'
+          : _message(exercise, result),
       onContinue: nav.pop,
       secondaryLabel: result == FeedbackResult.almost
           ? 'Skip — I can’t use the camera now'

@@ -12,6 +12,7 @@ import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exerci
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/sign_it_exercise_view.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/watch_exercise_view.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/mock_api.dart';
@@ -34,16 +35,27 @@ void main() {
         });
   });
 
-  Future<ProviderContainer> pumpPlayer(WidgetTester tester, {int? hearts}) =>
-      pumpApp(
-        tester,
-        loggedIn: true,
-        onboardingDone: true,
-        location: const LessonRoute(lessonId: lessonId).location,
-        overrides: [
-          if (hearts != null) startingHeartsProvider.overrideWithValue(hearts),
-        ],
-      );
+  Future<ProviderContainer> pumpPlayer(
+    WidgetTester tester, {
+    int? hearts,
+    FakeCameraScenario? camera,
+  }) => pumpApp(
+    tester,
+    loggedIn: true,
+    onboardingDone: true,
+    location: const LessonRoute(lessonId: lessonId).location,
+    overrides: [
+      if (hearts != null) startingHeartsProvider.overrideWithValue(hearts),
+      if (camera != null)
+        fakeCameraSettingsProvider.overrideWithBuild((ref, _) => camera),
+    ],
+  );
+
+  /// Lets the fake camera sign until the pipeline scores it.
+  Future<void> signOnCamera(WidgetTester tester) async {
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+  }
 
   Future<void> tapAndSettle(WidgetTester tester, Finder finder) async {
     await tester.ensureVisible(finder);
@@ -144,9 +156,9 @@ void main() {
     testWidgets('almost (24) never costs a heart; Try again retries', (
       tester,
     ) async {
-      final c = await pumpPlayer(tester);
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.almost);
       await jumpTo(tester, c, 4);
-      await tapAndSettle(tester, find.text('Simulate: almost'));
+      await signOnCamera(tester);
       expect(find.text('Almost there'), findsOneWidget);
       expect(
         find.text('Curl your index finger toward your palm.'),
@@ -159,6 +171,23 @@ void main() {
       await tapAndSettle(tester, find.text('Try again'));
       expect(find.byType(FeedbackSheet), findsNothing);
       expect(find.byType(SignItExerciseView), findsOneWidget);
+      expect(heartsShown(tester), GameRules.maxHearts);
+    });
+
+    testWidgets('a different sign (wrong) never costs a heart either', (
+      tester,
+    ) async {
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.wrong);
+      await jumpTo(tester, c, 4);
+      await signOnCamera(tester);
+      expect(
+        find.text(
+          'That looked like a different sign. Watch the reference and '
+          'try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Try again'), findsOneWidget);
       expect(heartsShown(tester), GameRules.maxHearts);
     });
 
@@ -184,9 +213,9 @@ void main() {
     });
 
     testWidgets('skip from the almost sheet', (tester) async {
-      final c = await pumpPlayer(tester);
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.almost);
       await jumpTo(tester, c, 4);
-      await tapAndSettle(tester, find.text('Simulate: almost'));
+      await signOnCamera(tester);
       await tapAndSettle(
         tester,
         find.text('Skip — I can’t use the camera now'),

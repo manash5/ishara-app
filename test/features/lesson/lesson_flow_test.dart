@@ -82,16 +82,16 @@ void main() {
     }
     await checkAndContinue(tester);
 
-    // 23 Sign it.
+    // 23 Sign it: the fake camera (correct by default) signs Namaste.
     expect(find.byType(SignItExerciseView), findsOneWidget);
-    await tapAndSettle(tester, find.text('Simulate: correct'));
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
     await tapAndSettle(tester, sheetButton('Continue'));
 
-    // 25 Fingerspell: one result per letter.
+    // 25 Fingerspell: the fake camera spells every letter.
     expect(find.byType(FingerspellExerciseView), findsOneWidget);
-    for (var i = 0; i < 3; i++) {
-      await tapAndSettle(tester, find.text('Simulate: correct'));
-    }
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
     await tapAndSettle(tester, sheetButton('Continue'));
 
     // 26 → 27 → Learn.

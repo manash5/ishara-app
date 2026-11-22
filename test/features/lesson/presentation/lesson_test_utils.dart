@@ -1,9 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/config/game_rules.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/lesson/data/models/lesson_dto.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_models.dart';
+import 'package:ishara_app/features/lesson/presentation/widgets/camera_exercise_layout.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../helpers/mock_api.dart';
@@ -51,20 +54,40 @@ Future<void> pumpExercise(
   Widget child, {
   ThemeMode mode = ThemeMode.light,
   bool disableAnimations = true,
+  FakeCameraScenario camera = FakeCameraScenario.noHand,
 }) async {
   usePhoneSize(tester);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: mode,
-      home: Builder(
-        builder: (context) => MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(disableAnimations: disableAnimations),
-          child: Scaffold(body: child),
+    // Camera exercises run the recognition pipeline on the fake camera;
+    // [camera] picks what it shows (no hand by default: no results).
+    ProviderScope(
+      overrides: [
+        ...mockApiOverrides(),
+        fakeCameraSettingsProvider.overrideWithBuild((ref, _) => camera),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: mode,
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(disableAnimations: disableAnimations),
+            child: Scaffold(body: child),
+          ),
         ),
       ),
     ),
   );
+  // Camera sessions read the profile: let its mock request finish (no
+  // camera frames yet; those need time to pass).
+  await pumpApi(tester);
 }
+
+/// The camera exercise's status chip (not the debug fps / latency chip).
+IsharaChip statusChip(WidgetTester tester) => tester.widget<IsharaChip>(
+  find.descendant(
+    of: find.byKey(CameraExerciseLayout.statusKey),
+    matching: find.byType(IsharaChip),
+  ),
+);
