@@ -3,5 +3,7 @@ import '../entities/weekly_leaderboard.dart';
 
 abstract interface class LeaderboardRepository {
   /// The learner's league this week (`GET /leaderboard/weekly`).
-  Future<Result<WeeklyLeaderboard>> getWeeklyLeaderboard();
+  /// Cache-first: emits the cached league (if any), then the fresh one. If
+  /// the refresh fails it emits the failure only when nothing was cached.
+  Stream<Result<WeeklyLeaderboard>> watchWeekly();
 }

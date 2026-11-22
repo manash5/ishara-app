@@ -8,27 +8,30 @@ part of 'dictionary_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// All dictionary signs (`GET /signs`, every page). Search, filters and
-/// sort run locally over this list.
+/// All dictionary signs (`GET /signs`, every page): the cached list first,
+/// then the fresh one. Search, filters and sort run locally over this list,
+/// so they are instant and work the same offline.
 
 @ProviderFor(dictionarySigns)
 final dictionarySignsProvider = DictionarySignsProvider._();
 
-/// All dictionary signs (`GET /signs`, every page). Search, filters and
-/// sort run locally over this list.
+/// All dictionary signs (`GET /signs`, every page): the cached list first,
+/// then the fresh one. Search, filters and sort run locally over this list,
+/// so they are instant and work the same offline.
 
 final class DictionarySignsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<DictionarySign>>,
           List<DictionarySign>,
-          FutureOr<List<DictionarySign>>
+          Stream<List<DictionarySign>>
         >
     with
         $FutureModifier<List<DictionarySign>>,
-        $FutureProvider<List<DictionarySign>> {
-  /// All dictionary signs (`GET /signs`, every page). Search, filters and
-  /// sort run locally over this list.
+        $StreamProvider<List<DictionarySign>> {
+  /// All dictionary signs (`GET /signs`, every page): the cached list first,
+  /// then the fresh one. Search, filters and sort run locally over this list,
+  /// so they are instant and work the same offline.
   DictionarySignsProvider._()
     : super(
         from: null,
@@ -45,17 +48,17 @@ final class DictionarySignsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<DictionarySign>> $createElement(
+  $StreamProviderElement<List<DictionarySign>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<DictionarySign>> create(Ref ref) {
+  Stream<List<DictionarySign>> create(Ref ref) {
     return dictionarySigns(ref);
   }
 }
 
-String _$dictionarySignsHash() => r'3411ef85f00ab31131ccaf28708e37182a8ccb57';
+String _$dictionarySignsHash() => r'0082425b0e5f7dcb24c689aeedee83448ce86645';
 
 /// The search box text.
 
@@ -287,27 +290,27 @@ final class FilteredDictionarySignsProvider
 }
 
 String _$filteredDictionarySignsHash() =>
-    r'549fe8232828f3551c268d5438e2042db13a0840';
+    r'36b2179f52b2c08db1b6fbfff7db0a8b12678e53';
 
-/// One sign's detail (`GET /signs/:id`); data null when there's no such
-/// sign.
+/// One sign's detail (`GET /signs/:id`): the cached list entry first, then
+/// the fresh detail. Data null when there's no such sign.
 
 @ProviderFor(signDetail)
 final signDetailProvider = SignDetailFamily._();
 
-/// One sign's detail (`GET /signs/:id`); data null when there's no such
-/// sign.
+/// One sign's detail (`GET /signs/:id`): the cached list entry first, then
+/// the fresh detail. Data null when there's no such sign.
 
 final class SignDetailProvider
     extends
         $FunctionalProvider<
           AsyncValue<SignDetail?>,
           SignDetail?,
-          FutureOr<SignDetail?>
+          Stream<SignDetail?>
         >
-    with $FutureModifier<SignDetail?>, $FutureProvider<SignDetail?> {
-  /// One sign's detail (`GET /signs/:id`); data null when there's no such
-  /// sign.
+    with $FutureModifier<SignDetail?>, $StreamProvider<SignDetail?> {
+  /// One sign's detail (`GET /signs/:id`): the cached list entry first, then
+  /// the fresh detail. Data null when there's no such sign.
   SignDetailProvider._({
     required SignDetailFamily super.from,
     required String super.argument,
@@ -331,12 +334,12 @@ final class SignDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<SignDetail?> $createElement(
+  $StreamProviderElement<SignDetail?> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<SignDetail?> create(Ref ref) {
+  Stream<SignDetail?> create(Ref ref) {
     final argument = this.argument as String;
     return signDetail(ref, argument);
   }
@@ -352,13 +355,13 @@ final class SignDetailProvider
   }
 }
 
-String _$signDetailHash() => r'f6fc5da6961dbaf7c56b116e32e9e9e0826e3e0a';
+String _$signDetailHash() => r'bad09a100adc794ab1cf3a566978019df7f76754';
 
-/// One sign's detail (`GET /signs/:id`); data null when there's no such
-/// sign.
+/// One sign's detail (`GET /signs/:id`): the cached list entry first, then
+/// the fresh detail. Data null when there's no such sign.
 
 final class SignDetailFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<SignDetail?>, String> {
+    with $FunctionalFamilyOverride<Stream<SignDetail?>, String> {
   SignDetailFamily._()
     : super(
         retry: null,
@@ -368,8 +371,8 @@ final class SignDetailFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One sign's detail (`GET /signs/:id`); data null when there's no such
-  /// sign.
+  /// One sign's detail (`GET /signs/:id`): the cached list entry first, then
+  /// the fresh detail. Data null when there's no such sign.
 
   SignDetailProvider call(String signId) =>
       SignDetailProvider._(argument: signId, from: this);

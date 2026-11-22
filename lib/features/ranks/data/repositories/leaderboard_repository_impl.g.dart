@@ -55,4 +55,4 @@ final class LeaderboardRepositoryProvider
 }
 
 String _$leaderboardRepositoryHash() =>
-    r'31474b9c0229cbda7998c372421072f877b845af';
+    r'd086569a50d2e0b4b21cfb28b1111b8da49bf3f3';

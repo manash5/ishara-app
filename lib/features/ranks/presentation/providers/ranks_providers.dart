@@ -2,18 +2,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/repositories/leaderboard_repository_impl.dart';
 import '../../domain/entities/weekly_leaderboard.dart';
-import '../../domain/usecases/get_weekly_leaderboard.dart';
+import '../../domain/usecases/watch_weekly_leaderboard.dart';
 
 export '../../domain/entities/weekly_leaderboard.dart';
 
 part 'ranks_providers.g.dart';
 
-/// The learner's weekly league (`GET /leaderboard/weekly`).
+/// The learner's weekly league (`GET /leaderboard/weekly`): the cached
+/// league first (so Ranks works offline), then the fresh one.
 @riverpod
-Future<WeeklyLeaderboard> weeklyLeaderboard(Ref ref) async =>
-    (await GetWeeklyLeaderboard(
-      ref.watch(leaderboardRepositoryProvider),
-    )()).getOrThrow();
+Stream<WeeklyLeaderboard> weeklyLeaderboard(Ref ref) => WatchWeeklyLeaderboard(
+  ref.watch(leaderboardRepositoryProvider),
+)().map((result) => result.getOrThrow());
 
 /// "3d 14h", "5h 20m", "45m" — the countdown chip text. Rounds up to the
 /// minute, so a league ending in 3d 13h 59m 59s still reads "3d 14h".

@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:ishara_app/features/dictionary/data/datasources/sign_local_data_source.dart';
+import 'package:ishara_app/features/dictionary/data/models/sign_dto.dart';
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_models.dart';
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_providers.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/dictionary_screen.dart';
@@ -17,6 +19,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
 import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -132,7 +135,7 @@ void main() {
         tester,
         overrides: [
           signDetailProvider(FixtureIds.namaste)
-              .overrideWith((_) => pending.future),
+              .overrideWith((_) => Stream.fromFuture(pending.future)),
         ],
       );
       expect(find.bySemanticsLabel('Loading sign'), findsOneWidget);
@@ -149,6 +152,25 @@ void main() {
     testWidgets('unknown sign', (tester) async {
       await _pump(tester, signId: 'nope');
       expect(find.text('Sign not found'), findsOneWidget);
+    });
+
+    testWidgets('offline: shows the cached list entry', (tester) async {
+      await SignLocalDataSource(TestHive.instance).writeSigns([
+        for (final s in fixtureData<List<dynamic>>('signs/list_page1'))
+          SignDto.fromJson(s as Map<String, dynamic>),
+      ]);
+      await _pump(
+        tester,
+        signId: FixtureIds.sorry,
+        simulation: MockApiSimulation.offline,
+      );
+      expect(find.text('Sorry'), findsNWidgets(2));
+      expect(find.text('Couldn’t load this sign'), findsNothing);
+    });
+
+    testWidgets('offline with nothing cached shows the error', (tester) async {
+      await _pump(tester, simulation: MockApiSimulation.offline);
+      expect(find.text('Couldn’t load this sign'), findsOneWidget);
     });
   });
 
