@@ -8,9 +8,10 @@ import 'hero_backdrop.dart';
 import 'ishara_button.dart';
 
 /// Shared layout of the lesson results (Figma 26 Lesson complete, 27
-/// Streak): a [HeroBackdrop] header with [hero], overlapped by a
-/// [ContentPanel] whose Continue button sits at the bottom, plus one short
-/// confetti burst (motion.md "playful": results only).
+/// Streak, 28 Out of hearts): a [HeroBackdrop] header with [hero],
+/// overlapped by a [ContentPanel] whose Continue button sits at the bottom,
+/// plus one short confetti burst (motion.md "playful": results only) when
+/// [celebrate] is on.
 class ResultsScaffold extends StatelessWidget {
   const ResultsScaffold({
     super.key,
@@ -21,6 +22,10 @@ class ResultsScaffold extends StatelessWidget {
     this.backdrop = HeroBackdropLayout.header,
     this.danu,
     this.danuRise = IsharaSizes.resultMascotOverlap,
+    this.continueLabel = 'Continue',
+    this.secondaryLabel,
+    this.onSecondary,
+    this.celebrate = true,
   });
 
   /// Hero content under the status bar.
@@ -40,6 +45,16 @@ class ResultsScaffold extends StatelessWidget {
 
   /// How far [danu] rises above the panel's top (the rest overlaps it).
   final double danuRise;
+
+  /// Label of the filled bottom button ([onContinue]).
+  final String continueLabel;
+
+  /// Optional outlined button under the filled one.
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
+
+  /// Plays the confetti burst. Off for Out of hearts (28).
+  final bool celebrate;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +101,26 @@ class ResultsScaffold extends StatelessWidget {
                                   const Spacer(),
                                   SafeArea(
                                     top: false,
-                                    child: IsharaButton(
-                                      label: 'Continue',
-                                      onPressed: onContinue,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        IsharaButton(
+                                          label: continueLabel,
+                                          onPressed: onContinue,
+                                        ),
+                                        if (secondaryLabel != null) ...[
+                                          const SizedBox(
+                                            height: IsharaSpacing.s3,
+                                          ),
+                                          IsharaButton(
+                                            label: secondaryLabel!,
+                                            variant:
+                                                IsharaButtonVariant.outlined,
+                                            onPressed: onSecondary,
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -108,7 +140,7 @@ class ResultsScaffold extends StatelessWidget {
                 ),
               ],
             ),
-            const Positioned.fill(child: ConfettiBurst()),
+            if (celebrate) const Positioned.fill(child: ConfettiBurst()),
           ],
         ),
       ),
@@ -116,10 +148,11 @@ class ResultsScaffold extends StatelessWidget {
   }
 }
 
-/// Danu on the results hero (26, 27): pops in just after the badge/flame,
-/// then plays [pose] on a loop (wave: the Learn roadmap animation;
-/// celebrate: cheering wings, a hop and twinkling confetti). Reduced
-/// motion shows the still pose.
+/// Danu on the results hero (26, 27, 28): pops in just after the
+/// badge/flame, then plays [pose] on a loop (wave: the Learn roadmap
+/// animation; celebrate: cheering wings, a hop and twinkling confetti;
+/// sad: a sigh, drooping head and a tear). Reduced motion shows the still
+/// pose.
 ///
 /// Pass it as [ResultsScaffold.danu]: it sits at the hero's right edge,
 /// drawn over the panel's top.

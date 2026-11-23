@@ -53,12 +53,7 @@ class LessonPlayerScreen extends ConsumerWidget {
     ref.listen(provider.select((s) => s.phase), (_, phase) {
       switch (phase) {
         case LessonPhase.outOfHearts:
-          IsharaFeedback.wrong();
-          showOutOfHeartsSheet(
-            context,
-            onPractise: () => const PracticeRoute().go(context),
-            onEndLesson: () => const LearnRoute().go(context),
-          );
+          const OutOfHeartsRoute().go(context);
         case LessonPhase.finished:
           LessonCompleteRoute(lessonId: lessonId).go(context);
         case LessonPhase.answering || LessonPhase.feedback:

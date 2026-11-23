@@ -121,8 +121,8 @@ abstract final class IsharaSizes {
   static const double letterTileGlyph = 44;
   static const double letterTileGlyphLine = 52;
   static const double dialogWidth = 312; // AlertDialog (29)
-  static const double sheetHeart = 22; // Out of hearts sheet (28)
-  static const double sheetHeartGap = 6;
+  static const double outOfHeartsHeart = 28; // Out of hearts (28)
+  static const double outOfHeartsHeartGap = 8;
 
   // Lesson results (26–27).
   static const double resultBadge = 64;

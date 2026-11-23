@@ -165,6 +165,58 @@ void main() {
     expect(assetsShown(tester), {DanuPose.wave.asset});
   });
 
+  testWidgets('animated sad sighs: head droops and a tear rolls down', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.sad, size: 130, animated: true),
+    );
+    expect(assetsShown(tester), DanuSadLayers.all.toSet());
+
+    Finder above(String asset, Type type) => find.ancestor(
+      of: find.byWidgetPredicate(
+        (w) =>
+            w is SvgPicture &&
+            (w.bytesLoader as SvgAssetLoader).assetName == asset,
+      ),
+      matching: find.byType(type),
+    );
+    double tearOpacity() =>
+        tester.widget<Opacity>(above(DanuSadLayers.tear, Opacity)).opacity;
+    double tearY() => tester
+        .widget<Transform>(above(DanuSadLayers.tear, Transform).first)
+        .transform
+        .getTranslation()
+        .y;
+    // The head's rotation is the outermost Transform above the head layer
+    // inside the body's sigh transform.
+    double headAngle() => tester
+        .widget<Transform>(above(DanuSadLayers.head, Transform).first)
+        .transform
+        .storage[1];
+
+    expect(tearOpacity(), closeTo(0, 1e-6));
+    final restAngle = headAngle();
+    // Mid-sigh: the head hangs lowest and the tear has rolled down.
+    await tester.pump(DanuSadMotion.period ~/ 2);
+    expect(headAngle(), greaterThan(restAngle));
+    expect(tearOpacity(), greaterThan(0.5));
+    expect(tearY(), greaterThan(0));
+    expect(tester.hasRunningAnimations, isTrue);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('reduced motion shows the still sad artwork', (tester) async {
+    await pumpThemed(
+      tester,
+      const DanuMascot(pose: DanuPose.sad, animated: true),
+      disableAnimations: true,
+    );
+    expect(assetsShown(tester), {DanuPose.sad.asset});
+  });
+
   testWidgets('animated has no effect on poses without layers', (tester) async {
     await pumpThemed(
       tester,
@@ -173,9 +225,13 @@ void main() {
     expect(assetsShown(tester), {DanuPose.think.asset});
   });
 
-  test('wave and celebrate layer assets are bundled', () async {
+  test('wave, celebrate and sad layer assets are bundled', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    for (final asset in [...DanuWaveLayers.all, ...DanuCelebrateLayers.all]) {
+    for (final asset in [
+      ...DanuWaveLayers.all,
+      ...DanuCelebrateLayers.all,
+      ...DanuSadLayers.all,
+    ]) {
       expect((await rootBundle.loadString(asset)).contains('<svg'), isTrue);
     }
   });

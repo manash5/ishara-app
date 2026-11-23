@@ -10,6 +10,7 @@ import 'package:ishara_app/features/lesson/presentation/providers/lesson_provide
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exercise_view.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
+import 'package:ishara_app/features/gamification/presentation/screens/out_of_hearts_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/sign_it_exercise_view.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/watch_exercise_view.dart';
 import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
@@ -225,16 +226,13 @@ void main() {
     });
   });
 
-  testWidgets('0 hearts opens the out-of-hearts sheet over the player', (
-    tester,
-  ) async {
+  testWidgets('0 hearts goes to the Out of hearts page', (tester) async {
     await pumpPlayer(tester, hearts: 1);
     await tapAndSettle(tester, find.text('Continue'));
     await tapAndSettle(tester, find.text('Hello'));
     await tapAndSettle(tester, find.text('Check'));
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
+    expect(find.byType(OutOfHeartsScreen), findsOneWidget);
     expect(find.byType(FeedbackSheet), findsNothing);
-    expect(heartsShown(tester), 0);
   });
 
   loadStateTests(

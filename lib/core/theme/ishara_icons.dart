@@ -41,6 +41,7 @@ abstract final class IsharaIcons {
   static const IconData scan = LucideIcons.scan;
   static const IconData flag = LucideIcons.flag;
   static const IconData heart = LucideIcons.heart;
+  static const IconData heartCrack = LucideIcons.heartCrack;
   static const IconData trash = LucideIcons.trash2;
 }
 

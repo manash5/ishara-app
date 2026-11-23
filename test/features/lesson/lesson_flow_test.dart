@@ -132,19 +132,13 @@ void main() {
     await tapAndSettle(tester, find.text('Continue'));
     await tapAndSettle(tester, find.text('Sorry'));
     await tapAndSettle(tester, find.text('Check'));
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
+    expect(find.byType(OutOfHeartsScreen), findsOneWidget);
     expect(find.text('You’re out of hearts'), findsOneWidget);
-    // The learner must choose: back doesn't close it.
-    await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
     await tapAndSettle(tester, find.text('End lesson'));
     expect(find.byType(LearnScreen), findsOneWidget);
   });
 
-  testWidgets('/out-of-hearts shows the same panel full-screen', (
-    tester,
-  ) async {
+  testWidgets('/out-of-hearts: Android back ends the lesson', (tester) async {
     await pumpApp(
       tester,
       loggedIn: true,
@@ -152,8 +146,8 @@ void main() {
       location: const OutOfHeartsRoute().location,
     );
     expect(find.byType(OutOfHeartsScreen), findsOneWidget);
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
-    await tapAndSettle(tester, find.text('End lesson'));
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
     expect(find.byType(LearnScreen), findsOneWidget);
   });
 }

@@ -331,12 +331,18 @@ Widget sharedSignVideo(BuildContext context) => GallerySection(
 );
 
 Widget sharedOutOfHearts(BuildContext context) => GallerySection(
-  title: 'OutOfHeartsPanel',
+  title: 'ResultsDanu · sad',
   subtitle:
-      '28 Out of hearts: sheet over the lesson, or the /out-of-hearts '
-      'route',
+      '28 Out of hearts (/out-of-hearts): Danu sighs, hangs its head and a '
+      'tear rolls down; still with reduced motion',
   children: [
-    _phone(const OutOfHeartsPanel(onPractise: _noop, onEndLesson: _noop)),
+    _onHero(
+      context,
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: ResultsDanu(pose: DanuPose.sad),
+      ),
+    ),
   ],
 );
 
