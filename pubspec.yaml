@@ -96,6 +96,9 @@ flutter:
     - assets/mascot/wave_layers/
     - assets/mascot/celebrate_layers/
     - assets/mascot/sad_layers/
+    - assets/mascot/point_layers/
+    - assets/mascot/namaste_layers/
+    - assets/mascot/think_layers/
     - assets/roadmap/
     # Mock API fixtures (USE_MOCK_API=true); shapes documented in docs/api-contract.md.
     - assets/mock_api/

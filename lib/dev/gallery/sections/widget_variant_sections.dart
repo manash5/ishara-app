@@ -309,8 +309,14 @@ class _HeroIntroDemoState extends State<_HeroIntroDemo>
 
 Widget danuWaving(BuildContext context) => const GallerySection(
   title: 'DanuMascot · animated',
-  subtitle: 'Waving loop (roadmap); still with reduced motion',
-  children: [DanuMascot(pose: DanuPose.wave, size: 160, animated: true)],
+  subtitle:
+      'Roadmap loops: wave, point, think, namaste; still with reduced motion',
+  children: [
+    DanuMascot(pose: DanuPose.wave, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.point, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.think, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.namaste, size: 160, animated: true),
+  ],
 );
 
 // ── Shared widgets consolidated from features ───────────────────────────────

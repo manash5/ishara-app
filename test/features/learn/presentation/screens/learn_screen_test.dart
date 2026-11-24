@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/error/failure.dart';
@@ -7,6 +9,7 @@ import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/learn/data/datasources/path_local_data_source.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/learn_offline_notice.dart';
+import 'package:ishara_app/features/learn/presentation/providers/learn_path_provider.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_lesson_sheet.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
 import 'package:ishara_app/features/learn/presentation/widgets/learn_path_view.dart';
@@ -67,8 +70,10 @@ void main() {
 
       // Danu guides from beside the current card.
       expect(
-        tester.widget<DanuMascot>(find.byType(DanuMascot)).pose,
-        DanuPose.wave,
+        find.byWidgetPredicate(
+          (w) => w is DanuMascot && w.pose == DanuPose.wave,
+        ),
+        findsOneWidget,
       );
       expect(
         tester
@@ -110,6 +115,106 @@ void main() {
     expect(find.text('Fingerspelling vowels'), findsOneWidget);
     expect(find.text('Summit'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Danus up the trek: pointing, thinking, namaste, sides switch', (
+    tester,
+  ) async {
+    await pumpLearn(tester);
+    final path = find.byKey(const Key('learn-path'));
+    final scrollable = find.descendant(
+      of: path,
+      matching: find.byType(Scrollable),
+    );
+    final screen = tester.getRect(path);
+    final sides = <bool>[];
+    // Units 2, 3 and 4 in the fixture, climbing up.
+    for (final pose in TrekGuide.poses) {
+      final danu = find.byKey(Key('trek-guide-${pose.name}'));
+      await tester.scrollUntilVisible(danu, 200, scrollable: scrollable);
+      await tester.pump();
+      expect(tester.widget<DanuMascot>(danu).animated, isTrue);
+      final rect = tester.getRect(danu);
+      // On screen, clear of every waypoint.
+      expect(rect.left, greaterThanOrEqualTo(screen.left));
+      expect(rect.right, lessThanOrEqualTo(screen.right));
+      for (final marker in find.byType(WaypointMarker).evaluate()) {
+        final box = marker.renderObject! as RenderBox;
+        expect(
+          rect.overlaps(box.localToGlobal(Offset.zero) & box.size),
+          isFalse,
+        );
+      }
+      sides.add(rect.center.dx < screen.center.dx);
+    }
+    expect(sides, [true, false, true]);
+    // No cheering Danu on the trail any more.
+    expect(find.byKey(const Key('trek-guide-celebrate')), findsNothing);
+    expect(tester.takeException(), isNull);
+    // Looping mascots: unmount instead of settling.
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  group('TrekGuide.spotFor', () {
+    PathUnit unit(int n, List<PathNodeState> states) => PathUnit(
+      number: n,
+      title: 'Unit $n',
+      color: UnitColor.values.first,
+      learned: 0,
+      total: states.length,
+      stops: [
+        for (final s in states)
+          PathStop(state: s, title: s.name, signs: 3, minutes: 5),
+      ],
+    );
+    const done = PathNodeState.completed;
+    const now = PathNodeState.current;
+    const locked = PathNodeState.locked;
+    const top = PathNodeState.checkpoint;
+
+    final units = [
+      unit(1, [done, done, top]),
+      unit(2, [done, now, locked, top]),
+      unit(3, [locked]),
+      unit(4, [locked, locked, top]),
+      unit(5, [locked, locked, top]),
+      unit(6, [locked, locked, top]),
+    ];
+
+    test('the current stage has only the waving guide', () {
+      expect(TrekGuide.spotFor(units, 1), isNull);
+    });
+
+    test('a one-stop stage has no room for Danu', () {
+      expect(TrekGuide.spotFor(units, 2), isNull);
+    });
+
+    test('poses take turns and sides alternate, finished stages too', () {
+      expect(
+        [
+          for (final i in [0, 3, 4, 5]) TrekGuide.spotFor(units, i),
+        ],
+        [
+          (pose: DanuPose.point, onLeft: true),
+          (pose: DanuPose.think, onLeft: false),
+          (pose: DanuPose.namaste, onLeft: true),
+          (pose: DanuPose.point, onLeft: false),
+        ],
+      );
+    });
+  });
+
+  test('a guide stands where its side of the trail has room', () {
+    const need = 0.32;
+    for (final stops in [2, 4, 6, 8]) {
+      for (final onLeft in [true, false]) {
+        final j = PathLayout.guideGap(stops, onLeft: onLeft, need: need);
+        expect(j, inInclusiveRange(0, stops - 2));
+        final (a, b) = (PathLayout.xOf(j), PathLayout.xOf(j + 1));
+        final room = onLeft ? math.min(a, b) : 1 - math.max(a, b);
+        if (stops >= 4) expect(room, greaterThanOrEqualTo(need));
+      }
+    }
   });
 
   test('waypoints sway either side of the centre line', () {
@@ -234,7 +339,9 @@ void main() {
 
   testWidgets('Danu on the trek is the animated, waving Danu', (tester) async {
     await pumpLearn(tester);
-    final danu = tester.widget<DanuMascot>(find.byType(DanuMascot));
+    final danu = tester.widget<DanuMascot>(
+      find.byWidgetPredicate((w) => w is DanuMascot && w.pose == DanuPose.wave),
+    );
     expect(danu.pose, DanuPose.wave);
     expect(danu.animated, isTrue);
   });

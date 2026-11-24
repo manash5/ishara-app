@@ -17,6 +17,10 @@ abstract final class TrekSizes {
   static const double flagsWidth = 96;
   static const double flagsHeight = 28;
   static const double danu = 96;
+
+  /// A guide Danu's own row on the trail: Danu plus headroom for the
+  /// thought cloud that pops up above the thinking pose.
+  static const double guideRow = danu + IsharaSpacing.s6;
 }
 
 /// Unit banner: the stage of the climb. Flat card in the unit colour with a
@@ -315,4 +319,35 @@ class PrayerFlags extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Where a guide Danu stands on a stage: its pose and the side of the trail.
+typedef TrekGuideSpot = ({DanuPose pose, bool onLeft});
+
+/// Danu along the trek, beyond the waving guide at the current lesson: one
+/// per other stage, taking turns pointing up the trail, thinking (with a
+/// thought cloud) and bowing namaste, and switching sides of the trail each
+/// time so the stages don't all look alike.
+abstract final class TrekGuide {
+  static const List<DanuPose> poses = [
+    DanuPose.point,
+    DanuPose.think,
+    DanuPose.namaste,
+  ];
+
+  /// Danu on stage [index] of [units], or null for none: the stage with the
+  /// current lesson already has the waving guide beside its card, and a
+  /// one-stop stage has no stretch of trail to stand beside.
+  static TrekGuideSpot? spotFor(List<PathUnit> units, int index) {
+    if (!hasGuide(units[index])) return null;
+    var n = 0;
+    for (var u = 0; u < index; u++) {
+      if (hasGuide(units[u])) n++;
+    }
+    return (pose: poses[n % poses.length], onLeft: n.isEven);
+  }
+
+  static bool hasGuide(PathUnit unit) =>
+      unit.stops.length >= 2 &&
+      !unit.stops.any((s) => s.state == PathNodeState.current);
 }
