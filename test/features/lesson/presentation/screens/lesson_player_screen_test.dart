@@ -2,16 +2,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/config/game_rules.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_player_provider.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/recognise_exercise_view.dart';
+import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
+import 'package:ishara_app/features/gamification/presentation/screens/out_of_hearts_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/sign_it_exercise_view.dart';
+import 'package:ishara_app/features/lesson/presentation/widgets/watch_exercise_view.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
+import '../../../../helpers/pump_themed.dart';
 
 void main() {
   const lessonId = 'unit-1-lesson-2';
@@ -28,16 +36,27 @@ void main() {
         });
   });
 
-  Future<ProviderContainer> pumpPlayer(WidgetTester tester, {int? hearts}) =>
-      pumpApp(
-        tester,
-        loggedIn: true,
-        onboardingDone: true,
-        location: const LessonRoute(lessonId: lessonId).location,
-        overrides: [
-          if (hearts != null) startingHeartsProvider.overrideWithValue(hearts),
-        ],
-      );
+  Future<ProviderContainer> pumpPlayer(
+    WidgetTester tester, {
+    int? hearts,
+    FakeCameraScenario? camera,
+  }) => pumpApp(
+    tester,
+    loggedIn: true,
+    onboardingDone: true,
+    location: const LessonRoute(lessonId: lessonId).location,
+    overrides: [
+      if (hearts != null) startingHeartsProvider.overrideWithValue(hearts),
+      if (camera != null)
+        fakeCameraSettingsProvider.overrideWithBuild((ref, _) => camera),
+    ],
+  );
+
+  /// Lets the fake camera sign until the pipeline scores it.
+  Future<void> signOnCamera(WidgetTester tester) async {
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+  }
 
   Future<void> tapAndSettle(WidgetTester tester, Finder finder) async {
     await tester.ensureVisible(finder);
@@ -138,9 +157,9 @@ void main() {
     testWidgets('almost (24) never costs a heart; Try again retries', (
       tester,
     ) async {
-      final c = await pumpPlayer(tester);
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.almost);
       await jumpTo(tester, c, 4);
-      await tapAndSettle(tester, find.text('Simulate: almost'));
+      await signOnCamera(tester);
       expect(find.text('Almost there'), findsOneWidget);
       expect(
         find.text('Curl your index finger toward your palm.'),
@@ -153,6 +172,23 @@ void main() {
       await tapAndSettle(tester, find.text('Try again'));
       expect(find.byType(FeedbackSheet), findsNothing);
       expect(find.byType(SignItExerciseView), findsOneWidget);
+      expect(heartsShown(tester), GameRules.maxHearts);
+    });
+
+    testWidgets('a different sign (wrong) never costs a heart either', (
+      tester,
+    ) async {
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.wrong);
+      await jumpTo(tester, c, 4);
+      await signOnCamera(tester);
+      expect(
+        find.text(
+          'That looked like a different sign. Watch the reference and '
+          'try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Try again'), findsOneWidget);
       expect(heartsShown(tester), GameRules.maxHearts);
     });
 
@@ -178,9 +214,9 @@ void main() {
     });
 
     testWidgets('skip from the almost sheet', (tester) async {
-      final c = await pumpPlayer(tester);
+      final c = await pumpPlayer(tester, camera: FakeCameraScenario.almost);
       await jumpTo(tester, c, 4);
-      await tapAndSettle(tester, find.text('Simulate: almost'));
+      await signOnCamera(tester);
       await tapAndSettle(
         tester,
         find.text('Skip — I can’t use the camera now'),
@@ -190,15 +226,65 @@ void main() {
     });
   });
 
-  testWidgets('0 hearts opens the out-of-hearts sheet over the player', (
-    tester,
-  ) async {
+  testWidgets('0 hearts goes to the Out of hearts page', (tester) async {
     await pumpPlayer(tester, hearts: 1);
     await tapAndSettle(tester, find.text('Continue'));
     await tapAndSettle(tester, find.text('Hello'));
     await tapAndSettle(tester, find.text('Check'));
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
+    expect(find.byType(OutOfHeartsScreen), findsOneWidget);
     expect(find.byType(FeedbackSheet), findsNothing);
-    expect(heartsShown(tester), 0);
+  });
+
+  loadStateTests(
+    location: const LessonRoute(lessonId: FixtureIds.currentLesson).location,
+    errorTitle: 'Couldn’t load this lesson',
+    loadingLabel: 'Loading the lesson',
+    // Offline, lessons are blocked instead (tested below).
+    offlineShowsError: false,
+  );
+
+  group('offline: lessons need sign videos', () {
+    for (final mode in themeModes) {
+      testWidgets('opening a lesson offline is blocked (${mode.name})', (
+        tester,
+      ) async {
+        if (mode == ThemeMode.dark) {
+          tester.platformDispatcher.platformBrightnessTestValue =
+              Brightness.dark;
+          addTearDown(
+            tester.platformDispatcher.clearPlatformBrightnessTestValue,
+          );
+        }
+        await pumpApp(
+          tester,
+          loggedIn: true,
+          onboardingDone: true,
+          location: const LessonRoute(lessonId: FixtureIds.currentLesson)
+              .location,
+          simulation: MockApiSimulation.offline,
+        );
+        final c = tokensFor(mode);
+        expect(find.text('Connect to start this lesson'), findsOneWidget);
+        expect(
+          textColor(tester, 'Connect to start this lesson'),
+          c.textPrimary,
+        );
+        expect(find.byType(WatchExerciseView), findsNothing);
+      });
+    }
+
+    testWidgets('Back to Learn leaves the blocked lesson', (tester) async {
+      await pumpApp(
+        tester,
+        loggedIn: true,
+        onboardingDone: true,
+        location: const LessonRoute(lessonId: FixtureIds.currentLesson)
+            .location,
+        simulation: MockApiSimulation.offline,
+      );
+      await tester.tap(find.text('Back to Learn'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LessonPlayerScreen), findsNothing);
+    });
   });
 }

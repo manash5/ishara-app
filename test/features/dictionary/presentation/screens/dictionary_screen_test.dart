@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:ishara_app/features/dictionary/data/datasources/sign_local_data_source.dart';
+import 'package:ishara_app/features/dictionary/data/models/sign_dto.dart';
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_models.dart';
 import 'package:ishara_app/features/dictionary/presentation/providers/dictionary_providers.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/dictionary_screen.dart';
@@ -13,22 +16,31 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
   ThemeMode mode = ThemeMode.light,
   List<Override> overrides = const [],
+  MockApiSimulation? simulation,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.625;
   addTearDown(tester.view.reset);
   await pumpThemed(
     tester,
-    ProviderScope(overrides: overrides, child: const DictionaryScreen()),
+    ProviderScope(
+      overrides: [
+        ...mockApiOverrides(simulation: simulation),
+        ...overrides,
+      ],
+      child: const DictionaryScreen(),
+    ),
     mode: mode,
   );
-  // Let chained futures (and error propagation) settle.
-  await tester.pump();
+  // Let the mock API answer and errors propagate.
+  await pumpApi(tester);
   await tester.pump();
 }
 
@@ -42,22 +54,14 @@ void main() {
         final c = tokensFor(mode);
 
         expect(find.text('Dictionary'), findsOneWidget);
-        expect(
-          find.text(
-            '${fakeDictionarySigns.length} signs · Nepali Sign Language',
-          ),
-          findsOneWidget,
-        );
+        expect(find.text('12 signs · Nepali Sign Language'), findsOneWidget);
         expect(find.text('Search signs'), findsOneWidget);
         expect(find.text('All signs'), findsOneWidget);
         expect(find.text('A–Z'), findsOneWidget);
         for (final chip in ['All', 'Greetings', 'Alphabet', 'Numbers']) {
           expect(find.widgetWithText(IsharaChip, chip), findsOneWidget);
         }
-        expect(
-          find.byType(SignListTile),
-          findsNWidgets(fakeDictionarySigns.length),
-        );
+        expect(find.byType(SignListTile), findsNWidgets(12));
         expect(find.byType(HeroBackdrop), findsOneWidget);
         expect(find.byType(ContentPanel), findsOneWidget);
 
@@ -139,7 +143,9 @@ void main() {
       await _pump(
         tester,
         overrides: [
-          dictionarySignsProvider.overrideWith((_) => pending.future),
+          dictionarySignsProvider.overrideWith(
+            (_) => Stream.fromFuture(pending.future),
+          ),
         ],
       );
       expect(find.byType(ListSkeleton), findsOneWidget);
@@ -151,7 +157,7 @@ void main() {
         tester,
         overrides: [
           dictionarySignsProvider.overrideWith(
-            (_) async => throw Exception('offline'),
+            (_) => Stream.error(Exception('offline')),
           ),
         ],
       );
@@ -160,12 +166,40 @@ void main() {
       expect(find.textContaining('offline'), findsNothing);
     });
 
+    testWidgets('offline with nothing cached shows the error', (tester) async {
+      await _pump(tester, simulation: MockApiSimulation.offline);
+      expect(find.text('Couldn’t load signs'), findsOneWidget);
+    });
+
     testWidgets('empty dictionary', (tester) async {
       await _pump(
         tester,
-        overrides: [dictionarySignsProvider.overrideWith((_) async => [])],
+        overrides: [
+          dictionarySignsProvider.overrideWith((_) => Stream.value([])),
+        ],
       );
       expect(find.text('No signs yet'), findsOneWidget);
+    });
+  });
+
+  group('offline', () {
+    testWidgets('shows the cached list and searches it locally', (
+      tester,
+    ) async {
+      await SignLocalDataSource(TestHive.instance).writeSigns([
+        for (final s in fixtureData<List<dynamic>>('signs/list_page1'))
+          SignDto.fromJson(s as Map<String, dynamic>),
+      ]);
+      await _pump(tester, simulation: MockApiSimulation.offline);
+
+      expect(find.text('8 signs · Nepali Sign Language'), findsOneWidget);
+      expect(find.byType(SignListTile), findsNWidgets(8));
+      expect(find.text('Couldn’t load signs'), findsNothing);
+
+      await tester.enterText(find.byType(TextField), 'thank');
+      await tester.pump();
+      expect(find.byType(SignListTile), findsOneWidget);
+      expect(find.text('Thank you'), findsOneWidget);
     });
   });
 
@@ -183,7 +217,7 @@ void main() {
 
     expect(
       currentLocation(container),
-      const SignDetailRoute(signId: 'namaste').location,
+      const SignDetailRoute(signId: FixtureIds.namaste).location,
     );
     expect(find.byType(SignDetailScreen), findsOneWidget);
     expect(find.byType(IsharaBottomBar), findsOneWidget);

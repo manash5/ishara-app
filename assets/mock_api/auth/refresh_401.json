@@ -1,0 +1,5 @@
+{
+  "status": 401,
+  "success": false,
+  "message": "Your session has ended. Please log in again."
+}

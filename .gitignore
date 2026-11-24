@@ -50,3 +50,7 @@ app.*.map.json
 
 claude.md 
 /.claude
+
+# Local --dart-define files (see env/example.json)
+env/*.json
+!env/example.json

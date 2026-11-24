@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
-import 'package:ishara_app/features/auth/presentation/providers/fake_session_provider.dart';
+import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:ishara_app/features/auth/presentation/screens/log_in_screen.dart';
 import 'package:ishara_app/features/auth/presentation/screens/sign_up_screen.dart';
@@ -15,6 +16,7 @@ import 'package:ishara_app/features/onboarding/presentation/screens/dominant_han
 import 'package:ishara_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../helpers/mock_api.dart';
 import '../../helpers/pump_app.dart';
 
 void main() {
@@ -22,8 +24,18 @@ void main() {
     await tester.ensureVisible(finder);
     await tester.pumpAndSettle();
     await tester.tap(finder);
+    // Let chained mock API calls finish (a bare pump never fires Dio's
+    // zero-length timers), then settle.
+    for (var i = 0; i < 4; i++) {
+      await pumpApi(tester);
+    }
     await tester.pumpAndSettle();
   }
+
+  Finder field(String label) => find.descendant(
+    of: find.widgetWithText(IsharaTextField, label),
+    matching: find.byType(TextField),
+  );
 
   group('redirects', () {
     testWidgets('Splash animates, then continues to Welcome when logged out', (
@@ -80,11 +92,14 @@ void main() {
       );
       expect(find.byType(ProfileScreen), findsOneWidget);
 
-      container.read(fakeSessionProvider.notifier).setOnboardingDone(false);
+      container
+          .read(sessionProvider.notifier)
+          .debugOverride(onboardingDone: false);
       await tester.pumpAndSettle();
       expect(find.byType(DailyGoalScreen), findsOneWidget);
 
-      container.read(fakeSessionProvider.notifier).logOut();
+      await container.read(sessionProvider.notifier).logOut();
+      await pumpApi(tester);
       await tester.pumpAndSettle();
       expect(find.byType(WelcomeScreen), findsOneWidget);
     });
@@ -112,7 +127,13 @@ void main() {
 
     await tapAndSettle(tester, find.text('Get started'));
     expect(find.byType(SignUpScreen), findsOneWidget);
-    await tapAndSettle(tester, find.text('Create account'));
+    await tester.enterText(field('Full name'), 'New learner');
+    await tester.enterText(field('Email'), 'new@ishara.test');
+    await tester.enterText(field('Password'), 'long enough');
+    await tapAndSettle(
+      tester,
+      find.widgetWithText(IsharaButton, 'Create account'),
+    );
     expect(find.byType(DailyGoalScreen), findsOneWidget);
     await tapAndSettle(tester, find.text('Continue'));
     expect(find.byType(DominantHandScreen), findsOneWidget);
@@ -122,7 +143,7 @@ void main() {
     expect(find.byType(CameraSetupCheckScreen), findsOneWidget);
     await tapAndSettle(tester, find.text('Looks good'));
     expect(find.byType(LearnScreen), findsOneWidget);
-    expect(container.read(fakeSessionProvider).onboardingDone, isTrue);
+    expect(container.read(sessionProvider).onboardingDone, isTrue);
   });
 
   testWidgets('click-through: log in → forgot password → Learn', (
@@ -133,10 +154,13 @@ void main() {
     expect(find.byType(LogInScreen), findsOneWidget);
     await tapAndSettle(tester, find.text('Forgot password?'));
     expect(find.byType(ForgotPasswordScreen), findsOneWidget);
-    await tapAndSettle(tester, find.text('Send reset link'));
-    expect(find.text('Resend link'), findsOneWidget);
+    await tester.enterText(field('Email'), 'learner@ishara.test');
+    await tapAndSettle(tester, find.text('Send reset code'));
+    expect(find.text('Resend code'), findsOneWidget);
     await tapAndSettle(tester, find.text('Back to log in'));
     expect(find.byType(LogInScreen), findsOneWidget);
+    await tester.enterText(field('Email'), 'learner@ishara.test');
+    await tester.enterText(field('Password'), 'any password');
     await tapAndSettle(tester, find.widgetWithText(FilledButton, 'Log in'));
     expect(find.byType(LearnScreen), findsOneWidget);
   });
@@ -148,12 +172,12 @@ void main() {
       tester,
       location: const GalleryRoute().location,
     );
-    expect(find.text('Fake session'), findsOneWidget);
+    expect(find.text('Session'), findsOneWidget);
     await tester.tap(find.byKey(const Key('gallery-session-logged-in')));
     await tester.pump();
-    expect(container.read(fakeSessionProvider).loggedIn, isTrue);
+    expect(container.read(sessionProvider).loggedIn, isTrue);
     await tester.tap(find.byKey(const Key('gallery-session-onboarded')));
     await tester.pump();
-    expect(container.read(fakeSessionProvider).onboardingDone, isTrue);
+    expect(container.read(sessionProvider).onboardingDone, isTrue);
   });
 }

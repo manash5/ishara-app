@@ -1,0 +1,93 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": [
+    {
+      "id": "91a1aaec-304d-5c72-8be7-3404cc351df2",
+      "name": "Namaste",
+      "category": "greetings",
+      "status": "learned",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "9010db34-4029-511e-bbed-d00a6b244f75",
+      "name": "Thank you",
+      "category": "greetings",
+      "status": "learned",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "386bd0e8-8cf0-51ae-8f63-59b5e755b82b",
+      "name": "Sorry",
+      "category": "etiquette",
+      "status": "practising",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "1b0bf8c5-93aa-5fd0-82a0-882635a496c3",
+      "name": "Please",
+      "category": "etiquette",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "34c3ee6b-d644-5b88-ae05-ab3b4e76e337",
+      "name": "Good morning",
+      "category": "greetings",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "79757565-dd18-5b8f-8fa2-0d20a45dfeb2",
+      "name": "How are you?",
+      "category": "questions",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "cafd8e67-cefe-5693-9ce4-3733caa8a0f2",
+      "name": "Ka",
+      "category": "alphabet",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    },
+    {
+      "id": "85679b9a-1953-513d-b33d-cd672f74af08",
+      "name": "Kha",
+      "category": "alphabet",
+      "status": "new",
+      "videoUrl": null,
+      "meaning": null,
+      "steps": [],
+      "etiquetteTip": null
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 8,
+    "total": 12,
+    "totalPages": 2
+  }
+}

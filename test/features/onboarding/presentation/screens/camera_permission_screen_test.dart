@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
-import 'package:ishara_app/features/auth/presentation/providers/fake_session_provider.dart';
+import 'package:ishara_app/core/error/failure.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
+import 'package:ishara_app/features/auth/presentation/providers/session_provider.dart';
 import 'package:ishara_app/features/onboarding/presentation/providers/onboarding_choices_provider.dart';
 import 'package:ishara_app/features/onboarding/presentation/screens/camera_permission_screen.dart';
 import 'package:ishara_app/features/onboarding/presentation/screens/camera_setup_check_screen.dart';
@@ -9,6 +11,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../auth/auth_test_utils.dart';
 import '../onboarding_test_utils.dart';
 
 void main() {
@@ -62,16 +65,40 @@ void main() {
     expect(container.read(onboardingChoicesProvider).cameraAllowed, isTrue);
   });
 
-  testWidgets('Not now finishes onboarding and lands on Learn', (tester) async {
-    final container = await pumpApp(
-      tester,
+  group('Not now with the mock API', () {
+    const onboarding = SessionState(
+      ready: true,
       loggedIn: true,
-      location: const CameraPermissionRoute().location,
+      onboardingDone: false,
     );
-    await tester.tap(find.text('Not now'));
-    await tester.pumpAndSettle();
-    expect(container.read(fakeSessionProvider).onboardingDone, isTrue);
-    expect(container.read(onboardingChoicesProvider).cameraAllowed, isFalse);
-    expect(currentLocation(container), const LearnRoute().location);
+
+    testWidgets('finishes onboarding and lands on Learn', (tester) async {
+      final env = AuthTestEnv(session: onboarding);
+      final container = await pumpAuthFlow(
+        tester,
+        env,
+        location: '/onboarding/camera-permission',
+      );
+      await tester.tap(find.text('Not now'));
+      await settleFlow(tester);
+      expect(container.read(sessionProvider).onboardingDone, isTrue);
+      expect(container.read(onboardingChoicesProvider).cameraAllowed, isFalse);
+      expect(find.text(learnStub), findsOneWidget);
+    });
+
+    testWidgets('a failure shows a snackbar and stays', (tester) async {
+      final env = AuthTestEnv(session: onboarding)
+        ..simulation = MockApiSimulation.serverError;
+      final container = await pumpAuthFlow(
+        tester,
+        env,
+        location: '/onboarding/camera-permission',
+      );
+      await tester.tap(find.text('Not now'));
+      await settleFlow(tester);
+      expect(container.read(sessionProvider).onboardingDone, isFalse);
+      expect(find.text(const ServerFailure().message), findsOneWidget);
+      expect(find.text(learnStub), findsNothing);
+    });
   });
 }

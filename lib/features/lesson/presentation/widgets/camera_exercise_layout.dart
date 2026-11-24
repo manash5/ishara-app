@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../providers/lesson_models.dart';
+import '../../../recognition/presentation/providers/camera_session_state.dart';
 import 'exercise_prompt.dart';
 
 /// Shared layout of the camera exercises (Figma 23–25), always in the dark
@@ -10,8 +11,10 @@ import 'exercise_prompt.dart';
 /// camera area (28dp corners) with a status chip, and a footer with an
 /// optional hint and "Can't use the camera now".
 ///
-/// UI-only phase: [CameraFeed] shows its placeholder and a "Simulate"
-/// row stands in for the recognition result.
+/// The recognition pipeline (`features/recognition`) supplies the live hand
+/// ([landmarks], [highlighted]) and the [status] chip; with no hand the feed
+/// shows the ghost target pose. Until the real camera lands the hand comes
+/// from the fake detector (`/gallery` → Fake camera).
 class CameraExerciseLayout extends StatelessWidget {
   const CameraExerciseLayout({
     super.key,
@@ -19,12 +22,17 @@ class CameraExerciseLayout extends StatelessWidget {
     required this.title,
     required this.status,
     required this.onSkip,
-    required this.onFakeResult,
+    this.landmarks,
+    this.highlighted = const {},
+    this.stats,
     this.showReference = false,
     this.below,
     this.hint,
     this.overlay = HandOverlayStyle.live,
   });
+
+  /// Wraps [status], so tests can tell it from the debug stats chip.
+  static const statusKey = Key('camera-status');
 
   final String eyebrow;
   final String title;
@@ -35,8 +43,14 @@ class CameraExerciseLayout extends StatelessWidget {
   /// "Can't use the camera now": swap camera exercises for recognise ones.
   final VoidCallback onSkip;
 
-  /// Fake recognition result; null while it can't be used (sheet showing).
-  final ValueChanged<CameraOutcome>? onFakeResult;
+  /// The live hand (0–1 points), or null with no hand in view.
+  final List<Offset>? landmarks;
+
+  /// Joints drawn in danger (Figma 24: the finger to fix).
+  final Set<int> highlighted;
+
+  /// Debug-only fps / latency readout (recognition.md).
+  final RecognitionStats? stats;
 
   /// Figma 23 `referencePip`: the sign's video, top-right of the prompt.
   final bool showReference;
@@ -96,19 +110,32 @@ class CameraExerciseLayout extends StatelessWidget {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: CameraFeed(overlay: overlay),
+                    child: CameraFeed(
+                      landmarks: landmarks,
+                      highlighted: highlighted,
+                      overlay:
+                          landmarks == null && overlay == HandOverlayStyle.live
+                          ? HandOverlayStyle.ghost
+                          : overlay,
+                    ),
                   ),
                   Positioned(
                     left: IsharaSpacing.s4,
                     top: IsharaSpacing.s4,
-                    child: status,
+                    child: KeyedSubtree(key: statusKey, child: status),
                   ),
-                  Positioned(
-                    left: IsharaSpacing.s4,
-                    right: IsharaSpacing.s4,
-                    bottom: IsharaSpacing.s4,
-                    child: _FakeResultRow(onResult: onFakeResult),
-                  ),
+                  if (kDebugMode && stats != null)
+                    Positioned(
+                      right: IsharaSpacing.s4,
+                      top: IsharaSpacing.s4,
+                      child: IsharaChip(
+                        key: const Key('recognition-debug-stats'),
+                        label:
+                            '${stats!.fps.round()} fps · '
+                            '${stats!.latencyMs.toStringAsFixed(1)} ms',
+                        tone: IsharaChipTone.neutral,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -141,40 +168,6 @@ class CameraExerciseLayout extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// UI-only stand-in for the recognition pipeline: pretend the camera saw
-/// the sign (correct) or nearly (almost).
-class _FakeResultRow extends StatelessWidget {
-  const _FakeResultRow({required this.onResult});
-
-  final ValueChanged<CameraOutcome>? onResult;
-
-  @override
-  Widget build(BuildContext context) {
-    final r = onResult;
-    return Row(
-      children: [
-        Expanded(
-          child: IsharaButton(
-            label: 'Simulate: correct',
-            variant: IsharaButtonVariant.outlined,
-            compact: true,
-            onPressed: r == null ? null : () => r(CameraOutcome.correct),
-          ),
-        ),
-        const SizedBox(width: IsharaSpacing.s2),
-        Expanded(
-          child: IsharaButton(
-            label: 'Simulate: almost',
-            variant: IsharaButtonVariant.outlined,
-            compact: true,
-            onPressed: r == null ? null : () => r(CameraOutcome.almost),
-          ),
-        ),
-      ],
     );
   }
 }

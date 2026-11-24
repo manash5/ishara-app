@@ -1,0 +1,368 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "OK",
+  "data": {
+    "units": [
+      {
+        "id": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+        "number": 1,
+        "title": "Greetings & etiquette",
+        "color": "teal",
+        "learnedCount": 4,
+        "totalCount": 12,
+        "stops": [
+          {
+            "id": "d00e35c9-665b-5102-8ec4-e9e58d3630cd",
+            "type": "lesson",
+            "state": "completed",
+            "title": "Hello",
+            "lesson": {
+              "id": "140564a7-babd-5c9d-ae0d-5aa411db5041",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Hello",
+              "kind": "lesson",
+              "state": "completed",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "f59c8a61-87b3-55c0-a179-8b7624bba96e",
+            "type": "lesson",
+            "state": "completed",
+            "title": "Namaste",
+            "lesson": {
+              "id": "a008bdbd-c93c-5fd4-9ccd-69c9411ed6c6",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Namaste",
+              "kind": "lesson",
+              "state": "completed",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "fc862f4d-0bbd-5da5-a797-652ed272b36a",
+            "type": "chest",
+            "state": "locked",
+            "title": "Reward chest",
+            "lesson": null
+          },
+          {
+            "id": "d45ea47d-6953-54c0-9fc4-f59d1875f552",
+            "type": "review",
+            "state": "available",
+            "title": "Review greetings",
+            "lesson": {
+              "id": "b376a5ce-def0-559b-835e-9e5299b5c0f7",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Review greetings",
+              "kind": "review",
+              "state": "available",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "e293b4cd-3493-54a1-8583-48df0f53e044",
+            "type": "lesson",
+            "state": "current",
+            "title": "Thank you",
+            "lesson": {
+              "id": "bd40c5dd-7e41-5609-bc81-7a678fe0967c",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Thank you",
+              "kind": "lesson",
+              "state": "current",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "27cd5489-256e-5de1-bef7-2ccbb1dff7c0",
+            "type": "lesson",
+            "state": "locked",
+            "title": "Sorry",
+            "lesson": {
+              "id": "a912cbb9-d762-5794-ac36-e4d32e6389bf",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Sorry",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "da2bcf30-3ca5-561d-a2e9-b6145846c6d2",
+            "type": "lesson",
+            "state": "locked",
+            "title": "Please",
+            "lesson": {
+              "id": "add5d8ed-6e1d-552d-8436-a4219a2fbcb1",
+              "unitId": "430d1101-6f2d-5de5-b201-d1d632b83de7",
+              "title": "Please",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "cfd25c6b-538c-5dc3-bfe5-a46b794026db",
+            "type": "checkpoint",
+            "state": "locked",
+            "title": "Summit",
+            "lesson": null
+          }
+        ]
+      },
+      {
+        "id": "a919218b-78bd-5b64-8614-8431ddf8698d",
+        "number": 2,
+        "title": "Fingerspelling vowels",
+        "color": "lavender",
+        "learnedCount": 0,
+        "totalCount": 10,
+        "stops": [
+          {
+            "id": "964579eb-ba39-5bb2-bee8-ca73a7d5c5cc",
+            "type": "lesson",
+            "state": "locked",
+            "title": "अ and आ",
+            "lesson": {
+              "id": "47bbdbb3-00e1-51c2-b21d-4821a6e2fd11",
+              "unitId": "a919218b-78bd-5b64-8614-8431ddf8698d",
+              "title": "अ and आ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "78f5302d-d3c7-512e-ae6d-fbee34357a1e",
+            "type": "lesson",
+            "state": "locked",
+            "title": "इ and ई",
+            "lesson": {
+              "id": "ece9d09f-c353-529d-b536-992c2152f773",
+              "unitId": "a919218b-78bd-5b64-8614-8431ddf8698d",
+              "title": "इ and ई",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "8c9d98a4-688c-501a-a8cd-b5c031798777",
+            "type": "lesson",
+            "state": "locked",
+            "title": "उ and ऊ",
+            "lesson": {
+              "id": "94897109-ce64-5f80-aefc-9e3d0f7e8def",
+              "unitId": "a919218b-78bd-5b64-8614-8431ddf8698d",
+              "title": "उ and ऊ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "e8e06be8-db4b-5850-9277-6d7cd4669410",
+            "type": "chest",
+            "state": "locked",
+            "title": "Reward chest",
+            "lesson": null
+          },
+          {
+            "id": "3323ff48-4013-5868-bc30-26894eba729b",
+            "type": "lesson",
+            "state": "locked",
+            "title": "ए and ऐ",
+            "lesson": {
+              "id": "bc3cb119-fb01-56a6-9630-346853d256c4",
+              "unitId": "a919218b-78bd-5b64-8614-8431ddf8698d",
+              "title": "ए and ऐ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "0fb5e58b-9d37-58aa-9d2d-75b6b08d525f",
+            "type": "lesson",
+            "state": "locked",
+            "title": "ओ and औ",
+            "lesson": {
+              "id": "144e937d-938f-5f33-bb38-a4aa43d2fdc8",
+              "unitId": "a919218b-78bd-5b64-8614-8431ddf8698d",
+              "title": "ओ and औ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "0e630fd8-b2e1-5180-9814-e5b31a254eef",
+            "type": "checkpoint",
+            "state": "locked",
+            "title": "Summit",
+            "lesson": null
+          }
+        ]
+      },
+      {
+        "id": "45eb4ccf-edcc-544d-8494-763c47b5a630",
+        "number": 3,
+        "title": "Fingerspelling consonants",
+        "color": "mint",
+        "learnedCount": 0,
+        "totalCount": 12,
+        "stops": [
+          {
+            "id": "e15b1955-6937-57ce-88bc-9574fe7e265e",
+            "type": "lesson",
+            "state": "locked",
+            "title": "क to ङ",
+            "lesson": {
+              "id": "57d68905-cb74-52f6-b600-c27e1cade76b",
+              "unitId": "45eb4ccf-edcc-544d-8494-763c47b5a630",
+              "title": "क to ङ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "c7a0ef2b-f30e-54cb-9199-046eddcf397e",
+            "type": "lesson",
+            "state": "locked",
+            "title": "च to ञ",
+            "lesson": {
+              "id": "61363226-3d2a-5a02-8f0d-eff5711bdc8b",
+              "unitId": "45eb4ccf-edcc-544d-8494-763c47b5a630",
+              "title": "च to ञ",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "b5244782-3cf5-5d2a-b796-0b3c048e895a",
+            "type": "lesson",
+            "state": "locked",
+            "title": "ट to ण",
+            "lesson": {
+              "id": "3475e5c9-c559-55ce-8bfb-34cd22de0fb9",
+              "unitId": "45eb4ccf-edcc-544d-8494-763c47b5a630",
+              "title": "ट to ण",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "77d69bbf-9dd9-5b30-9149-eb4810a2bad4",
+            "type": "chest",
+            "state": "locked",
+            "title": "Reward chest",
+            "lesson": null
+          },
+          {
+            "id": "3bd7a13c-40ff-51e2-9198-f114a94ef3d0",
+            "type": "lesson",
+            "state": "locked",
+            "title": "त to न",
+            "lesson": {
+              "id": "45ea6424-cd23-5ede-9a5e-59e41fb6c046",
+              "unitId": "45eb4ccf-edcc-544d-8494-763c47b5a630",
+              "title": "त to न",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "248ae1d6-537f-5491-a877-536539088eed",
+            "type": "checkpoint",
+            "state": "locked",
+            "title": "Summit",
+            "lesson": null
+          }
+        ]
+      },
+      {
+        "id": "a8eff502-d024-58e1-b5b2-85d0b1862ebc",
+        "number": 4,
+        "title": "Numbers 1–10",
+        "color": "lime",
+        "learnedCount": 0,
+        "totalCount": 10,
+        "stops": [
+          {
+            "id": "fff900ed-b09e-5b63-a204-f36a31326a24",
+            "type": "lesson",
+            "state": "locked",
+            "title": "1 to 3",
+            "lesson": {
+              "id": "792c98da-4c0f-5c7e-85d0-aed032ff8156",
+              "unitId": "a8eff502-d024-58e1-b5b2-85d0b1862ebc",
+              "title": "1 to 3",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "7c918da8-4f4b-5ae4-a398-f03615de6a12",
+            "type": "lesson",
+            "state": "locked",
+            "title": "4 to 6",
+            "lesson": {
+              "id": "eb4119fb-33c7-5bda-bbc3-94effd91ceea",
+              "unitId": "a8eff502-d024-58e1-b5b2-85d0b1862ebc",
+              "title": "4 to 6",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "f126aec0-afed-5291-93b1-f47628b603e0",
+            "type": "lesson",
+            "state": "locked",
+            "title": "7 to 10",
+            "lesson": {
+              "id": "be6cc539-2e8b-59ca-bd01-e7309024ddff",
+              "unitId": "a8eff502-d024-58e1-b5b2-85d0b1862ebc",
+              "title": "7 to 10",
+              "kind": "lesson",
+              "state": "locked",
+              "signCount": 3,
+              "minutes": 5
+            }
+          },
+          {
+            "id": "bd3c4526-569f-5bb4-ad79-f36fbd085746",
+            "type": "checkpoint",
+            "state": "locked",
+            "title": "Summit",
+            "lesson": null
+          }
+        ]
+      }
+    ]
+  }
+}

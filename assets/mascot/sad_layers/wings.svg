@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="wings-back">
+<g id="Group_5">
+<path id="Vector_28" d="M86.9785 104.628C91.8478 121.007 88.4576 140.819 79.3609 156.222L75.7892 149.958L72.1687 158.727L69.8736 148.542L65.5346 153.25C62.7999 135.015 64.195 115.064 70.0199 103.442C74.2892 99.7307 83.2673 100.359 86.9785 104.628Z" fill="#B79CF0" stroke-width="2" stroke-linejoin="round" stroke="#163A3E"/>
+<path id="Vector_29" d="M79.298 114.115C81.4536 126.295 79.619 138.196 75.0707 145.898C72.636 137.708 71.478 125.598 73.3126 113.697L79.298 114.115Z" fill="#9479D4"/>
+<path id="Vector_30" d="M82.57 110.334C84.8651 120.519 84.1675 130.495 81.6143 138.336" stroke-width="2" stroke-linecap="round" stroke="#8BE3B0"/>
+</g>
+<g id="Group_6">
+<path id="Vector_31" d="M113.022 104.628C108.153 121.007 111.543 140.819 120.64 156.222L124.211 149.958L127.832 158.727L130.127 148.542L134.466 153.25C137.201 135.015 135.805 115.064 129.981 103.442C125.711 99.7307 116.733 100.359 113.022 104.628Z" fill="#B79CF0" stroke-width="2" stroke-linejoin="round" stroke="#163A3E"/>
+<path id="Vector_32" d="M120.702 114.115C118.547 126.295 120.382 138.196 124.93 145.898C127.364 137.708 128.523 125.598 126.688 113.697L120.702 114.115Z" fill="#9479D4"/>
+<path id="Vector_33" d="M117.431 110.334C115.135 120.519 115.833 130.495 118.386 138.336" stroke-width="2" stroke-linecap="round" stroke="#8BE3B0"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_1_3" x1="0.00017643" y1="80" x2="0.00017643" y2="176" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#1F4D52"/>
+<stop offset="0.65" stop-color="#6A5FB0"/>
+<stop offset="1" stop-color="#9479D4"/>
+</linearGradient>
+</defs>
+</svg>

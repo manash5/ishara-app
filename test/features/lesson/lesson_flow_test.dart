@@ -4,7 +4,7 @@ import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/gamification/presentation/screens/out_of_hearts_screen.dart';
 import 'package:ishara_app/features/gamification/presentation/screens/streak_screen.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
-import 'package:ishara_app/features/lesson/presentation/providers/fake_lesson_provider.dart';
+import 'package:ishara_app/features/lesson/presentation/providers/lesson_providers.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_complete_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_player_screen.dart';
 import 'package:ishara_app/features/lesson/presentation/screens/quit_lesson_dialog.dart';
@@ -82,16 +82,16 @@ void main() {
     }
     await checkAndContinue(tester);
 
-    // 23 Sign it.
+    // 23 Sign it: the fake camera (correct by default) signs Namaste.
     expect(find.byType(SignItExerciseView), findsOneWidget);
-    await tapAndSettle(tester, find.text('Simulate: correct'));
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
     await tapAndSettle(tester, sheetButton('Continue'));
 
-    // 25 Fingerspell: one result per letter.
+    // 25 Fingerspell: the fake camera spells every letter.
     expect(find.byType(FingerspellExerciseView), findsOneWidget);
-    for (var i = 0; i < 3; i++) {
-      await tapAndSettle(tester, find.text('Simulate: correct'));
-    }
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
     await tapAndSettle(tester, sheetButton('Continue'));
 
     // 26 → 27 → Learn.
@@ -132,19 +132,13 @@ void main() {
     await tapAndSettle(tester, find.text('Continue'));
     await tapAndSettle(tester, find.text('Sorry'));
     await tapAndSettle(tester, find.text('Check'));
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
+    expect(find.byType(OutOfHeartsScreen), findsOneWidget);
     expect(find.text('You’re out of hearts'), findsOneWidget);
-    // The learner must choose: back doesn't close it.
-    await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
     await tapAndSettle(tester, find.text('End lesson'));
     expect(find.byType(LearnScreen), findsOneWidget);
   });
 
-  testWidgets('/out-of-hearts shows the same panel full-screen', (
-    tester,
-  ) async {
+  testWidgets('/out-of-hearts: Android back ends the lesson', (tester) async {
     await pumpApp(
       tester,
       loggedIn: true,
@@ -152,8 +146,8 @@ void main() {
       location: const OutOfHeartsRoute().location,
     );
     expect(find.byType(OutOfHeartsScreen), findsOneWidget);
-    expect(find.byType(OutOfHeartsPanel), findsOneWidget);
-    await tapAndSettle(tester, find.text('End lesson'));
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
     expect(find.byType(LearnScreen), findsOneWidget);
   });
 }

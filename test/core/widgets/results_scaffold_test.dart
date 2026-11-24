@@ -12,6 +12,9 @@ void main() {
     bool reduced = true,
     Widget? danu,
     VoidCallback? onContinue,
+    bool celebrate = true,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
@@ -30,6 +33,10 @@ void main() {
               danu: danu,
               hero: const Text('Hero'),
               onContinue: onContinue ?? () {},
+              celebrate: celebrate,
+              continueLabel: secondaryLabel == null ? 'Continue' : 'Go',
+              secondaryLabel: secondaryLabel,
+              onSecondary: onSecondary,
               children: const [Text('Panel')],
             ),
           ),
@@ -98,6 +105,31 @@ void main() {
     await tester.pump(IsharaMotion.confetti);
     await tester.pump();
     expect(confetti(), findsNothing);
+  });
+
+  testWidgets('celebrate: false never plays confetti', (tester) async {
+    await pumpResults(tester, reduced: false, celebrate: false);
+    expect(find.byType(ConfettiBurst), findsNothing);
+  });
+
+  testWidgets('custom label and an outlined secondary action', (tester) async {
+    var (go, other) = (0, 0);
+    await pumpResults(
+      tester,
+      onContinue: () => go++,
+      secondaryLabel: 'Other',
+      onSecondary: () => other++,
+    );
+    final buttons = tester
+        .widgetList<IsharaButton>(find.byType(IsharaButton))
+        .toList();
+    expect(buttons.map((b) => (b.label, b.variant)), [
+      ('Go', IsharaButtonVariant.filled),
+      ('Other', IsharaButtonVariant.outlined),
+    ]);
+    await tester.tap(find.text('Go'));
+    await tester.tap(find.text('Other'));
+    expect((go, other), (1, 1));
   });
 
   testWidgets('no confetti with reduced motion', (tester) async {

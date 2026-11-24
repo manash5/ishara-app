@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/error/failure.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/widgets/widgets.dart';
 import 'gallery_section.dart';
@@ -308,8 +309,14 @@ class _HeroIntroDemoState extends State<_HeroIntroDemo>
 
 Widget danuWaving(BuildContext context) => const GallerySection(
   title: 'DanuMascot · animated',
-  subtitle: 'Waving loop (roadmap); still with reduced motion',
-  children: [DanuMascot(pose: DanuPose.wave, size: 160, animated: true)],
+  subtitle:
+      'Roadmap loops: wave, point, think, namaste; still with reduced motion',
+  children: [
+    DanuMascot(pose: DanuPose.wave, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.point, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.think, size: 160, animated: true),
+    DanuMascot(pose: DanuPose.namaste, size: 160, animated: true),
+  ],
 );
 
 // ── Shared widgets consolidated from features ───────────────────────────────
@@ -318,17 +325,30 @@ Widget sharedSignVideo(BuildContext context) => GallerySection(
   title: 'SignVideo',
   subtitle:
       'SignVideoPlayer that keeps its own slow-mo / mirror state '
-      '(Dictionary 14, lesson 18–19); tap the controls',
-  children: [_phone(const SignVideo(semanticLabel: 'Sign video: Namaste'))],
+      '(Dictionary 14, lesson 18–19); tap the controls. Offline: '
+      '"connect to watch", no controls',
+  children: [
+    _phone(const SignVideo(semanticLabel: 'Sign video: Namaste')),
+    const SizedBox(height: IsharaSpacing.s4),
+    _phone(
+      const SignVideo(semanticLabel: 'Sign video: Namaste', offline: true),
+    ),
+  ],
 );
 
 Widget sharedOutOfHearts(BuildContext context) => GallerySection(
-  title: 'OutOfHeartsPanel',
+  title: 'ResultsDanu · sad',
   subtitle:
-      '28 Out of hearts: sheet over the lesson, or the /out-of-hearts '
-      'route',
+      '28 Out of hearts (/out-of-hearts): Danu sighs, hangs its head and a '
+      'tear rolls down; still with reduced motion',
   children: [
-    _phone(const OutOfHeartsPanel(onPractise: _noop, onEndLesson: _noop)),
+    _onHero(
+      context,
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: ResultsDanu(pose: DanuPose.sad),
+      ),
+    ),
   ],
 );
 
@@ -374,6 +394,48 @@ Widget sharedListSkeleton(BuildContext context) => GallerySection(
         count: 3,
         gap: IsharaSpacing.s1,
       ),
+    ),
+  ],
+);
+
+Widget sharedLoadStateView(BuildContext context) => GallerySection(
+  title: 'LoadStateView',
+  subtitle: 'whole-screen loading skeleton, and the error with Try again',
+  children: [
+    _phone(
+      LoadStateView(
+        error: null,
+        errorTitle: 'Couldn’t load your path',
+        onRetry: () {},
+        loadingLabel: 'Loading your path',
+      ),
+    ),
+    const SizedBox(height: IsharaSpacing.s4),
+    _phone(
+      LoadStateView(
+        error: const NetworkFailure(),
+        errorTitle: 'Couldn’t load your path',
+        onRetry: () {},
+        loadingLabel: 'Loading your path',
+      ),
+    ),
+  ],
+);
+
+Widget sharedConfirmDialog(BuildContext context) => GallerySection(
+  title: 'ConfirmDialog',
+  subtitle:
+      'asks before an irreversible action (29 quit lesson, delete account)',
+  children: [
+    ConfirmDialog(
+      title: 'Delete your account?',
+      body:
+          'This permanently deletes your account, progress and streak from '
+          'Ishara. You can’t undo this.',
+      confirmLabel: 'Delete account',
+      cancelLabel: 'Cancel',
+      onConfirm: () {},
+      onCancel: () {},
     ),
   ],
 );

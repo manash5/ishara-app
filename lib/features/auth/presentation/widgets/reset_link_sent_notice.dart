@@ -8,7 +8,12 @@ import '../../../../core/theme/theme.dart';
 /// Fades in when it appears (motion.md: plain fade, `standard`).
 // TODO(figma-gap): no shared inline notice/banner component; see report.
 class ResetLinkSentNotice extends StatelessWidget {
-  const ResetLinkSentNotice({super.key});
+  const ResetLinkSentNotice({super.key, this.message = defaultMessage});
+
+  static const defaultMessage =
+      'Code sent. Check your inbox — it expires in 1 hour.';
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,7 @@ class ResetLinkSentNotice extends StatelessWidget {
               const SizedBox(width: IsharaSpacing.s3),
               Expanded(
                 child: Text(
-                  'Link sent. Check your inbox — it expires in 1 hour.',
+                  message,
                   style: context.textStyles.bodyMedium.copyWith(
                     color: c.successText,
                   ),

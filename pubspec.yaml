@@ -1,5 +1,5 @@
 name: ishara_app
-description: "A new Flutter project."
+description: "Ishara: learn Nepali Sign Language with short lessons and on-device sign checking."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -40,6 +40,19 @@ dependencies:
   go_router: ^18.1.4
   flutter_riverpod: ^3.5.0
   riverpod_annotation: ^4.0.8
+  dio: ^5.11.1
+  dio_smart_retry: ^7.0.1
+  pretty_dio_logger: ^1.4.0
+  flutter_secure_storage: ^11.2.0
+  connectivity_plus: ^7.3.2
+  hive_ce: ^2.24.0
+  # 2.6.0 adds a zlib native build hook that needs MSVC on Windows hosts,
+  # which breaks `flutter test` there. 2.5.x has no native code.
+  hive_ce_flutter: ">=2.5.0 <2.6.0"
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+  uuid: ^4.6.0
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +67,9 @@ dev_dependencies:
   riverpod_generator: ^4.0.10
   build_runner: ^2.17.1
   go_router_builder: ^4.5.3
+  mocktail: ^1.0.5
+  freezed: ^4.0.3
+  json_serializable: ^6.15.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -78,7 +94,24 @@ flutter:
     - assets/mascot/
     # Wave pose split into layers so Danu can wave (same artwork).
     - assets/mascot/wave_layers/
+    - assets/mascot/celebrate_layers/
+    - assets/mascot/sad_layers/
+    - assets/mascot/point_layers/
+    - assets/mascot/namaste_layers/
+    - assets/mascot/think_layers/
     - assets/roadmap/
+    # Mock API fixtures (USE_MOCK_API=true); shapes documented in docs/api-contract.md.
+    - assets/mock_api/
+    - assets/mock_api/auth/
+    - assets/mock_api/health/
+    - assets/mock_api/leaderboard/
+    - assets/mock_api/lessons/
+    - assets/mock_api/me/
+    - assets/mock_api/path/
+    - assets/mock_api/progress/
+    - assets/mock_api/signs/
+    # Greeting reference templates for DTW (synthetic until ishara-systems/ml).
+    - assets/ml/templates/greetings/
 
   # Bundled fonts (no runtime fetching). Plus Jakarta Sans for all UI text;
   # Anek Devanagari (variable) for Nepali glyphs only.

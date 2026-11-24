@@ -9,6 +9,7 @@ import '../providers/dictionary_models.dart';
 import '../providers/dictionary_providers.dart';
 import '../widgets/sign_detail_sections.dart';
 import '../widgets/sign_status_tone.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "14 Sign detail" (Light 12:1025 · Dark 60:6840): pushed inside the
 /// Dictionary branch, so the floating bottom bar stays visible and the
@@ -50,7 +51,7 @@ class SignDetailScreen extends ConsumerWidget {
             title: 'Couldn’t load this sign',
             body: 'Check your connection and try again.',
             actionLabel: 'Try again',
-            onAction: () => ref.invalidate(dictionarySignsProvider),
+            onAction: () => ref.invalidate(signDetailProvider(signId)),
           ),
         ),
         _ => const _SignDetailSkeleton(),
@@ -81,7 +82,13 @@ class _SignDetailBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SignVideo(semanticLabel: 'Sign video: ${sign.name}'),
+                // Videos need a connection; the text below works offline.
+                Consumer(
+                  builder: (context, ref, _) => SignVideo(
+                    semanticLabel: 'Sign video: ${sign.name}',
+                    offline: ref.watch(isOnlineProvider).value == false,
+                  ),
+                ),
                 const SizedBox(height: IsharaSpacing.s6),
                 SignMeaningSection(
                   name: sign.name,

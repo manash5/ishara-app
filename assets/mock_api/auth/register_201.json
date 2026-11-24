@@ -1,0 +1,44 @@
+{
+  "status": 201,
+  "success": true,
+  "message": "Account created",
+  "data": {
+    "accessToken": "replaced-by-mock-adapter",
+    "refreshToken": "replaced-by-mock-adapter",
+    "expiresAt": "2026-11-22T10:00:00.000Z",
+    "user": {
+      "id": "a213adb9-43f5-5d81-8a43-a25e06cbfd93",
+      "email": "new.learner@ishara.test",
+      "displayName": "New learner",
+      "avatarUrl": null,
+      "joinedAt": "2026-11-22T06:00:00.000Z",
+      "onboardingDone": false,
+      "dailyGoalMinutes": 10,
+      "dominantHand": "right",
+      "timezone": "Asia/Kathmandu",
+      "stats": {
+        "totalXp": 0,
+        "weeklyXp": 0,
+        "streakDays": 0,
+        "longestStreakDays": 0,
+        "streakFreezes": 0,
+        "hearts": 5,
+        "maxHearts": 5,
+        "heartsRefillAt": null,
+        "signsLearned": 0,
+        "cameraAccuracy": 0,
+        "weekStart": "2026-11-16",
+        "weekXp": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "todayIndex": 6
+      }
+    }
+  }
+}

@@ -26,6 +26,7 @@ class SignVideoPlayer extends StatelessWidget {
     this.onToggleSlowMotion,
     this.onToggleMirror,
     this.borderRadius,
+    this.unavailableMessage,
   });
 
   /// What the video shows, e.g. "Sign video". Never describe the NSL sign
@@ -42,6 +43,10 @@ class SignVideoPlayer extends StatelessWidget {
   /// Overrides the Figma radius (xl for large, lg for tile), e.g. md inside
   /// a [VideoOption].
   final BorderRadius? borderRadius;
+
+  /// When set, the video can't play (e.g. offline): this message replaces
+  /// it, with a wifi-off icon, and the controls are hidden.
+  final String? unavailableMessage;
 
   // Figma frames the placeholder art was drawn on.
   static const double _largeWidth = 364;
@@ -94,12 +99,41 @@ class SignVideoPlayer extends StatelessWidget {
       ],
     );
 
-    final media = Transform.flip(flipX: mirrored, child: video ?? placeholder);
+    final unavailable = unavailableMessage;
+    final media = unavailable != null
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.all(IsharaSpacing.s4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    IsharaIcons.wifiOff,
+                    size: IsharaSizes.iconMd,
+                    color: c.textSecondary,
+                  ),
+                  if (large) ...[
+                    const SizedBox(height: IsharaSpacing.s2),
+                    Text(
+                      unavailable,
+                      textAlign: TextAlign.center,
+                      style: context.textStyles.bodyMedium.copyWith(
+                        color: c.textSecondary,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          )
+        : Transform.flip(flipX: mirrored, child: video ?? placeholder);
 
     return Semantics(
       container: true,
-      label: semanticLabel,
-      image: video == null,
+      label: unavailable == null
+          ? semanticLabel
+          : '$semanticLabel. $unavailable',
+      image: video == null && unavailable == null,
       child: AspectRatio(
         aspectRatio: large
             ? _largeWidth / _largeHeight
@@ -112,7 +146,9 @@ class SignVideoPlayer extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 ExcludeSemantics(child: media),
-                if (large)
+                if (unavailable != null)
+                  const SizedBox.shrink()
+                else if (large)
                   Positioned(
                     left: IsharaSpacing.s3,
                     bottom: IsharaSpacing.s3,

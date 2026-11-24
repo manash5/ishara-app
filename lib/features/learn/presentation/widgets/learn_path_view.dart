@@ -36,6 +36,23 @@ abstract final class PathLayout {
   /// Horizontal trail position of the [index]-th stop (fraction of width).
   static double xOf(int index) =>
       0.5 + sway * math.sin(index * swayStep + math.pi / 6);
+
+  /// Which stretch of trail a guide Danu stands beside: the lowest gap
+  /// between stop j and j + 1 (of [stops]) with at least [need] (fraction of
+  /// the width) free on its side, else the roomiest gap.
+  static int guideGap(int stops, {required bool onLeft, required double need}) {
+    double room(int j) {
+      final (a, b) = (xOf(j), xOf(j + 1));
+      return onLeft ? math.min(a, b) : 1 - math.max(a, b);
+    }
+
+    var best = 0;
+    for (var j = 0; j < stops - 1; j++) {
+      if (room(j) >= need) return j;
+      if (room(j) > room(best)) best = j;
+    }
+    return best;
+  }
 }
 
 /// The scrolling trek: stages stacked bottom (Unit 1) → top, each a banner
@@ -129,6 +146,7 @@ class _LearnPathViewState extends State<LearnPathView>
           SliverToBoxAdapter(
             child: _Stage(
               unit: unit,
+              guide: TrekGuide.spotFor(widget.units, u),
               trail: _trail,
               entranceFor: (i) => _rowEntrance(firstOrder[u] + i),
               onStop: (stop) => widget.onStop(unit, stop),
@@ -144,6 +162,7 @@ class _LearnPathViewState extends State<LearnPathView>
 class _Stage extends StatelessWidget {
   const _Stage({
     required this.unit,
+    required this.guide,
     required this.trail,
     required this.entranceFor,
     required this.onStop,
@@ -151,6 +170,9 @@ class _Stage extends StatelessWidget {
   });
 
   final PathUnit unit;
+
+  /// Danu beside this stage's trail ([TrekGuide.spotFor]), if any.
+  final TrekGuideSpot? guide;
   final Animation<double> trail;
 
   /// Entrance animation for the stop at this index (first lesson = 0).
@@ -170,6 +192,7 @@ class _Stage extends StatelessWidget {
           const SizedBox(height: IsharaSpacing.s4),
           _Trail(
             unit: unit,
+            guide: guide,
             trail: trail,
             entranceFor: entranceFor,
             onStop: onStop,
@@ -186,12 +209,14 @@ class _Stage extends StatelessWidget {
 class _Trail extends StatelessWidget {
   const _Trail({
     required this.unit,
+    required this.guide,
     required this.trail,
     required this.entranceFor,
     required this.onStop,
   });
 
   final PathUnit unit;
+  final TrekGuideSpot? guide;
   final Animation<double> trail;
   final Animation<double> Function(int index) entranceFor;
   final ValueChanged<PathStop> onStop;
@@ -227,6 +252,14 @@ class _Trail extends StatelessWidget {
         final anchors = List<Offset>.filled(stops.length, Offset.zero);
         final rows = <Widget>[];
         var y = 0.0;
+        final spot = guide;
+        final below = spot == null
+            ? -1
+            : PathLayout.guideGap(
+                stops.length,
+                onLeft: spot.onLeft,
+                need: (TrekSizes.danu + IsharaSpacing.s2) / w,
+              );
         // Rows top → bottom are the stops last → first (the trail climbs).
         for (var i = stops.length - 1; i >= 0; i--) {
           final stop = stops[i];
@@ -259,6 +292,22 @@ class _Trail extends StatelessWidget {
             ),
           );
           y += h;
+          // Danu's own row, between this stop and the one below it.
+          if (spot != null && i == below + 1) {
+            rows.add(
+              Positioned(
+                left: 0,
+                right: 0,
+                top: y,
+                height: TrekSizes.guideRow,
+                child: _Entrance(
+                  animation: entranceFor(i),
+                  child: _GuideRow(spot: spot),
+                ),
+              ),
+            );
+            y += TrekSizes.guideRow;
+          }
         }
         return SizedBox(
           height: y,
@@ -388,6 +437,35 @@ class _CurrentRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Danu beside the trail, facing it: on the right-hand side the artwork is
+/// mirrored so Danu still points, bows and thinks towards the trail. Danu
+/// stands at the bottom of the row; the top is headroom for the thought
+/// cloud.
+class _GuideRow extends StatelessWidget {
+  const _GuideRow({required this.spot});
+
+  final TrekGuideSpot spot;
+
+  @override
+  Widget build(BuildContext context) {
+    final (:pose, :onLeft) = spot;
+    return ExcludeSemantics(
+      child: Align(
+        alignment: onLeft ? Alignment.bottomLeft : Alignment.bottomRight,
+        child: Transform.flip(
+          flipX: !onLeft,
+          child: DanuMascot(
+            key: Key('trek-guide-${pose.name}'),
+            pose: pose,
+            size: TrekSizes.danu,
+            animated: true,
+          ),
+        ),
+      ),
     );
   }
 }

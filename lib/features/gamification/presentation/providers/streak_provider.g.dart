@@ -8,17 +8,34 @@ part of 'streak_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Hard-coded streak matching the Figma frame; the server replaces it.
+/// What Figma "27 Streak" shows: the learner's profile (`GET /me`, cached
+/// offline), brought up to date by the lesson just completed (its response
+/// has the new streak before `/me` is refetched). Derived synchronously so an
+/// error shows at once, even while Riverpod retries the profile; retry with
+/// `ref.invalidate(userProfileProvider)`.
 
 @ProviderFor(streakSummary)
 final streakSummaryProvider = StreakSummaryProvider._();
 
-/// Hard-coded streak matching the Figma frame; the server replaces it.
+/// What Figma "27 Streak" shows: the learner's profile (`GET /me`, cached
+/// offline), brought up to date by the lesson just completed (its response
+/// has the new streak before `/me` is refetched). Derived synchronously so an
+/// error shows at once, even while Riverpod retries the profile; retry with
+/// `ref.invalidate(userProfileProvider)`.
 
 final class StreakSummaryProvider
-    extends $FunctionalProvider<StreakSummary, StreakSummary, StreakSummary>
-    with $Provider<StreakSummary> {
-  /// Hard-coded streak matching the Figma frame; the server replaces it.
+    extends
+        $FunctionalProvider<
+          AsyncValue<StreakStats>,
+          AsyncValue<StreakStats>,
+          AsyncValue<StreakStats>
+        >
+    with $Provider<AsyncValue<StreakStats>> {
+  /// What Figma "27 Streak" shows: the learner's profile (`GET /me`, cached
+  /// offline), brought up to date by the lesson just completed (its response
+  /// has the new streak before `/me` is refetched). Derived synchronously so an
+  /// error shows at once, even while Riverpod retries the profile; retry with
+  /// `ref.invalidate(userProfileProvider)`.
   StreakSummaryProvider._()
     : super(
         from: null,
@@ -35,21 +52,22 @@ final class StreakSummaryProvider
 
   @$internal
   @override
-  $ProviderElement<StreakSummary> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<StreakStats>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  StreakSummary create(Ref ref) {
+  AsyncValue<StreakStats> create(Ref ref) {
     return streakSummary(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(StreakSummary value) {
+  Override overrideWithValue(AsyncValue<StreakStats> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<StreakSummary>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<StreakStats>>(value),
     );
   }
 }
 
-String _$streakSummaryHash() => r'e06b5cb1a4ef509060420a4fcfdc3a015e9cdb1b';
+String _$streakSummaryHash() => r'8c536b70755fb9885f69a16289c78c16e38ba4ed';

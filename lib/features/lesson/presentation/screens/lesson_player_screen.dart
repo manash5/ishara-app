@@ -7,6 +7,7 @@ import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/lesson_models.dart';
 import '../providers/lesson_player_provider.dart';
+import '../providers/lesson_providers.dart';
 import '../widgets/fingerspell_exercise_view.dart';
 import '../widgets/match_pairs_exercise_view.dart';
 import '../widgets/pick_sign_exercise_view.dart';
@@ -14,6 +15,7 @@ import '../widgets/recognise_exercise_view.dart';
 import '../widgets/sign_it_exercise_view.dart';
 import '../widgets/watch_exercise_view.dart';
 import 'quit_lesson_dialog.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma copy for the XP shown in a correct `FeedbackSheet` (20).
 const String _xpCopy = '+3 XP';
@@ -29,16 +31,29 @@ class LessonPlayerScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = lessonPlayerProvider(lessonId);
+    // Lessons need sign videos: don't start one offline. A drop mid-lesson
+    // doesn't interrupt it (the completion is queued).
+    if (ref.watch(isOnlineProvider).value == false &&
+        !ref.read(provider.exists)) {
+      return const _OfflineBlocked();
+    }
+    final lesson = ref.watch(lessonProvider(lessonId));
+    if (!lesson.hasValue) {
+      return Scaffold(
+        backgroundColor: context.colors.bgSurface,
+        body: LoadStateView(
+          error: lesson.error,
+          errorTitle: 'Couldn’t load this lesson',
+          onRetry: () => ref.invalidate(lessonProvider(lessonId)),
+          loadingLabel: 'Loading the lesson',
+        ),
+      );
+    }
     final state = ref.watch(provider);
     ref.listen(provider.select((s) => s.phase), (_, phase) {
       switch (phase) {
         case LessonPhase.outOfHearts:
-          IsharaFeedback.wrong();
-          showOutOfHeartsSheet(
-            context,
-            onPractise: () => const PracticeRoute().go(context),
-            onEndLesson: () => const LearnRoute().go(context),
-          );
+          const OutOfHeartsRoute().go(context);
         case LessonPhase.finished:
           LessonCompleteRoute(lessonId: lessonId).go(context);
         case LessonPhase.answering || LessonPhase.feedback:
@@ -101,7 +116,9 @@ class _PlayerController {
 
   void cameraResult(CameraOutcome outcome) {
     final result = player.cameraResult(outcome);
-    if (result != null) _feedback(result);
+    if (result != null) {
+      _feedback(result, differentSign: outcome == CameraOutcome.wrong);
+    }
   }
 
   void skipCamera() => player.skipCamera();
@@ -110,14 +127,20 @@ class _PlayerController {
 
   /// Shows the `FeedbackSheet` (it adds the haptic), then moves on. Leaving
   /// the sheet any other way (e.g. Android back) also moves on.
-  Future<void> _feedback(FeedbackResult result) async {
+  Future<void> _feedback(
+    FeedbackResult result, {
+    bool differentSign = false,
+  }) async {
     final exercise = _state.exercise;
     var skip = false;
     final nav = Navigator.of(context);
     await FeedbackSheet.show(
       context,
       result: result,
-      message: _message(exercise, result),
+      message: differentSign
+          ? 'That looked like a different sign. Watch the reference and '
+                'try again.'
+          : _message(exercise, result),
       onContinue: nav.pop,
       secondaryLabel: result == FeedbackResult.almost
           ? 'Skip — I can’t use the camera now'
@@ -244,4 +267,31 @@ class _PlayerPage extends StatelessWidget {
       onResult: controller.cameraResult,
     ),
   };
+}
+
+/// Shown instead of the player when a lesson is opened offline.
+class _OfflineBlocked extends StatelessWidget {
+  const _OfflineBlocked();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.colors.bgSurface,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(IsharaSpacing.screenMargin),
+            child: StateMessage(
+              title: 'Connect to start this lesson',
+              body:
+                  'Lessons need sign videos, so they need an internet '
+                  'connection. Fingerspelling practice works offline.',
+              actionLabel: 'Back to Learn',
+              onAction: () => const LearnRoute().go(context),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/lesson/presentation/providers/lesson_models.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/fingerspell_exercise_view.dart';
 import 'package:ishara_app/features/lesson/presentation/widgets/fingerspell_letter_tile.dart';
+import 'package:ishara_app/features/recognition/data/recognition_providers.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_themed.dart';
@@ -37,7 +38,9 @@ void main() {
         tester,
         view(stateOn<FingerspellExercise>(letterIndex: 1)),
         mode: mode,
+        camera: FakeCameraScenario.correct,
       );
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('FINGERSPELL'), findsOneWidget);
       expect(find.text('कमल  ·  lotus'), findsOneWidget);
       expect(tiles(tester), [
@@ -70,20 +73,46 @@ void main() {
     expect(tiles(tester), everyElement(LetterTileState.done));
   });
 
-  testWidgets('skip and fake results call back', (tester) async {
-    var skipped = 0;
+  testWidgets('the pipeline spells क म ल: a result per letter', (tester) async {
     final results = <CameraOutcome>[];
     await pumpExercise(
       tester,
-      view(
-        stateOn<FingerspellExercise>(),
-        onSkip: () => skipped++,
-        onResult: results.add,
-      ),
+      view(stateOn<FingerspellExercise>(), onResult: results.add),
+      camera: FakeCameraScenario.correct,
+    );
+    await tester.pump(const Duration(seconds: 5));
+    // Two letters advance the word; the last ends it (correct sheet).
+    expect(results, [
+      CameraOutcome.correct,
+      CameraOutcome.correct,
+      CameraOutcome.correct,
+    ]);
+  });
+
+  testWidgets('another letter held → almost', (tester) async {
+    final results = <CameraOutcome>[];
+    await pumpExercise(
+      tester,
+      view(stateOn<FingerspellExercise>(), onResult: results.add),
+      camera: FakeCameraScenario.almost,
+    );
+    await tester.pump(const Duration(seconds: 3));
+    expect(results, [CameraOutcome.almost]);
+  });
+
+  testWidgets('no hand: a friendly chip', (tester) async {
+    await pumpExercise(tester, view(stateOn<FingerspellExercise>()));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Show your hand in the frame'), findsOneWidget);
+  });
+
+  testWidgets('skip calls back', (tester) async {
+    var skipped = 0;
+    await pumpExercise(
+      tester,
+      view(stateOn<FingerspellExercise>(), onSkip: () => skipped++),
     );
     await tester.tap(find.text('Can’t use the camera now'));
-    await tester.tap(find.text('Simulate: correct'));
     expect(skipped, 1);
-    expect(results, [CameraOutcome.correct]);
   });
 }

@@ -87,6 +87,40 @@ void main() {
     });
   }
 
+  // Regression: on a phone the status bar sits inside the app bar's
+  // area; a fixed 64dp box squeezed the toolbar, cutting off the title and
+  // hiding the back button.
+  testWidgets('below a status bar: back button and title fully visible', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    tester.view.padding = const FakeViewPadding(top: 63); // 24dp
+    addTearDown(tester.view.reset);
+    var taps = 0;
+    await pumpBar(
+      tester,
+      IsharaTopAppBar(title: 'Settings', onLeading: () => taps++),
+      ThemeMode.light,
+    );
+    const statusBar = 24.0;
+    final bar = tester.getRect(find.byType(IsharaTopAppBar));
+    expect(bar.height, statusBar + IsharaSizes.appBarHeight);
+    final title = tester.getRect(find.text('Settings'));
+    final back = tester.getRect(find.byTooltip('Back'));
+    for (final r in [title, back]) {
+      expect(r.top, greaterThanOrEqualTo(statusBar));
+      expect(r.bottom, lessThanOrEqualTo(bar.bottom));
+    }
+    // Centred in the 64dp toolbar under the status bar.
+    expect(
+      title.center.dy,
+      closeTo(statusBar + IsharaSizes.appBarHeight / 2, 1),
+    );
+    await tester.tap(find.byTooltip('Back'));
+    expect(taps, 1);
+  });
+
   testWidgets('title is optional (back button only)', (tester) async {
     await pumpThemed(
       tester,

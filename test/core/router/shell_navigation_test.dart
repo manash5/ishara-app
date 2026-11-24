@@ -4,7 +4,7 @@ import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/dictionary_screen.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/sign_detail_screen.dart';
-import 'package:ishara_app/features/learn/presentation/providers/learn_path_provider.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/features/learn/presentation/screens/learn_screen.dart';
 import 'package:ishara_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:ishara_app/features/ranks/presentation/screens/ranks_screen.dart';
@@ -77,7 +77,7 @@ void main() {
       expect(find.text('Practice'), findsWidgets);
       expect(find.byType(IsharaBottomBar), findsNothing);
 
-      await tapAndSettle(tester, find.text('Done'));
+      await tapAndSettle(tester, find.byTooltip('Close'));
       expect(find.byType(LearnScreen), findsOneWidget);
       expect(activeTab(tester), IsharaTab.learn);
     });
@@ -92,18 +92,18 @@ void main() {
   });
 
   group('learn', () {
-    testWidgets('Learn offline state (12) toggles', (tester) async {
-      final container = await pumpApp(
+    testWidgets('offline (12): Learn stays in the shell with its notice', (
+      tester,
+    ) async {
+      await pumpApp(
         tester,
         loggedIn: true,
         onboardingDone: true,
         location: const LearnRoute().location,
+        simulation: MockApiSimulation.offline,
       );
-      container.read(learnOfflineProvider.notifier).set(true);
-      await tester.pumpAndSettle();
-      expect(frameTitle('12', 'Learn – offline'), findsOneWidget);
-      await tapAndSettle(tester, find.text('Try again'));
       expect(find.byType(LearnScreen), findsOneWidget);
+      expect(find.byType(IsharaBottomBar), findsOneWidget);
     });
   });
 }

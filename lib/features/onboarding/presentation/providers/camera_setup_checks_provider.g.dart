@@ -8,22 +8,18 @@ part of 'camera_setup_checks_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Fake checklist (Figma 9:530) until the live camera + landmarker feed it.
+/// The setup checklist, updated from the hand landmark detector on every
+/// frame (recognition.md). Frames and landmarks stay in memory only.
 
-@ProviderFor(cameraSetupChecks)
+@ProviderFor(CameraSetupChecks)
 final cameraSetupChecksProvider = CameraSetupChecksProvider._();
 
-/// Fake checklist (Figma 9:530) until the live camera + landmarker feed it.
-
+/// The setup checklist, updated from the hand landmark detector on every
+/// frame (recognition.md). Frames and landmarks stay in memory only.
 final class CameraSetupChecksProvider
-    extends
-        $FunctionalProvider<
-          List<CameraSetupCheck>,
-          List<CameraSetupCheck>,
-          List<CameraSetupCheck>
-        >
-    with $Provider<List<CameraSetupCheck>> {
-  /// Fake checklist (Figma 9:530) until the live camera + landmarker feed it.
+    extends $NotifierProvider<CameraSetupChecks, CameraSetupState> {
+  /// The setup checklist, updated from the hand landmark detector on every
+  /// frame (recognition.md). Frames and landmarks stay in memory only.
   CameraSetupChecksProvider._()
     : super(
         from: null,
@@ -40,22 +36,36 @@ final class CameraSetupChecksProvider
 
   @$internal
   @override
-  $ProviderElement<List<CameraSetupCheck>> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  List<CameraSetupCheck> create(Ref ref) {
-    return cameraSetupChecks(ref);
-  }
+  CameraSetupChecks create() => CameraSetupChecks();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<CameraSetupCheck> value) {
+  Override overrideWithValue(CameraSetupState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<List<CameraSetupCheck>>(value),
+      providerOverride: $SyncValueProvider<CameraSetupState>(value),
     );
   }
 }
 
-String _$cameraSetupChecksHash() => r'2fc80f5387e46b2186249ee3b73265282857845e';
+String _$cameraSetupChecksHash() => r'd58b17dbe3ef31a563450b2024231a721b7e1c78';
+
+/// The setup checklist, updated from the hand landmark detector on every
+/// frame (recognition.md). Frames and landmarks stay in memory only.
+
+abstract class _$CameraSetupChecks extends $Notifier<CameraSetupState> {
+  CameraSetupState build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<CameraSetupState, CameraSetupState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CameraSetupState, CameraSetupState>,
+              CameraSetupState,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

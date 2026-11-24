@@ -8,7 +8,8 @@ part of 'lesson_player_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Drives the lesson player (Figma 18–25) over the fake lesson.
+/// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+/// screen builds it only once [lessonProvider] has data.
 ///
 /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
 /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -18,7 +19,8 @@ part of 'lesson_player_provider.dart';
 @ProviderFor(LessonPlayer)
 final lessonPlayerProvider = LessonPlayerFamily._();
 
-/// Drives the lesson player (Figma 18–25) over the fake lesson.
+/// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+/// screen builds it only once [lessonProvider] has data.
 ///
 /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
 /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -26,7 +28,8 @@ final lessonPlayerProvider = LessonPlayerFamily._();
 /// recognise exercise on the same sign, with no penalty.
 final class LessonPlayerProvider
     extends $NotifierProvider<LessonPlayer, LessonPlayerState> {
-  /// Drives the lesson player (Figma 18–25) over the fake lesson.
+  /// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+  /// screen builds it only once [lessonProvider] has data.
   ///
   /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
   /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -76,9 +79,10 @@ final class LessonPlayerProvider
   }
 }
 
-String _$lessonPlayerHash() => r'2804ea8b6a755ae53bed86522506be94bc910328';
+String _$lessonPlayerHash() => r'f0b8f9ab4c165501f6648fbf75c195893274fa71';
 
-/// Drives the lesson player (Figma 18–25) over the fake lesson.
+/// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+/// screen builds it only once [lessonProvider] has data.
 ///
 /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
 /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -103,7 +107,8 @@ final class LessonPlayerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Drives the lesson player (Figma 18–25) over the fake lesson.
+  /// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+  /// screen builds it only once [lessonProvider] has data.
   ///
   /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
   /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).
@@ -117,7 +122,8 @@ final class LessonPlayerFamily extends $Family
   String toString() => r'lessonPlayerProvider';
 }
 
-/// Drives the lesson player (Figma 18–25) over the fake lesson.
+/// Drives the lesson player (Figma 18–25) over the loaded lesson. The
+/// screen builds it only once [lessonProvider] has data.
 ///
 /// Rules (lessons-gamification.md): a wrong non-camera answer costs one
 /// heart; camera mistakes never do; at 0 hearts the lesson stops (28).

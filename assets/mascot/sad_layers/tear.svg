@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="tear" d="M118 68C121 72 122 75 119.5 77.5C117 75.5 116.5 72 118 68Z" fill="#8FD8F0" stroke-width="1.2" stroke="#163A3E"/>
+<defs>
+<linearGradient id="paint0_linear_1_3" x1="0.00017643" y1="80" x2="0.00017643" y2="176" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#1F4D52"/>
+<stop offset="0.65" stop-color="#6A5FB0"/>
+<stop offset="1" stop-color="#9479D4"/>
+</linearGradient>
+</defs>
+</svg>

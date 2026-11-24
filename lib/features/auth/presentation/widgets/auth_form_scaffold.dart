@@ -17,6 +17,7 @@ class AuthFormScaffold extends StatelessWidget {
     required this.subtitle,
     required this.children,
     this.footer,
+    this.offlineMessage,
   });
 
   final String title;
@@ -27,6 +28,9 @@ class AuthFormScaffold extends StatelessWidget {
 
   /// Figma `footer` (padding 12 × screen margin).
   final Widget? footer;
+
+  /// Shown under the heading while offline: auth needs a connection.
+  final String? offlineMessage;
 
   /// Back pops when there is somewhere to go back to, else returns to
   /// Welcome (e.g. after a deep link).
@@ -81,6 +85,14 @@ class AuthFormScaffold extends StatelessWidget {
                               color: c.textSecondary,
                             ),
                           ),
+                          if (offlineMessage case final message?) ...[
+                            const SizedBox(height: IsharaSpacing.s6),
+                            IsharaSnackbar(
+                              key: const Key('auth-offline-notice'),
+                              message: message,
+                              icon: IsharaIcons.wifiOff,
+                            ),
+                          ],
                           for (final child in children) ...[
                             const SizedBox(height: IsharaSpacing.s6),
                             child,

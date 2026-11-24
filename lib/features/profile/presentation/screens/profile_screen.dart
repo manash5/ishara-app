@@ -4,10 +4,12 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/relative_time.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_hero.dart';
 import '../widgets/weekly_xp_chart.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// "1240" → "1,240".
 String groupThousands(int n) =>
@@ -21,7 +23,19 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    final p = ref.watch(profileSummaryProvider);
+    final summary = ref.watch(profileSummaryProvider);
+    final p = summary.value;
+    if (p == null) {
+      return Scaffold(
+        backgroundColor: c.bgSurface,
+        body: LoadStateView(
+          error: summary.error,
+          errorTitle: 'Couldn’t load your profile',
+          onRetry: () => ref.invalidate(userProfileProvider),
+          loadingLabel: 'Loading your profile',
+        ),
+      );
+    }
     return AnnotatedRegion<SystemUiOverlayStyle>(
       // White status bar icons over the teal hero in both themes.
       value: SystemUiOverlayStyle.light,
@@ -48,6 +62,23 @@ class ProfileScreen extends ConsumerWidget {
                 child: ContentPanel(
                   children: [
                     const SectionHeader(title: 'Your stats'),
+                    if (ref.watch(isOnlineProvider).value == false)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: IsharaSpacing.s3,
+                          ),
+                          child: IsharaChip(
+                            key: const Key('profile-offline-chip'),
+                            label: offlineUpdatedLabel(
+                              ref.watch(profileLastUpdatedProvider),
+                            ),
+                            icon: IsharaIcons.wifiOff,
+                            tone: IsharaChipTone.neutral,
+                          ),
+                        ),
+                      ),
                     _StatsGrid(profile: p),
                     Padding(
                       padding: const EdgeInsets.only(top: IsharaSpacing.s2),

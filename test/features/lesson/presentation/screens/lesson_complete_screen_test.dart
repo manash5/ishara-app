@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/theme/theme.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
 import 'package:ishara_app/features/dictionary/presentation/screens/sign_detail_screen.dart';
@@ -9,8 +10,11 @@ import 'package:ishara_app/features/gamification/presentation/screens/streak_scr
 import 'package:ishara_app/features/lesson/presentation/screens/lesson_complete_screen.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/load_states.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 void main() {
   late List<Object?> haptics;
@@ -36,6 +40,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
+        overrides: mockApiOverrides(),
         child: MaterialApp(
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
@@ -43,12 +48,15 @@ void main() {
           home: Builder(
             builder: (context) => MediaQuery(
               data: MediaQuery.of(context).copyWith(disableAnimations: reduced),
-              child: const LessonCompleteScreen(lessonId: 'l1'),
+              child: const LessonCompleteScreen(
+                lessonId: FixtureIds.currentLesson,
+              ),
             ),
           ),
         ),
       ),
     );
+    await pumpApi(tester);
   }
 
   DanuMascot danu(WidgetTester tester) =>
@@ -160,7 +168,8 @@ void main() {
       tester,
       loggedIn: true,
       onboardingDone: true,
-      location: const LessonCompleteRoute(lessonId: 'l1').location,
+      location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+          .location,
     );
     await tester.tap(find.widgetWithText(SignListTile, 'Namaste'));
     await tester.pumpAndSettle();
@@ -172,8 +181,37 @@ void main() {
     expect(find.byType(StreakScreen), findsOneWidget);
   });
 
+  testWidgets('offline: error with Try again, and the attempt is queued', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      loggedIn: true,
+      onboardingDone: true,
+      location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+          .location,
+      simulation: MockApiSimulation.offline,
+    );
+    expect(find.text('Couldn’t save your lesson'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+    expect(TestHive.instance.syncQueue.length, 1);
+
+    // Try again resends the same clientEventId: still one queued entry.
+    await tester.tap(find.text('Try again'));
+    await pumpApi(tester);
+    await tester.pumpAndSettle();
+    expect(TestHive.instance.syncQueue.length, 1);
+  });
+
   test('formatLessonTime pads seconds', () {
     expect(formatLessonTime(const Duration(minutes: 4, seconds: 12)), '4:12');
     expect(formatLessonTime(const Duration(minutes: 1, seconds: 5)), '1:05');
   });
+
+  loadStateTests(
+    location: const LessonCompleteRoute(lessonId: FixtureIds.currentLesson)
+        .location,
+    errorTitle: 'Couldn’t save your lesson',
+    loadingLabel: 'Saving your lesson',
+  );
 }

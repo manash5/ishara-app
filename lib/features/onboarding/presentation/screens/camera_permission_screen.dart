@@ -5,16 +5,17 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../auth/presentation/providers/fake_session_provider.dart';
 import '../providers/onboarding_choices_provider.dart';
+import '../providers/onboarding_completion_provider.dart';
 import '../widgets/onboarding_bar.dart';
 import '../widgets/privacy_point.dart';
 
 /// Figma "08 Camera permission" (9:359): step 3 of 3. A teal
 /// [HeroBackdrop] header with a [ContentPanel] explaining camera privacy.
 ///
-/// UI-only phase: "Allow camera" does not ask the OS yet; "Not now" skips the
-/// setup check and finishes onboarding (camera exercises can be skipped).
+/// "Allow camera" does not ask the OS yet; "Not now" skips the setup check
+/// and finishes onboarding (`POST /me/onboarding`; camera exercises can be
+/// skipped).
 class CameraPermissionScreen extends ConsumerWidget {
   const CameraPermissionScreen({super.key});
 
@@ -29,6 +30,7 @@ class CameraPermissionScreen extends ConsumerWidget {
     final c = context.colors;
     final s = context.textStyles;
     final navigator = Navigator.of(context);
+    final saving = ref.watch(onboardingCompletionProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -146,18 +148,31 @@ class CameraPermissionScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: IsharaSpacing.s2),
                                 IsharaButton(
-                                  label: 'Not now',
+                                  label: saving ? 'Saving…' : 'Not now',
                                   variant: IsharaButtonVariant.text,
-                                  onPressed: () {
-                                    ref
-                                        .read(
-                                          onboardingChoicesProvider.notifier,
-                                        )
-                                        .setCameraAllowed(false);
-                                    ref
-                                        .read(fakeSessionProvider.notifier)
-                                        .completeOnboarding();
-                                  },
+                                  onPressed: saving
+                                      ? null
+                                      : () async {
+                                          ref
+                                              .read(
+                                                onboardingChoicesProvider
+                                                    .notifier,
+                                              )
+                                              .setCameraAllowed(false);
+                                          final failure = await ref
+                                              .read(
+                                                onboardingCompletionProvider
+                                                    .notifier,
+                                              )
+                                              .complete();
+                                          if (failure != null &&
+                                              context.mounted) {
+                                            IsharaSnackbar.show(
+                                              context,
+                                              message: failure.message,
+                                            );
+                                          }
+                                        },
                                 ),
                                 SizedBox(
                                   height: MediaQuery.paddingOf(context).bottom,

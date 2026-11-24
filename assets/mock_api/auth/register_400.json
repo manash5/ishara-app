@@ -1,0 +1,5 @@
+{
+  "status": 400,
+  "success": false,
+  "message": "Use at least 8 characters for your password."
+}

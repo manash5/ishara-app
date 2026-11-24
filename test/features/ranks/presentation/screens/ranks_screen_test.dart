@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ishara_app/core/router/app_routes.dart';
+import 'package:ishara_app/core/services/api/mock_api_settings.dart';
 import 'package:ishara_app/core/widgets/widgets.dart';
+import 'package:ishara_app/features/ranks/data/datasources/leaderboard_local_data_source.dart';
+import 'package:ishara_app/features/ranks/data/models/weekly_leaderboard_dto.dart';
 import 'package:ishara_app/features/ranks/presentation/providers/ranks_providers.dart';
 import 'package:ishara_app/features/ranks/presentation/screens/ranks_screen.dart';
 import 'package:ishara_app/features/ranks/presentation/widgets/leaderboard_parts.dart';
@@ -12,22 +15,31 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/pump_themed.dart';
+import '../../../../helpers/mock_api.dart';
+import '../../../../helpers/test_hive.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
   ThemeMode mode = ThemeMode.light,
   List<Override> overrides = const [],
+  MockApiSimulation? simulation,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.625;
   addTearDown(tester.view.reset);
   await pumpThemed(
     tester,
-    ProviderScope(overrides: overrides, child: const RanksScreen()),
+    ProviderScope(
+      overrides: [
+        ...mockApiOverrides(simulation: simulation),
+        ...overrides,
+      ],
+      child: const RanksScreen(),
+    ),
     mode: mode,
   );
-  // Let chained futures (and error propagation) settle.
-  await tester.pump();
+  // Let the mock API answer and errors propagate.
+  await pumpApi(tester);
   await tester.pump();
 }
 
@@ -47,10 +59,7 @@ void main() {
           find.text('Top 5 move up to Silver. You’re 60 XP away.'),
           findsOneWidget,
         );
-        expect(
-          find.byType(LeaderboardTile),
-          findsNWidgets(fakeWeeklyLeaderboard.entries.length),
-        );
+        expect(find.byType(LeaderboardTile), findsNWidgets(10));
         expect(find.text('PROMOTION ZONE'), findsOneWidget);
         expect(find.byType(HeroBackdrop), findsOneWidget);
 
@@ -89,7 +98,9 @@ void main() {
       await _pump(
         tester,
         overrides: [
-          weeklyLeaderboardProvider.overrideWith((_) => pending.future),
+          weeklyLeaderboardProvider.overrideWith(
+            (_) => Stream.fromFuture(pending.future),
+          ),
         ],
       );
       expect(find.byType(ListSkeleton), findsOneWidget);
@@ -101,7 +112,7 @@ void main() {
         tester,
         overrides: [
           weeklyLeaderboardProvider.overrideWith(
-            (_) async => throw Exception('offline'),
+            (_) => Stream.error(Exception('offline')),
           ),
         ],
       );
@@ -115,21 +126,66 @@ void main() {
         tester,
         overrides: [
           weeklyLeaderboardProvider.overrideWith(
-            (_) async => const WeeklyLeaderboard(
-              leagueName: 'Bronze',
-              nextLeagueName: 'Silver',
-              weekNumber: 1,
-              learnerCount: 0,
-              endsIn: Duration(days: 1),
-              promotionCount: 5,
-              xpToPromotion: 0,
-              entries: [],
+            (_) => Stream.value(
+              WeeklyLeaderboard(
+                leagueName: 'Bronze',
+                nextLeagueName: 'Silver',
+                weekNumber: 1,
+                learnerCount: 0,
+                endsAt: DateTime.now().add(const Duration(days: 1)),
+                promotionCount: 5,
+                xpToPromotion: 0,
+                entries: [],
+              ),
             ),
           ),
         ],
       );
       expect(find.text('No one here yet'), findsOneWidget);
       expect(find.byType(LeaderboardTile), findsNothing);
+    });
+  });
+
+  group('offline', () {
+    testWidgets('shows the cached league', (tester) async {
+      await LeaderboardLocalDataSource(TestHive.instance).writeWeekly(
+        WeeklyLeaderboardDto.fromJson(
+          fixtureData<Map<String, dynamic>>('leaderboard/weekly_200'),
+        ),
+      );
+      await _pump(tester, simulation: MockApiSimulation.offline);
+
+      expect(find.text('Couldn’t load the leaderboard'), findsNothing);
+      expect(find.text('Bronze league'), findsOneWidget);
+      expect(find.byType(LeaderboardTile), findsNWidgets(10));
+    });
+
+    for (final mode in themeModes) {
+      testWidgets('says when the cached league was updated (${mode.name})', (
+        tester,
+      ) async {
+        await TestHive.instance.putCache(
+          LeaderboardLocalDataSource.cacheKey,
+          fixtureData<Map<String, dynamic>>('leaderboard/weekly_200'),
+          fetchedAt: DateTime.now().subtract(const Duration(hours: 3)),
+        );
+        await _pump(tester, mode: mode, simulation: MockApiSimulation.offline);
+        final chip = tester.widget<IsharaChip>(
+          find.byKey(const Key('ranks-offline-chip')),
+        );
+        expect(chip.label, 'Offline · updated 3 h ago');
+        expect(chip.tone, IsharaChipTone.neutral);
+      });
+    }
+
+    testWidgets('online: no offline chip', (tester) async {
+      await _pump(tester);
+      expect(find.byKey(const Key('ranks-offline-chip')), findsNothing);
+    });
+
+    testWidgets('with nothing cached shows the error', (tester) async {
+      await _pump(tester, simulation: MockApiSimulation.offline);
+      expect(find.text('Couldn’t load the leaderboard'), findsOneWidget);
     });
   });
 

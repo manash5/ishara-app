@@ -11,14 +11,22 @@ class PasswordField extends ConsumerWidget {
   const PasswordField({
     super.key,
     required this.field,
+    this.label = 'Password',
     this.hint,
     this.errorText,
     this.isNewPassword = false,
+    this.controller,
+    this.onSubmitted,
+    this.enabled = true,
   });
 
   final AuthPasswordField field;
+  final String label;
   final String? hint;
   final String? errorText;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onSubmitted;
+  final bool enabled;
 
   /// Autofill as a new password (sign up) rather than an existing one.
   final bool isNewPassword;
@@ -27,7 +35,10 @@ class PasswordField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final visible = ref.watch(passwordVisibleProvider(field));
     return IsharaTextField(
-      label: 'Password',
+      label: label,
+      controller: controller,
+      onSubmitted: onSubmitted,
+      enabled: enabled,
       hint: hint,
       errorText: errorText,
       prefixIcon: IsharaIcons.lock,

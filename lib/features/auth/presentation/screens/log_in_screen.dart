@@ -5,24 +5,53 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/auth_form_providers.dart';
-import '../providers/fake_session_provider.dart';
 import '../widgets/auth_form_scaffold.dart';
 import '../widgets/auth_link.dart';
 import '../widgets/or_divider.dart';
 import '../widgets/password_field.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "04 Log in" (7:206).
 ///
-/// UI-only phase: "Log in" and Google log the fake session in; the router
-/// redirect then moves on to Learn. The password error comes from
-/// [logInPasswordErrorProvider] (always null until the data layer lands).
-class LogInScreen extends ConsumerWidget {
+/// "Log in" and Google call the auth use cases through [logInFormProvider];
+/// on success the session signs in and the router redirect moves on. Errors
+/// (e.g. "Wrong email or password.") show under the password field.
+class LogInScreen extends ConsumerStatefulWidget {
   const LogInScreen({super.key});
 
+  /// Shown while offline (auth needs a connection).
+  static const offlineMessage =
+      'You’re offline. Logging in needs an internet connection.';
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final passwordError = ref.watch(logInPasswordErrorProvider);
+  ConsumerState<LogInScreen> createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends ConsumerState<LogInScreen> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _logIn() {
+    FocusScope.of(context).unfocus();
+    ref
+        .read(logInFormProvider.notifier)
+        .logIn(email: _email.text, password: _password.text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final form = ref.watch(logInFormProvider);
+    // Auth needs a connection.
+    final offline = ref.watch(isOnlineProvider).value == false;
     return AuthFormScaffold(
+      offlineMessage: offline ? LogInScreen.offlineMessage : null,
       title: 'Welcome back',
       subtitle: 'Log in to keep your streak going.',
       footer: AuthLink(
@@ -33,16 +62,22 @@ class LogInScreen extends ConsumerWidget {
       children: [
         AuthFields(
           children: [
-            const IsharaTextField(
+            IsharaTextField(
               label: 'Email',
+              controller: _email,
+              enabled: !form.busy,
+              errorText: form.errorFor(AuthField.email),
               prefixIcon: IsharaIcons.mail,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              autofillHints: [AutofillHints.email],
+              autofillHints: const [AutofillHints.email],
             ),
             PasswordField(
               field: AuthPasswordField.logIn,
-              errorText: passwordError,
+              controller: _password,
+              enabled: !form.busy,
+              errorText: form.errorFor(AuthField.password),
+              onSubmitted: (_) => _logIn(),
             ),
           ],
         ),
@@ -54,12 +89,14 @@ class LogInScreen extends ConsumerWidget {
           ),
         ),
         IsharaButton(
-          label: 'Log in',
-          onPressed: () => ref.read(fakeSessionProvider.notifier).logIn(),
+          label: form.pending == AuthSubmit.email ? 'Logging in…' : 'Log in',
+          onPressed: form.busy || offline ? null : _logIn,
         ),
         const OrDivider(),
         GoogleSignInButton(
-          onPressed: () => ref.read(fakeSessionProvider.notifier).logIn(),
+          onPressed: form.busy || offline
+              ? null
+              : ref.read(logInFormProvider.notifier).google,
         ),
       ],
     );

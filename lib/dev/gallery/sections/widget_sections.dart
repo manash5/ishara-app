@@ -62,6 +62,8 @@ final List<WidgetBuilder> widgetSections = [
   leaderboardAvatarName,
   sharedStateMessage,
   sharedListSkeleton,
+  sharedLoadStateView,
+  sharedConfirmDialog,
   _settingsTiles,
   settingsDestructiveAndGroup,
   _statCards,

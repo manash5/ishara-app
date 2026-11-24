@@ -1,0 +1,15 @@
+<svg width="200" height="207" viewBox="0 0 200 207" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="eye">
+<g id="eye">
+<path id="Vector_37" d="M119 72.1233C124.523 72.1233 129 68.3177 129 63.6233C129 58.9288 124.523 55.1233 119 55.1233C113.477 55.1233 109 58.9288 109 63.6233C109 68.3177 113.477 72.1233 119 72.1233Z" fill="#38C6E8"/>
+<path id="Vector_38" d="M115.5 65.6233C119.167 60.9566 122.833 60.9566 126.5 65.6233" stroke-width="2.6" stroke-linecap="round" stroke="#0B1F21"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_1_3" x1="0.00017643" y1="86.6233" x2="0.00017643" y2="182.623" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#1F4D52"/>
+<stop offset="0.65" stop-color="#6A5FB0"/>
+<stop offset="1" stop-color="#9479D4"/>
+</linearGradient>
+</defs>
+</svg>

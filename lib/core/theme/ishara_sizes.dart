@@ -121,14 +121,13 @@ abstract final class IsharaSizes {
   static const double letterTileGlyph = 44;
   static const double letterTileGlyphLine = 52;
   static const double dialogWidth = 312; // AlertDialog (29)
-  static const double sheetHeart = 22; // Out of hearts sheet (28)
-  static const double sheetHeartGap = 6;
+  static const double outOfHeartsHeart = 28; // Out of hearts (28)
+  static const double outOfHeartsHeartGap = 8;
 
   // Lesson results (26–27).
   static const double resultBadge = 64;
   static const double resultBadgeIcon = 32;
   static const double streakHero = 128;
-  static const double streakHeroIcon = 88;
   static const double streakDay = 32;
   static const double streakDayGap = 6;
   static const double resultMascot = 96;
@@ -145,6 +144,16 @@ abstract final class IsharaSizes {
   /// the panel's top, beside "Your results"). A little more than
   /// [resultHeroBottom], so Danu sits just under the title.
   static const double resultMascotOverlap = 76;
+
+  /// 27 hero: teal under "day streak" (less than 26, so Danu, level with
+  /// the text, reaches the panel).
+  static const double streakHeroBottom = 40;
+
+  /// 27: how far Danu's box drops into the results panel.
+  static const double streakMascotDip = 16;
+
+  /// 27: Danu at the hero's right edge (a little bigger than on 26).
+  static const double streakMascot = 128;
   static const double streakNumber = 56; // 27 hero count (56/64 ExtraBold)
   static const double streakNumberLine = 64;
 

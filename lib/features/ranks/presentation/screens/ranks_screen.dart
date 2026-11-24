@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/relative_time.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../providers/ranks_providers.dart';
 import '../widgets/league_header.dart';
 import '../widgets/leaderboard_parts.dart';
+import '../../../../core/connectivity/is_online.dart';
 
 /// Figma "15 Ranks" (Light 12:1204 · Dark 60:6872): a tab root in the
 /// bottom-bar shell. League hero header, then a content panel with the
@@ -29,6 +31,21 @@ class RanksScreen extends ConsumerWidget {
                 ),
               ]
             : [
+                if (ref.watch(isOnlineProvider).value == false)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: IsharaSpacing.s3),
+                      child: IsharaChip(
+                        key: const Key('ranks-offline-chip'),
+                        label: offlineUpdatedLabel(
+                          ref.watch(leaderboardLastUpdatedProvider),
+                        ),
+                        icon: IsharaIcons.wifiOff,
+                        tone: IsharaChipTone.neutral,
+                      ),
+                    ),
+                  ),
                 LeagueBanner(
                   text:
                       'Top ${b.promotionCount} move up to ${b.nextLeagueName}. '
@@ -73,7 +90,9 @@ class RanksScreen extends ConsumerWidget {
                   subtitle:
                       'Week ${data.weekNumber} · '
                       '${data.learnerCount} learners',
-                  countdown: 'Ends in ${formatTimeLeft(data.endsIn)}',
+                  countdown:
+                      'Ends in '
+                      '${formatTimeLeft(data.endsAt.difference(DateTime.now()))}',
                 )
               else
                 const LeagueHeader(title: 'Ranks', badge: false),
@@ -107,10 +126,11 @@ class _Leaderboard extends StatelessWidget {
           ],
           LeaderboardTile(
             rank: i + 1,
-            name: entries[i].name,
+            // Figma labels the learner's own row "You".
+            name: entries[i].isMe ? 'You' : entries[i].displayName,
             xp: entries[i].xp,
             isMe: entries[i].isMe,
-            avatarName: entries[i].avatarName,
+            avatarName: entries[i].isMe ? entries[i].displayName : null,
           ),
         ],
       ],

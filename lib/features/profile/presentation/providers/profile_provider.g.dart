@@ -8,20 +8,81 @@ part of 'profile_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Hard-coded profile matching the Figma frame; a repository-backed
-/// provider replaces it when the data layer lands.
+/// The signed-in learner (`GET /me`), cache-first: the cached profile at
+/// once, then the fresh one, then every change (settings, onboarding).
+/// Learn, lesson and gamification read their stats from here; invalidate it
+/// to refetch. A fetch failure without a cached profile is an `AsyncError`
+/// carrying a `Failure`.
+
+@ProviderFor(userProfile)
+final userProfileProvider = UserProfileProvider._();
+
+/// The signed-in learner (`GET /me`), cache-first: the cached profile at
+/// once, then the fresh one, then every change (settings, onboarding).
+/// Learn, lesson and gamification read their stats from here; invalidate it
+/// to refetch. A fetch failure without a cached profile is an `AsyncError`
+/// carrying a `Failure`.
+
+final class UserProfileProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserProfile>,
+          UserProfile,
+          Stream<UserProfile>
+        >
+    with $FutureModifier<UserProfile>, $StreamProvider<UserProfile> {
+  /// The signed-in learner (`GET /me`), cache-first: the cached profile at
+  /// once, then the fresh one, then every change (settings, onboarding).
+  /// Learn, lesson and gamification read their stats from here; invalidate it
+  /// to refetch. A fetch failure without a cached profile is an `AsyncError`
+  /// carrying a `Failure`.
+  UserProfileProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userProfileProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userProfileHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<UserProfile> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<UserProfile> create(Ref ref) {
+    return userProfile(ref);
+  }
+}
+
+String _$userProfileHash() => r'1d0e8e62e2fcb771db576af2d41aff2de9918eb6';
+
+/// Derived synchronously so an error shows at once, even while Riverpod
+/// retries [userProfile].
 
 @ProviderFor(profileSummary)
 final profileSummaryProvider = ProfileSummaryProvider._();
 
-/// Hard-coded profile matching the Figma frame; a repository-backed
-/// provider replaces it when the data layer lands.
+/// Derived synchronously so an error shows at once, even while Riverpod
+/// retries [userProfile].
 
 final class ProfileSummaryProvider
-    extends $FunctionalProvider<ProfileSummary, ProfileSummary, ProfileSummary>
-    with $Provider<ProfileSummary> {
-  /// Hard-coded profile matching the Figma frame; a repository-backed
-  /// provider replaces it when the data layer lands.
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProfileSummary>,
+          AsyncValue<ProfileSummary>,
+          AsyncValue<ProfileSummary>
+        >
+    with $Provider<AsyncValue<ProfileSummary>> {
+  /// Derived synchronously so an error shows at once, even while Riverpod
+  /// retries [userProfile].
   ProfileSummaryProvider._()
     : super(
         from: null,
@@ -38,21 +99,75 @@ final class ProfileSummaryProvider
 
   @$internal
   @override
-  $ProviderElement<ProfileSummary> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<ProfileSummary>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  ProfileSummary create(Ref ref) {
+  AsyncValue<ProfileSummary> create(Ref ref) {
     return profileSummary(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ProfileSummary value) {
+  Override overrideWithValue(AsyncValue<ProfileSummary> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ProfileSummary>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<ProfileSummary>>(value),
     );
   }
 }
 
-String _$profileSummaryHash() => r'1e71388ebd56fa1eed927bf8d4d192490a5091b0';
+String _$profileSummaryHash() => r'2ae84380a544dc7b76662eb2e206b74582ca5e50';
+
+/// When the profile on screen was fetched; re-read whenever it changes.
+/// Null when unknown (nothing cached, or the cache can't be read): the
+/// "updated … ago" chip is then left out.
+
+@ProviderFor(profileLastUpdated)
+final profileLastUpdatedProvider = ProfileLastUpdatedProvider._();
+
+/// When the profile on screen was fetched; re-read whenever it changes.
+/// Null when unknown (nothing cached, or the cache can't be read): the
+/// "updated … ago" chip is then left out.
+
+final class ProfileLastUpdatedProvider
+    extends $FunctionalProvider<DateTime?, DateTime?, DateTime?>
+    with $Provider<DateTime?> {
+  /// When the profile on screen was fetched; re-read whenever it changes.
+  /// Null when unknown (nothing cached, or the cache can't be read): the
+  /// "updated … ago" chip is then left out.
+  ProfileLastUpdatedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profileLastUpdatedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$profileLastUpdatedHash();
+
+  @$internal
+  @override
+  $ProviderElement<DateTime?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DateTime? create(Ref ref) {
+    return profileLastUpdated(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime?>(value),
+    );
+  }
+}
+
+String _$profileLastUpdatedHash() =>
+    r'8265400379fc1daece3cfd74ac161c154f6131a8';
